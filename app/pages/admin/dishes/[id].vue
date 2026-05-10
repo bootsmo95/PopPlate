@@ -112,20 +112,27 @@
         />
       </section>
 
-      <!-- Placeholder: Generation (Task 9) -->
+      <!-- Generation Status (Task 9) -->
       <section class="mb-8">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Generation</h2>
-        <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
-          3D model generation will be available in a future update.
-        </div>
+        <AdminGenerationStatus
+          :dish-id="dish.id"
+          :dish-status="dish.status"
+          :image-count="sourceImages.length"
+          :latest-job="latestJob"
+          @job-created="handleJobCreated"
+        />
       </section>
 
-      <!-- Placeholder: Publish / QR (Task 10) -->
+      <!-- Publish & QR Code (Task 10) -->
       <section class="mb-10">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Publish &amp; QR Code</h2>
-        <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
-          Publishing and QR code generation will be available in a future update.
-        </div>
+        <AdminPublishControls
+          :dish="dish"
+          :qr-code="qrCode"
+          @published="handlePublished"
+          @unpublished="handleUnpublished"
+        />
       </section>
 
       <!-- Archive -->
@@ -163,6 +170,25 @@ interface SourceImage {
   createdAt: string
 }
 
+interface GenerationJob {
+  id: string
+  dishId: string
+  status: string
+  attemptNumber: number
+  errorMessage: string | null
+  errorCode: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+interface QrCode {
+  id: string
+  dishId: string
+  publicUrl: string
+  imageUrl: string
+  createdAt: string
+}
+
 interface DishDetail {
   id: string
   restaurantId: string
@@ -173,6 +199,8 @@ interface DishDetail {
   ingredients: string | null
   status: DishStatus
   publicDishId: string
+  posterUrl: string | null
+  previewModelGlbUrl: string | null
   createdAt: string
   updatedAt: string
 }
@@ -190,12 +218,73 @@ const { data: sourceImagesData, refresh: refreshImages } = await useFetch<Source
 )
 const sourceImages = computed(() => sourceImagesData.value ?? [])
 
+// Latest generation job
+const { data: jobsData, refresh: refreshJobs } = await useFetch<GenerationJob[]>(
+  `/api/dishes/${id}/jobs`,
+)
+const latestJob = computed<GenerationJob | null>(() => jobsData.value?.[0] ?? null)
+
+// QR code
+const { data: qrCode, refresh: refreshQr } = await useFetch<QrCode | null>(
+  `/api/dishes/${id}/qr`,
+)
+
+// Auto-polling when job is queued or processing
+let pollInterval: ReturnType<typeof setInterval> | null = null
+
+function startPolling() {
+  if (pollInterval) return
+  pollInterval = setInterval(async () => {
+    await Promise.all([refresh(), refreshJobs()])
+    const status = latestJob.value?.status
+    if (status !== 'queued' && status !== 'processing') {
+      stopPolling()
+    }
+  }, 3000)
+}
+
+function stopPolling() {
+  if (pollInterval) {
+    clearInterval(pollInterval)
+    pollInterval = null
+  }
+}
+
+watch(
+  latestJob,
+  (job) => {
+    if (job && (job.status === 'queued' || job.status === 'processing')) {
+      startPolling()
+    } else {
+      stopPolling()
+    }
+  },
+  { immediate: true },
+)
+
+onUnmounted(() => {
+  stopPolling()
+})
+
 function handleImageUploaded(_image: SourceImage) {
   refreshImages()
 }
 
 function handleImageDeleted(_imageId: string) {
   refreshImages()
+}
+
+function handleJobCreated(_job: GenerationJob) {
+  refreshJobs()
+  refresh()
+}
+
+async function handlePublished() {
+  await Promise.all([refresh(), refreshQr()])
+}
+
+async function handleUnpublished() {
+  await refresh()
 }
 
 const form = reactive({
