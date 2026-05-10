@@ -2,6 +2,7 @@
   <button
     slot="ar-button"
     class="flex items-center gap-2 px-5 py-3 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-semibold text-sm rounded-full shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
+    @click="emit('ar-clicked')"
   >
     <!-- AR cube icon -->
     <svg
@@ -21,3 +22,9 @@
     View on your table
   </button>
 </template>
+
+<script setup lang="ts">
+const emit = defineEmits<{
+  (e: 'ar-clicked'): void
+}>()
+</script>

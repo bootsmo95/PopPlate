@@ -147,6 +147,25 @@
         />
       </section>
 
+      <!-- Analytics (Task 14) -->
+      <section v-if="analyticsData" class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Analytics</h2>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+            <p class="text-2xl font-bold text-gray-900">{{ analyticsData.page_open }}</p>
+            <p class="text-xs text-gray-500 mt-1">Page Opens</p>
+          </div>
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+            <p class="text-2xl font-bold text-gray-900">{{ analyticsData.viewer_loaded }}</p>
+            <p class="text-xs text-gray-500 mt-1">Viewer Loads</p>
+          </div>
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+            <p class="text-2xl font-bold text-gray-900">{{ analyticsData.ar_launch_clicked }}</p>
+            <p class="text-xs text-gray-500 mt-1">AR Launches</p>
+          </div>
+        </div>
+      </section>
+
       <!-- Archive -->
       <div class="border-t border-gray-200 pt-6">
         <h2 class="text-sm font-semibold text-gray-700 mb-2">Danger Zone</h2>
@@ -240,6 +259,16 @@ const latestJob = computed<GenerationJob | null>(() => jobsData.value?.[0] ?? nu
 // QR code
 const { data: qrCode, refresh: refreshQr } = await useFetch<QrCode | null>(
   `/api/dishes/${id}/qr`,
+)
+
+// Analytics counts
+interface AnalyticsData {
+  page_open: number
+  viewer_loaded: number
+  ar_launch_clicked: number
+}
+const { data: analyticsData, refresh: refreshAnalytics } = await useFetch<AnalyticsData>(
+  `/api/dishes/${id}/analytics`,
 )
 
 // Auto-polling when job is queued or processing

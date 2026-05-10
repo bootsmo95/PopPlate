@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
+    id: dish.id,
     name: dish.name,
     shortDescription: dish.shortDescription,
     priceText: dish.priceText,

@@ -27,12 +27,13 @@
       class="w-full rounded-xl overflow-hidden block"
       :style="{ height: viewerHeight }"
       @error="hasError = true"
+      @load="emit('viewer-loaded')"
     >
       <!-- iOS Quick Look source -->
       <source v-if="usdzUrl" :src="usdzUrl" type="model/vnd.usdz+zip" />
 
       <!-- AR button (slot) -->
-      <ThreeDArButton />
+      <ThreeDArButton @ar-clicked="emit('ar-clicked')" />
 
       <!-- Loading slot -->
       <div slot="progress-bar" class="w-full h-1 bg-gray-200">
@@ -47,6 +48,11 @@
 if (import.meta.client) {
   import('@google/model-viewer')
 }
+
+const emit = defineEmits<{
+  (e: 'viewer-loaded'): void
+  (e: 'ar-clicked'): void
+}>()
 
 const props = withDefaults(
   defineProps<{

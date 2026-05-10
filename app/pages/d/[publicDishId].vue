@@ -80,18 +80,23 @@
         :poster-url="dish.posterUrl"
         :alt="dish.name"
         height="60vh"
+        @viewer-loaded="onViewerLoaded"
+        @ar-clicked="onArClicked"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { trackPageOpen, trackViewerLoaded, trackArLaunchClicked } from '~/lib/analytics/events'
+
 definePageMeta({ layout: 'public' })
 
 const route = useRoute()
 const publicDishId = route.params.publicDishId as string
 
 interface PublicDish {
+  id: string
   name: string
   shortDescription: string | null
   priceText: string | null
@@ -128,4 +133,23 @@ useHead({
     },
   ],
 })
+
+// Analytics — only fire on client
+onMounted(() => {
+  if (dish.value) {
+    trackPageOpen(dish.value.id, dish.value.restaurantId)
+  }
+})
+
+function onViewerLoaded() {
+  if (dish.value) {
+    trackViewerLoaded(dish.value.id, dish.value.restaurantId)
+  }
+}
+
+function onArClicked() {
+  if (dish.value) {
+    trackArLaunchClicked(dish.value.id, dish.value.restaurantId)
+  }
+}
 </script>
