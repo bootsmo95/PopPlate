@@ -124,6 +124,18 @@
         />
       </section>
 
+      <!-- 3D Preview (Task 12) -->
+      <section v-if="dish.previewModelGlbUrl" class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Preview</h2>
+        <ThreeDDishViewer
+          :glb-url="dish.previewModelGlbUrl"
+          :usdz-url="dish.previewModelUsdzUrl ?? undefined"
+          :poster-url="dish.posterUrl ?? undefined"
+          :alt="dish.name"
+          height="400px"
+        />
+      </section>
+
       <!-- Publish & QR Code (Task 10) -->
       <section class="mb-10">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Publish &amp; QR Code</h2>
@@ -201,6 +213,7 @@ interface DishDetail {
   publicDishId: string
   posterUrl: string | null
   previewModelGlbUrl: string | null
+  previewModelUsdzUrl: string | null
   createdAt: string
   updatedAt: string
 }

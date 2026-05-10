@@ -9,5 +9,11 @@ export default defineNuxtConfig({
     strict: true,
   },
 
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag: string) => tag === 'model-viewer',
+    },
+  },
+
   ssr: true,
 })
