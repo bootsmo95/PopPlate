@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npx nuxi@latest init . --force)",
+      "Bash(npx nuxi@latest init . --force --template minimal)",
+      "Bash(yes \"\")",
+      "Bash(npx --yes nuxi@3.35.1 init . --force --template minimal)",
+      "Bash(git -C /c/repos/PopPlate/.claude/worktrees/friendly-agnesi-c552fa status)",
+      "Bash(git -C /c/repos/PopPlate/.claude/worktrees/friendly-agnesi-c552fa log --oneline -3)",
+      "Bash(git -C /c/repos/PopPlate/.claude/worktrees/friendly-agnesi-c552fa checkout -- README.md)",
+      "Bash(git -C /c/repos/PopPlate/.claude/worktrees/friendly-agnesi-c552fa diff README.md)",
+      "Bash(git -C /c/repos/PopPlate/.claude/worktrees/friendly-agnesi-c552fa add .env.example .gitignore app/ nuxt.config.ts package-lock.json package.json public/ tsconfig.json types/ docs/3dFood/IMPLEMENTATION_PLAN_V2.md)",
+      "Bash(git -C /c/repos/PopPlate/.claude/worktrees/friendly-agnesi-c552fa add app/components/ server/ lib/)",
+      "Bash(npm show *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git -C /c/repos/PopPlate/.claude/worktrees/friendly-agnesi-c552fa stash)",
+      "Bash(grep -qE \"✓|error TS|ERROR|Build|\\\\\\\\[success\\\\\\\\]|nitro built|Generated\" \"C:/Users/ANDERS~1/AppData/Local/Temp/claude/C--repos-PopPlate--claude-worktrees-friendly-agnesi-c552fa/b756b4e2-7f40-4777-8516-45cb91640c97/tasks/bcz40sv20.output\")",
+      "Bash(grep -qE \"Nitro built|error TS|\\\\\\\\[error\\\\\\\\]|done in|finished\" \"C:/Users/ANDERS~1/AppData/Local/Temp/claude/C--repos-PopPlate--claude-worktrees-friendly-agnesi-c552fa/b756b4e2-7f40-4777-8516-45cb91640c97/tasks/bcz40sv20.output\")"
+    ]
+  }
+}
