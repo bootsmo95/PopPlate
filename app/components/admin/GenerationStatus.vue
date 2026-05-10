@@ -75,25 +75,6 @@
       </div>
     </template>
 
-    <!-- Completed job with no special dish status -->
-    <template v-else-if="latestJob.status === 'completed'">
-      <div class="space-y-3">
-        <div class="flex items-center gap-2 text-green-700">
-          <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <p class="text-sm font-semibold">Generation complete!</p>
-        </div>
-        <button
-          :disabled="loading"
-          class="px-4 py-2 bg-white hover:bg-gray-50 disabled:opacity-50 text-slate-700 text-sm font-medium border border-gray-300 rounded-lg transition-colors"
-          @click="startGeneration"
-        >
-          {{ loading ? 'Starting…' : 'Retry Generation' }}
-        </button>
-      </div>
-    </template>
-
     <p v-if="error" class="mt-3 text-red-600 text-sm">{{ error }}</p>
   </div>
 </template>

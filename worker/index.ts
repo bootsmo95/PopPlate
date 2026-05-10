@@ -1,6 +1,6 @@
 import { db } from '../server/database/index.js'
 import { generationJobs, dishes } from '../server/database/schema.js'
-import { eq, asc } from 'drizzle-orm'
+import { eq, asc, and, sql } from 'drizzle-orm'
 import { handleGenerate } from './handlers/generate.js'
 
 const POLL_INTERVAL_MS = 5000
@@ -8,29 +8,25 @@ const POLL_INTERVAL_MS = 5000
 let isShuttingDown = false
 
 async function processNextJob(): Promise<void> {
-  // Pick the oldest queued job
+  // Atomic job pickup: UPDATE ... WHERE status='queued' RETURNING * (prevents race conditions)
   const [job] = await db
-    .select()
-    .from(generationJobs)
-    .where(eq(generationJobs.status, 'queued'))
-    .orderBy(asc(generationJobs.createdAt))
-    .limit(1)
-
-  if (!job) {
-    return
-  }
-
-  console.log(`[worker] Picked up job ${job.id} (dish: ${job.dishId}, attempt: ${job.attemptNumber})`)
-
-  // Mark as processing
-  await db
     .update(generationJobs)
     .set({
       status: 'processing',
       startedAt: new Date(),
       updatedAt: new Date(),
     })
-    .where(eq(generationJobs.id, job.id))
+    .where(
+      and(
+        eq(generationJobs.status, 'queued'),
+        eq(generationJobs.id, sql`(SELECT id FROM generation_jobs WHERE status = 'queued' ORDER BY created_at ASC LIMIT 1)`)
+      )
+    )
+    .returning()
+
+  if (!job) {
+    return
+  }
 
   console.log(`[worker] Job ${job.id} → processing`)
 

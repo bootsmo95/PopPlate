@@ -3,9 +3,8 @@ interface AuthUser {
   role: string
 }
 
-const user = ref<AuthUser | null>(null)
-
 export function useAuth() {
+  const user = useState<AuthUser | null>('auth-user', () => null)
   const isAuthenticated = computed(() => user.value !== null)
 
   async function login(email: string, password: string): Promise<void> {

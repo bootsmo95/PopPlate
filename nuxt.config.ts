@@ -5,6 +5,13 @@ export default defineNuxtConfig({
 
   modules: ['@nuxtjs/tailwindcss', 'nuxt-auth-utils'],
 
+  runtimeConfig: {
+    public: {
+      appUrl: 'http://localhost:3000',
+      defaultRestaurantId: '',
+    },
+  },
+
   typescript: {
     strict: true,
   },

@@ -1,6 +1,6 @@
 import { db } from '../../../database/index'
 import { analyticsEvents } from '../../../database/schema'
-import { eq, and, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
       count: sql<number>`count(*)::int`,
     })
     .from(analyticsEvents)
-    .where(and(eq(analyticsEvents.dishId, id)))
+    .where(eq(analyticsEvents.dishId, id))
     .groupBy(analyticsEvents.eventType)
 
   const result: Record<string, number> = {

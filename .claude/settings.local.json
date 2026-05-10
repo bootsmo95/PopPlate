@@ -19,7 +19,9 @@
       "Bash(git commit -m ' *)",
       "Bash(git -C /c/repos/PopPlate/.claude/worktrees/friendly-agnesi-c552fa stash)",
       "Bash(grep -qE \"✓|error TS|ERROR|Build|\\\\\\\\[success\\\\\\\\]|nitro built|Generated\" \"C:/Users/ANDERS~1/AppData/Local/Temp/claude/C--repos-PopPlate--claude-worktrees-friendly-agnesi-c552fa/b756b4e2-7f40-4777-8516-45cb91640c97/tasks/bcz40sv20.output\")",
-      "Bash(grep -qE \"Nitro built|error TS|\\\\\\\\[error\\\\\\\\]|done in|finished\" \"C:/Users/ANDERS~1/AppData/Local/Temp/claude/C--repos-PopPlate--claude-worktrees-friendly-agnesi-c552fa/b756b4e2-7f40-4777-8516-45cb91640c97/tasks/bcz40sv20.output\")"
+      "Bash(grep -qE \"Nitro built|error TS|\\\\\\\\[error\\\\\\\\]|done in|finished\" \"C:/Users/ANDERS~1/AppData/Local/Temp/claude/C--repos-PopPlate--claude-worktrees-friendly-agnesi-c552fa/b756b4e2-7f40-4777-8516-45cb91640c97/tasks/bcz40sv20.output\")",
+      "Bash(taskkill /PID 161476 /F)",
+      "Bash(NUXT_IGNORE_LOCK=1 npm run build)"
     ]
   }
 }

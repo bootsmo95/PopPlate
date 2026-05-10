@@ -45,8 +45,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'No file provided' })
   }
 
-  const filename = filePart.filename!
-  const ext = filename.slice(filename.lastIndexOf('.')).toLowerCase()
+  const rawFilename = filePart.filename!
+  const ext = rawFilename.slice(rawFilename.lastIndexOf('.')).toLowerCase()
+  // Sanitize: use a generated name to prevent path traversal and weird characters
+  const filename = `${crypto.randomUUID()}${ext}`
 
   // Validate file extension
   if (!ALLOWED_EXTENSIONS.includes(ext)) {

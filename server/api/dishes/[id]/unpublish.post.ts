@@ -15,6 +15,9 @@ export default defineEventHandler(async (event) => {
   if (!dish) {
     throw createError({ statusCode: 404, message: 'Dish not found' })
   }
+  if (dish.status !== 'published') {
+    throw createError({ statusCode: 422, message: 'Only published dishes can be unpublished' })
+  }
 
   const [updatedDish] = await db
     .update(dishes)

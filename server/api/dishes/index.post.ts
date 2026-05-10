@@ -1,5 +1,6 @@
 import { db } from '../../database/index'
-import { dishes } from '../../database/schema'
+import { dishes, restaurants } from '../../database/schema'
+import { eq } from 'drizzle-orm'
 import { requireAuth } from '../../utils/auth'
 import { nanoid } from 'nanoid'
 
@@ -20,6 +21,11 @@ export default defineEventHandler(async (event) => {
   }
   if (!body?.restaurantId) {
     throw createError({ statusCode: 400, message: 'restaurantId is required' })
+  }
+
+  const [restaurant] = await db.select({ id: restaurants.id }).from(restaurants).where(eq(restaurants.id, body.restaurantId)).limit(1)
+  if (!restaurant) {
+    throw createError({ statusCode: 404, message: 'Restaurant not found' })
   }
 
   const publicDishId = nanoid(8)

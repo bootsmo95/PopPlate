@@ -3,9 +3,11 @@ import postgres from 'postgres'
 import * as schema from './schema'
 
 // Singleton pattern to avoid multiple connections in dev (Nuxt HMR)
-let _db: ReturnType<typeof drizzle<typeof schema>> | undefined
+type DbInstance = ReturnType<typeof drizzle<typeof schema>>
 
-function getDb() {
+let _db: DbInstance | undefined
+
+function getDb(): DbInstance {
   if (!_db) {
     const url = process.env.DATABASE_URL
     if (!url) {
@@ -17,5 +19,9 @@ function getDb() {
   return _db
 }
 
-export const db = getDb()
+export const db = new Proxy({} as DbInstance, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getDb(), prop, receiver)
+  },
+})
 export { schema }

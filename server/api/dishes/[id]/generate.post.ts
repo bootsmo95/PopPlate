@@ -1,6 +1,6 @@
 import { db } from '../../../database/index'
 import { dishes, dishSourceImages, generationJobs } from '../../../database/schema'
-import { eq, desc, count } from 'drizzle-orm'
+import { eq, desc, count, inArray } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
@@ -31,6 +31,21 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 422,
       message: 'Dish must have at least 5 source images before generating',
+    })
+  }
+
+  // Check for in-flight jobs — prevent duplicates
+  const [inflightJob] = await db
+    .select()
+    .from(generationJobs)
+    .where(eq(generationJobs.dishId, id))
+    .where(inArray(generationJobs.status, ['queued', 'processing']))
+    .limit(1)
+
+  if (inflightJob) {
+    throw createError({
+      statusCode: 409,
+      message: 'A generation job is already in progress for this dish',
     })
   }
 

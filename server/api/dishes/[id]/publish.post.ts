@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const appBaseUrl = process.env.APP_BASE_URL ?? 'http://localhost:3000'
+  const appBaseUrl = process.env.NUXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const publicUrl = `${appBaseUrl}/d/${dish.publicDishId}`
 
   // Generate QR code as PNG buffer
@@ -65,7 +65,8 @@ export default defineEventHandler(async (event) => {
     .where(eq(dishes.id, id))
     .returning()
 
-  // Create QR code record
+  // Remove old QR codes for this dish, then create new one
+  await db.delete(qrCodes).where(eq(qrCodes.dishId, id))
   const [qrCode] = await db
     .insert(qrCodes)
     .values({ dishId: id, publicUrl, imageUrl })
