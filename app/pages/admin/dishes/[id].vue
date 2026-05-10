@@ -100,12 +100,16 @@
         </button>
       </form>
 
-      <!-- Placeholder: Source Images (Task 7) -->
+      <!-- Source Images (Task 7) -->
       <section class="mb-8">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Source Images</h2>
-        <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
-          Source image upload will be available in a future update.
-        </div>
+        <AdminImageUploader
+          :dish-id="dish.id"
+          :restaurant-id="dish.restaurantId"
+          :existing-images="sourceImages"
+          @uploaded="handleImageUploaded"
+          @deleted="handleImageDeleted"
+        />
       </section>
 
       <!-- Placeholder: Generation (Task 9) -->
@@ -150,8 +154,18 @@ definePageMeta({ layout: 'admin' })
 const route = useRoute()
 const id = route.params.id as string
 
+interface SourceImage {
+  id: string
+  dishId: string
+  storageKey: string
+  imageUrl: string
+  sortOrder: number
+  createdAt: string
+}
+
 interface DishDetail {
   id: string
+  restaurantId: string
   name: string
   shortDescription: string | null
   priceText: string | null
@@ -169,6 +183,20 @@ const {
   error: fetchError,
   refresh,
 } = await useFetch<DishDetail>(`/api/dishes/${id}`)
+
+// Source images
+const { data: sourceImagesData, refresh: refreshImages } = await useFetch<SourceImage[]>(
+  `/api/dishes/${id}/images`,
+)
+const sourceImages = computed(() => sourceImagesData.value ?? [])
+
+function handleImageUploaded(_image: SourceImage) {
+  refreshImages()
+}
+
+function handleImageDeleted(_imageId: string) {
+  refreshImages()
+}
 
 const form = reactive({
   name: dish.value?.name ?? '',
