@@ -1,0 +1,249 @@
+<template>
+  <div class="p-6 max-w-2xl">
+    <div class="mb-6">
+      <NuxtLink to="/admin/dishes" class="text-sm text-gray-500 hover:text-gray-700">
+        ← Back to Dishes
+      </NuxtLink>
+    </div>
+
+    <!-- Loading -->
+    <div v-if="pending" class="text-gray-500 text-sm">Loading…</div>
+
+    <!-- Error loading -->
+    <div v-else-if="fetchError" class="text-red-600 text-sm">Failed to load dish.</div>
+
+    <template v-else-if="dish">
+      <!-- Title + status -->
+      <div class="flex items-start gap-3 mb-6">
+        <h1 class="text-2xl font-bold text-gray-900 leading-tight">{{ dish.name }}</h1>
+        <AdminStatusBadge :status="dish.status" class="mt-1 flex-shrink-0" />
+      </div>
+
+      <!-- Edit form -->
+      <form @submit.prevent="handleSave" class="space-y-5 mb-10">
+        <!-- Name -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+            Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="name"
+            v-model="form.name"
+            type="text"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+          />
+        </div>
+
+        <!-- Short Description -->
+        <div>
+          <label for="shortDescription" class="block text-sm font-medium text-gray-700 mb-1">
+            Short Description
+          </label>
+          <textarea
+            id="shortDescription"
+            v-model="form.shortDescription"
+            rows="2"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
+          />
+        </div>
+
+        <!-- Price -->
+        <div>
+          <label for="priceText" class="block text-sm font-medium text-gray-700 mb-1">
+            Price
+          </label>
+          <input
+            id="priceText"
+            v-model="form.priceText"
+            type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+          />
+        </div>
+
+        <!-- Allergens -->
+        <div>
+          <label for="allergens" class="block text-sm font-medium text-gray-700 mb-1">
+            Allergens
+          </label>
+          <input
+            id="allergens"
+            v-model="form.allergens"
+            type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+          />
+        </div>
+
+        <!-- Ingredients -->
+        <div>
+          <label for="ingredients" class="block text-sm font-medium text-gray-700 mb-1">
+            Ingredients
+          </label>
+          <textarea
+            id="ingredients"
+            v-model="form.ingredients"
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
+          />
+        </div>
+
+        <!-- Save feedback -->
+        <p v-if="saveError" class="text-red-600 text-sm">{{ saveError }}</p>
+        <p v-if="saveSuccess" class="text-green-600 text-sm">Changes saved.</p>
+
+        <button
+          type="submit"
+          :disabled="saving"
+          class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-400 text-white text-sm font-semibold rounded-lg transition-colors"
+        >
+          {{ saving ? 'Saving…' : 'Save Changes' }}
+        </button>
+      </form>
+
+      <!-- Placeholder: Source Images (Task 7) -->
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Source Images</h2>
+        <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
+          Source image upload will be available in a future update.
+        </div>
+      </section>
+
+      <!-- Placeholder: Generation (Task 9) -->
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Generation</h2>
+        <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
+          3D model generation will be available in a future update.
+        </div>
+      </section>
+
+      <!-- Placeholder: Publish / QR (Task 10) -->
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Publish &amp; QR Code</h2>
+        <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">
+          Publishing and QR code generation will be available in a future update.
+        </div>
+      </section>
+
+      <!-- Archive -->
+      <div class="border-t border-gray-200 pt-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-2">Danger Zone</h2>
+        <button
+          v-if="dish.status !== 'archived'"
+          :disabled="archiving"
+          class="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
+          @click="handleArchive"
+        >
+          {{ archiving ? 'Archiving…' : 'Archive Dish' }}
+        </button>
+        <p v-else class="text-sm text-gray-500">This dish is archived.</p>
+        <p v-if="archiveError" class="text-red-600 text-sm mt-2">{{ archiveError }}</p>
+      </div>
+    </template>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { DishStatus } from '~/types'
+
+definePageMeta({ layout: 'admin' })
+
+const route = useRoute()
+const id = route.params.id as string
+
+interface DishDetail {
+  id: string
+  name: string
+  shortDescription: string | null
+  priceText: string | null
+  allergens: string | null
+  ingredients: string | null
+  status: DishStatus
+  publicDishId: string
+  createdAt: string
+  updatedAt: string
+}
+
+const {
+  data: dish,
+  pending,
+  error: fetchError,
+  refresh,
+} = await useFetch<DishDetail>(`/api/dishes/${id}`)
+
+const form = reactive({
+  name: dish.value?.name ?? '',
+  shortDescription: dish.value?.shortDescription ?? '',
+  priceText: dish.value?.priceText ?? '',
+  allergens: dish.value?.allergens ?? '',
+  ingredients: dish.value?.ingredients ?? '',
+})
+
+watch(
+  () => dish.value,
+  (d) => {
+    if (d) {
+      form.name = d.name
+      form.shortDescription = d.shortDescription ?? ''
+      form.priceText = d.priceText ?? ''
+      form.allergens = d.allergens ?? ''
+      form.ingredients = d.ingredients ?? ''
+    }
+  },
+)
+
+const saving = ref(false)
+const saveError = ref('')
+const saveSuccess = ref(false)
+
+async function handleSave() {
+  if (!form.name.trim()) {
+    saveError.value = 'Name is required.'
+    return
+  }
+
+  saving.value = true
+  saveError.value = ''
+  saveSuccess.value = false
+
+  try {
+    await $fetch(`/api/dishes/${id}`, {
+      method: 'PUT',
+      body: {
+        name: form.name.trim(),
+        shortDescription: form.shortDescription.trim() || null,
+        priceText: form.priceText.trim() || null,
+        allergens: form.allergens.trim() || null,
+        ingredients: form.ingredients.trim() || null,
+      },
+    })
+
+    saveSuccess.value = true
+    await refresh()
+  } catch (err: unknown) {
+    const e = err as { data?: { message?: string }; message?: string }
+    saveError.value = e?.data?.message ?? e?.message ?? 'Failed to save changes.'
+  } finally {
+    saving.value = false
+  }
+}
+
+const archiving = ref(false)
+const archiveError = ref('')
+
+async function handleArchive() {
+  if (!confirm('Archive this dish? It will no longer be visible to guests.')) return
+
+  archiving.value = true
+  archiveError.value = ''
+
+  try {
+    await $fetch(`/api/dishes/${id}`, { method: 'DELETE' })
+    await refresh()
+  } catch (err: unknown) {
+    const e = err as { data?: { message?: string }; message?: string }
+    archiveError.value = e?.data?.message ?? e?.message ?? 'Failed to archive dish.'
+  } finally {
+    archiving.value = false
+  }
+}
+</script>
