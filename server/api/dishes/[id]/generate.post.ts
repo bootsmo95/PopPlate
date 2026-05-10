@@ -1,0 +1,68 @@
+import { db } from '../../../database/index'
+import { dishes, dishSourceImages, generationJobs } from '../../../database/schema'
+import { eq, desc, count } from 'drizzle-orm'
+import { requireAuth } from '../../../utils/auth'
+
+export default defineEventHandler(async (event) => {
+  await requireAuth(event)
+
+  const id = getRouterParam(event, 'id')
+  if (!id) {
+    throw createError({ statusCode: 400, message: 'id is required' })
+  }
+
+  // Verify dish exists
+  const [dish] = await db
+    .select()
+    .from(dishes)
+    .where(eq(dishes.id, id))
+
+  if (!dish) {
+    throw createError({ statusCode: 404, message: 'Dish not found' })
+  }
+
+  // Validate dish has at least 5 source images
+  const [imageCount] = await db
+    .select({ count: count() })
+    .from(dishSourceImages)
+    .where(eq(dishSourceImages.dishId, id))
+
+  if ((imageCount?.count ?? 0) < 5) {
+    throw createError({
+      statusCode: 422,
+      message: 'Dish must have at least 5 source images before generating',
+    })
+  }
+
+  // Get the latest generation job for this dish (if any)
+  const [latestJob] = await db
+    .select()
+    .from(generationJobs)
+    .where(eq(generationJobs.dishId, id))
+    .orderBy(desc(generationJobs.createdAt))
+    .limit(1)
+
+  const nextAttemptNumber = latestJob ? latestJob.attemptNumber + 1 : 1
+
+  // Create new GenerationJob record
+  const [newJob] = await db
+    .insert(generationJobs)
+    .values({
+      dishId: id,
+      status: 'queued',
+      attemptNumber: nextAttemptNumber,
+      requestedByUserId: null, // MVP: session user has no DB id
+    })
+    .returning()
+
+  // Update dish status to processing
+  await db
+    .update(dishes)
+    .set({
+      status: 'processing',
+      updatedAt: new Date(),
+    })
+    .where(eq(dishes.id, id))
+
+  return newJob
+})
