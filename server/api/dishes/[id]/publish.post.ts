@@ -2,8 +2,7 @@ import { db } from '../../../database/index'
 import { dishes, qrCodes } from '../../../database/schema'
 import { eq } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
-import { uploadFile, getPublicUrl } from '../../../utils/storage'
-import { qrImageKey } from '../../../utils/storage-keys'
+import { toDataUrl } from '../../../utils/inline-assets'
 import QRCode from 'qrcode'
 
 export default defineEventHandler(async (event) => {
@@ -53,10 +52,8 @@ export default defineEventHandler(async (event) => {
     margin: 2,
   })
 
-  // Upload QR image to S3
-  const key = qrImageKey(dish.restaurantId, dish.id, 'qr.png')
-  await uploadFile(key, qrBuffer, 'image/png')
-  const imageUrl = getPublicUrl(key)
+  // Store QR inline for MVP stability while external object storage is being sorted out
+  const imageUrl = toDataUrl(qrBuffer, 'image/png')
 
   // Update dish status
   const [updatedDish] = await db
