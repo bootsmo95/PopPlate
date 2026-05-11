@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm'
+import { Readable } from 'node:stream'
 import { db } from '../../../database/index'
 import { dishes } from '../../../database/schema'
 
@@ -50,6 +51,23 @@ export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Content-Type', contentType)
   setResponseHeader(event, 'Cache-Control', 'public, max-age=86400')
 
-  const arrayBuffer = await upstream.arrayBuffer()
-  return send(event, Buffer.from(arrayBuffer))
+  if (upstream.headers.get('content-length')) {
+    setResponseHeader(event, 'Content-Length', upstream.headers.get('content-length')!)
+  }
+
+  const reader = upstream.body?.getReader()
+  if (!reader) {
+    throw createError({ statusCode: 502, message: 'No response body' })
+  }
+
+  return new Readable({
+    async read() {
+      const { done, value } = await reader.read()
+      if (done) {
+        this.push(null)
+      } else {
+        this.push(Buffer.from(value))
+      }
+    },
+  })
 })
