@@ -89,20 +89,13 @@ function handleError() {
   }
 }
 
-onMounted(async () => {
-  try {
-    await import('@google/model-viewer')
-    // Give the custom element time to register and upgrade
-    await nextTick()
-    // If model-viewer loaded but model hasn't triggered @load yet,
-    // set ready after a brief delay so the element is at least visible
-    setTimeout(() => {
-      if (!hasError.value) {
-        ready.value = true
-      }
-    }, 500)
-  } catch {
-    hasError.value = true
-  }
+onMounted(() => {
+  // model-viewer is registered globally via plugins/model-viewer.client.ts
+  // Show the element after a brief delay to let the custom element upgrade
+  setTimeout(() => {
+    if (!hasError.value) {
+      ready.value = true
+    }
+  }, 300)
 })
 </script>
