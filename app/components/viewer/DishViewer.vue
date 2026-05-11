@@ -41,7 +41,7 @@
       shadow-intensity="1"
       class="w-full rounded-xl overflow-hidden"
       :style="{ height: viewerHeight, display: 'block' }"
-      @error="hasError = true"
+      @error="handleError"
       @load="handleLoad"
     >
       <source v-if="usdzUrl" :src="usdzUrl" type="model/vnd.usdz+zip" />
@@ -74,11 +74,19 @@ const props = withDefaults(
 
 const viewerHeight = computed(() => props.height)
 const hasError = ref(false)
+const loaded = ref(false)
 const ready = ref(false)
 
 function handleLoad() {
+  loaded.value = true
   ready.value = true
   emit('viewer-loaded')
+}
+
+function handleError() {
+  if (!loaded.value) {
+    hasError.value = true
+  }
 }
 
 onMounted(async () => {
