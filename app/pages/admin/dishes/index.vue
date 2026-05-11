@@ -60,7 +60,8 @@ interface DishItem {
   createdAt: string
 }
 
-const { data: dishes, pending, error } = await useFetch<DishItem[]>('/api/dishes')
+const ssrHeaders = useAuthHeaders()
+const { data: dishes, pending, error } = await useFetch<DishItem[]>('/api/dishes', { headers: ssrHeaders })
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-GB', {

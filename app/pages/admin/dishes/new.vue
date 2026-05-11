@@ -128,7 +128,8 @@ interface Restaurant {
   name: string
 }
 
-const { data: restaurants, pending: restaurantsPending } = await useFetch<Restaurant[]>('/api/restaurants')
+const ssrHeaders = useAuthHeaders()
+const { data: restaurants, pending: restaurantsPending } = await useFetch<Restaurant[]>('/api/restaurants', { headers: ssrHeaders })
 
 const form = reactive({
   restaurantId: '',

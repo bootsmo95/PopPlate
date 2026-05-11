@@ -144,7 +144,8 @@ const submitting = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
-const { data: restaurants, pending, error, refresh } = await useFetch<Restaurant[]>('/api/restaurants')
+const ssrHeaders = useAuthHeaders()
+const { data: restaurants, pending, error, refresh } = await useFetch<Restaurant[]>('/api/restaurants', { headers: ssrHeaders })
 
 const slugPreview = computed(() => {
   const slug = name.value

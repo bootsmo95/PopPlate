@@ -74,7 +74,7 @@
       <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
         View in 3D
       </h2>
-      <ThreeDDishViewer
+      <ViewerDishViewer
         :glb-url="dish.previewModelGlbUrl"
         :usdz-url="dish.previewModelUsdzUrl"
         :poster-url="dish.posterUrl"
