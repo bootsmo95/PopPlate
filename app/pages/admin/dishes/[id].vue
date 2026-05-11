@@ -129,9 +129,9 @@
       <section v-if="dish.previewModelGlbUrl" class="mb-8">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Preview</h2>
         <ViewerDishViewer
-          :glb-url="`/api/dishes/${dish.id}/model`"
-          :usdz-url="dish.previewModelUsdzUrl ? `/api/dishes/${dish.id}/model?format=usdz` : undefined"
-          :poster-url="dish.posterUrl ? `/api/dishes/${dish.id}/model?format=poster` : undefined"
+          :glb-url="`/m/${dish.id}.glb`"
+          :usdz-url="dish.previewModelUsdzUrl ? `/m/${dish.id}.usdz` : undefined"
+          :poster-url="dish.posterUrl ? `/m/${dish.id}.png` : undefined"
           :alt="dish.name"
           height="400px"
         />

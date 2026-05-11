@@ -75,11 +75,12 @@
         View in 3D
       </h2>
       <ViewerDishViewer
-        :glb-url="`/api/dishes/${dish.id}/model`"
-        :usdz-url="dish.previewModelUsdzUrl ? `/api/dishes/${dish.id}/model?format=usdz` : undefined"
-        :poster-url="dish.posterUrl ? `/api/dishes/${dish.id}/model?format=poster` : undefined"
+        :glb-url="`/m/${dish.id}.glb`"
+        :usdz-url="dish.previewModelUsdzUrl ? `/m/${dish.id}.usdz` : undefined"
+        :poster-url="dish.posterUrl ? `/m/${dish.id}.png` : undefined"
         :alt="dish.name"
         height="60vh"
+        :auto-ar="isMobile"
         @viewer-loaded="onViewerLoaded"
         @ar-clicked="onArClicked"
       />
@@ -107,6 +108,12 @@ interface PublicDish {
   restaurantId: string
   publicDishId: string
 }
+
+const isMobile = ref(false)
+
+onMounted(() => {
+  isMobile.value = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+})
 
 const {
   data: dish,
