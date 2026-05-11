@@ -128,7 +128,7 @@
       <!-- 3D Preview (Task 12) -->
       <section v-if="dish.previewModelGlbUrl" class="mb-8">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Preview</h2>
-        <ThreeDDishViewer
+        <ViewerDishViewer
           :glb-url="dish.previewModelGlbUrl"
           :usdz-url="dish.previewModelUsdzUrl ?? undefined"
           :poster-url="dish.posterUrl ?? undefined"
@@ -192,6 +192,7 @@ definePageMeta({ layout: 'admin' })
 
 const route = useRoute()
 const id = route.params.id as string
+const ssrHeaders = useAuthHeaders()
 
 interface SourceImage {
   id: string
@@ -244,23 +245,26 @@ const {
   pending,
   error: fetchError,
   refresh,
-} = await useFetch<DishDetail>(`/api/dishes/${id}`)
+} = await useFetch<DishDetail>(`/api/dishes/${id}`, { headers: ssrHeaders })
 
 // Source images
 const { data: sourceImagesData, refresh: refreshImages } = await useFetch<SourceImage[]>(
   `/api/dishes/${id}/images`,
+  { headers: ssrHeaders },
 )
 const sourceImages = computed(() => sourceImagesData.value ?? [])
 
 // Latest generation job
 const { data: jobsData, refresh: refreshJobs } = await useFetch<GenerationJob[]>(
   `/api/dishes/${id}/jobs`,
+  { headers: ssrHeaders },
 )
 const latestJob = computed<GenerationJob | null>(() => jobsData.value?.[0] ?? null)
 
 // QR code
 const { data: qrCode, refresh: refreshQr } = await useFetch<QrCode | null>(
   `/api/dishes/${id}/qr`,
+  { headers: ssrHeaders },
 )
 
 // Analytics counts
@@ -271,6 +275,7 @@ interface AnalyticsData {
 }
 const { data: analyticsData, refresh: refreshAnalytics } = await useFetch<AnalyticsData>(
   `/api/dishes/${id}/analytics`,
+  { headers: ssrHeaders },
 )
 
 // Auto-polling when job is queued or processing

@@ -45,7 +45,7 @@
       @load="handleLoad"
     >
       <source v-if="usdzUrl" :src="usdzUrl" type="model/vnd.usdz+zip" />
-      <ThreeDArButton @ar-clicked="emit('ar-clicked')" />
+      <ViewerArButton @ar-clicked="emit('ar-clicked')" />
     </model-viewer>
   </div>
 </template>
