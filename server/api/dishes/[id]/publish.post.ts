@@ -52,22 +52,24 @@ export default defineEventHandler(async (event) => {
     margin: 2,
   })
 
-  // Store QR inline for MVP stability while external object storage is being sorted out
   const imageUrl = toDataUrl(qrBuffer, 'image/png')
 
-  // Update dish status
-  const [updatedDish] = await db
-    .update(dishes)
-    .set({ status: 'published', publishedAt: new Date(), updatedAt: new Date() })
-    .where(eq(dishes.id, id))
-    .returning()
+  // Wrap DB mutations in a transaction to avoid half-state
+  const result = await db.transaction(async (tx) => {
+    const [updatedDish] = await tx
+      .update(dishes)
+      .set({ status: 'published', publishedAt: new Date(), updatedAt: new Date() })
+      .where(eq(dishes.id, id))
+      .returning()
 
-  // Remove old QR codes for this dish, then create new one
-  await db.delete(qrCodes).where(eq(qrCodes.dishId, id))
-  const [qrCode] = await db
-    .insert(qrCodes)
-    .values({ dishId: id, publicUrl, imageUrl })
-    .returning()
+    await tx.delete(qrCodes).where(eq(qrCodes.dishId, id))
+    const [qrCode] = await tx
+      .insert(qrCodes)
+      .values({ dishId: id, publicUrl, imageUrl })
+      .returning()
 
-  return { dish: updatedDish, qrCode }
+    return { dish: updatedDish, qrCode }
+  })
+
+  return result
 })

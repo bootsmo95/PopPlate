@@ -38,7 +38,7 @@ export interface Dish {
   previewModelGlbUrl: string | null
   previewModelUsdzUrl: string | null
   scaleCm: number | null
-  createdByUserId: string
+  createdByUserId: string | null
   createdAt: Date
   updatedAt: Date
   publishedAt: Date | null
@@ -59,7 +59,7 @@ export interface GenerationJob {
   jobType: 'dish_generation'
   status: JobStatus
   attemptNumber: number
-  requestedByUserId: string
+  requestedByUserId: string | null
   inputVersion: number
   outputPreviewModelGlbUrl: string | null
   outputPreviewModelUsdzUrl: string | null
@@ -82,11 +82,11 @@ export interface QrCode {
 
 export interface AnalyticsEvent {
   id: string
-  restaurantId: string
-  dishId: string
+  restaurantId: string | null
+  dishId: string | null
   eventType: string
-  sessionId: string
-  userAgent: string
+  sessionId: string | null
+  userAgent: string | null
   referrer: string | null
   createdAt: Date
 }

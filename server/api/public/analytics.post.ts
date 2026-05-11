@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
 
-  const { eventType, dishId, restaurantId, sessionId, userAgent, referrer } = body ?? {}
+  const { eventType, dishId, sessionId, userAgent, referrer } = body ?? {}
 
   if (!dishId || typeof dishId !== 'string') {
     throw createError({ statusCode: 400, message: 'dishId is required' })
@@ -43,14 +43,18 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const [dish] = await db.select({ id: dishes.id }).from(dishes).where(eq(dishes.id, dishId)).limit(1)
+  const [dish] = await db
+    .select({ id: dishes.id, restaurantId: dishes.restaurantId })
+    .from(dishes)
+    .where(eq(dishes.id, dishId))
+    .limit(1)
   if (!dish) {
     throw createError({ statusCode: 404, message: 'Dish not found' })
   }
 
   await db.insert(analyticsEvents).values({
     dishId,
-    restaurantId: typeof restaurantId === 'string' ? restaurantId : null,
+    restaurantId: dish.restaurantId,
     eventType,
     sessionId: typeof sessionId === 'string' ? sessionId : null,
     userAgent: typeof userAgent === 'string' ? userAgent : null,
