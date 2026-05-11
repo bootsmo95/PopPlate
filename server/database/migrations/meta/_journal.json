@@ -8,6 +8,13 @@
       "when": 1778413495228,
       "tag": "0000_first_steel_serpent",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778490000000,
+      "tag": "0001_add_meshy_fields",
+      "breakpoints": true
     }
   ]
 }
