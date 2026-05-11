@@ -11,24 +11,21 @@ export function useAuth() {
   const authUser = computed(() => (user.value as AuthUser | null) ?? null)
   const accountTier = computed(() => authUser.value?.accountTier ?? 'free')
 
-  async function login(email: string, password: string): Promise<void> {
-    await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: { email, password },
+  async function login(next = '/admin/dishes'): Promise<void> {
+    await navigateTo(`/api/auth/authentik/login?next=${encodeURIComponent(next)}`, {
+      external: true,
     })
+  }
 
-    await fetchSession()
+  async function signup(next = '/admin/settings'): Promise<void> {
+    await navigateTo(`/api/auth/authentik/signup?next=${encodeURIComponent(next)}`, {
+      external: true,
+    })
   }
 
   async function logout(): Promise<void> {
-    try {
-      await $fetch('/api/auth/logout', { method: 'POST' })
-    } catch {
-      // Ignore logout errors — session may already be cleared
-    } finally {
-      await clear()
-      await navigateTo('/admin/login')
-    }
+    await clear()
+    await navigateTo('/api/auth/authentik/logout', { external: true })
   }
 
   async function fetchUser(): Promise<AuthUser | null> {
@@ -41,6 +38,7 @@ export function useAuth() {
     isAuthenticated,
     accountTier,
     login,
+    signup,
     logout,
     fetchUser,
   }
