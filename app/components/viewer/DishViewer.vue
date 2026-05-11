@@ -29,6 +29,7 @@
 
     <!-- model-viewer web component -->
     <model-viewer
+      ref="viewerRef"
       v-show="ready && !hasError"
       :src="glbUrl"
       :ios-src="usdzUrl ?? undefined"
@@ -63,15 +64,18 @@ const props = withDefaults(
     posterUrl?: string | null
     alt?: string
     height?: string
+    autoAr?: boolean
   }>(),
   {
     usdzUrl: null,
     posterUrl: null,
     alt: 'Dish 3D model',
     height: '60vh',
+    autoAr: false,
   },
 )
 
+const viewerRef = ref<HTMLElement | null>(null)
 const viewerHeight = computed(() => props.height)
 const hasError = ref(false)
 const loaded = ref(false)
@@ -81,6 +85,10 @@ function handleLoad() {
   loaded.value = true
   ready.value = true
   emit('viewer-loaded')
+
+  if (props.autoAr) {
+    tryActivateAr()
+  }
 }
 
 function handleError() {
@@ -89,9 +97,14 @@ function handleError() {
   }
 }
 
+function tryActivateAr() {
+  const viewer = viewerRef.value as (HTMLElement & { canActivateAR?: boolean; activateAR?: () => Promise<void> }) | null
+  if (viewer?.canActivateAR) {
+    viewer.activateAR?.()
+  }
+}
+
 onMounted(() => {
-  // model-viewer is registered globally via plugins/model-viewer.client.ts
-  // Show the element after a brief delay to let the custom element upgrade
   setTimeout(() => {
     if (!hasError.value) {
       ready.value = true
