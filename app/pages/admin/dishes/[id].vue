@@ -253,9 +253,16 @@ const { data: sourceImagesData, refresh: refreshImages } = await useFetch<Source
 const sourceImages = computed(() => sourceImagesData.value ?? [])
 
 // Latest generation job
-const { data: jobsData, refresh: refreshJobs } = await useFetch<GenerationJob[]>(
-  `/api/dishes/${id}/jobs`,
-)
+const jobsData = ref<GenerationJob[]>([])
+
+async function refreshJobs() {
+  jobsData.value = await $fetch<GenerationJob[]>(`/api/dishes/${id}/jobs`, {
+    query: { t: Date.now() },
+  })
+}
+
+await refreshJobs()
+
 const latestJob = computed<GenerationJob | null>(() => jobsData.value?.[0] ?? null)
 
 // QR code
@@ -275,6 +282,7 @@ const { data: analyticsData, refresh: refreshAnalytics } = await useFetch<Analyt
 
 // Auto-polling when job is queued or processing
 let pollInterval: ReturnType<typeof setInterval> | null = null
+let isPolling = false
 
 function startPolling() {
   if (pollInterval) return
@@ -324,9 +332,8 @@ function handleImageDeleted(_imageId: string) {
   refreshImages()
 }
 
-function handleJobCreated(_job: GenerationJob) {
-  refreshJobs()
-  refresh()
+async function handleJobCreated(_job: GenerationJob) {
+  await Promise.all([refreshJobs(), refresh()])
 }
 
 async function handlePublished() {

@@ -7,6 +7,11 @@ const POLL_INTERVAL_MS = 5000
 
 let isShuttingDown = false
 
+async function ensureMeshySchema(): Promise<void> {
+  await db.execute(sql`ALTER TABLE "generation_jobs" ADD COLUMN IF NOT EXISTS "external_task_id" text`)
+  await db.execute(sql`ALTER TABLE "generation_jobs" ADD COLUMN IF NOT EXISTS "progress" integer DEFAULT 0 NOT NULL`)
+}
+
 async function processNextJob(): Promise<void> {
   // Atomic job pickup: UPDATE ... WHERE status='queued' RETURNING * (prevents race conditions)
   const [job] = await db
@@ -112,5 +117,14 @@ function shutdown(signal: string): void {
 process.on('SIGINT', () => shutdown('SIGINT'))
 process.on('SIGTERM', () => shutdown('SIGTERM'))
 
-console.log('[worker] Starting PopPlate worker...')
-poll()
+async function main(): Promise<void> {
+  console.log('[worker] Starting PopPlate worker...')
+  await ensureMeshySchema()
+  console.log('[worker] Meshy schema ensured')
+  await poll()
+}
+
+main().catch((err) => {
+  console.error('[worker] Fatal startup error:', err)
+  process.exit(1)
+})
