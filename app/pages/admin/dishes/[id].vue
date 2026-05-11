@@ -100,9 +100,10 @@
         </button>
       </form>
 
-      <!-- Source Images (Task 7) -->
+      <!-- Source Images -->
       <section class="mb-8">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Source Images</h2>
+        <AdminImageGuide class="mb-3" />
         <AdminImageUploader
           :dish-id="dish.id"
           :restaurant-id="dish.restaurantId"
@@ -206,6 +207,7 @@ interface GenerationJob {
   dishId: string
   status: string
   attemptNumber: number
+  progress: number
   errorMessage: string | null
   errorCode: string | null
   createdAt: string

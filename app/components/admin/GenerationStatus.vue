@@ -2,7 +2,7 @@
   <div class="rounded-xl border border-gray-200 p-5 bg-white">
     <!-- No job yet -->
     <template v-if="!latestJob">
-      <div v-if="imageCount >= 5" class="flex items-center gap-3">
+      <div v-if="imageCount >= MIN_IMAGES" class="flex items-center gap-3">
         <p class="text-sm text-gray-600 flex-1">Ready to generate a 3D model from your images.</p>
         <button
           :disabled="loading"
@@ -13,28 +13,38 @@
         </button>
       </div>
       <p v-else class="text-sm text-amber-600 bg-amber-50 rounded-lg px-4 py-3">
-        Upload at least 5 images to start generation ({{ imageCount }}/5 uploaded).
+        Upload at least {{ MIN_IMAGES }} images to start generation ({{ imageCount }}/{{ MIN_IMAGES }} uploaded).
       </p>
     </template>
 
     <!-- Queued -->
     <template v-else-if="latestJob.status === 'queued'">
-      <div class="flex items-center gap-3 text-sm text-gray-600">
-        <svg class="animate-spin h-4 w-4 text-slate-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg>
-        Generation queued&hellip;
+      <div class="space-y-2">
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+          <svg class="animate-spin h-4 w-4 text-slate-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          <span>Your 3D model is in the queue and will start generating shortly.</span>
+        </div>
+        <p class="text-xs text-gray-400 ml-7">This usually takes a few minutes. You can leave this page — we'll keep working in the background.</p>
       </div>
     </template>
 
     <!-- Processing -->
     <template v-else-if="latestJob.status === 'processing'">
       <div class="space-y-2">
-        <p class="text-sm text-slate-700 font-medium">Generating 3D model&hellip;</p>
-        <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-          <div class="h-2 bg-slate-600 rounded-full animate-progress" style="width: 60%" />
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-slate-700 font-medium">Generating 3D model&hellip;</p>
+          <span class="text-sm font-semibold text-slate-700 tabular-nums">{{ latestJob.progress ?? 0 }}%</span>
         </div>
+        <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+          <div
+            class="h-2.5 bg-slate-600 rounded-full transition-all duration-500 ease-out"
+            :style="{ width: `${latestJob.progress ?? 0}%` }"
+          />
+        </div>
+        <p class="text-xs text-gray-400">This typically takes 2–5 minutes. You can leave this page.</p>
       </div>
     </template>
 
@@ -80,11 +90,14 @@
 </template>
 
 <script setup lang="ts">
+const MIN_IMAGES = 2
+
 interface GenerationJob {
   id: string
   dishId: string
   status: string
   attemptNumber: number
+  progress: number
   errorMessage: string | null
   errorCode: string | null
   createdAt: string
@@ -121,13 +134,3 @@ async function startGeneration() {
   }
 }
 </script>
-
-<style scoped>
-@keyframes progress-pulse {
-  0%, 100% { width: 40%; }
-  50% { width: 80%; }
-}
-.animate-progress {
-  animation: progress-pulse 2s ease-in-out infinite;
-}
-</style>

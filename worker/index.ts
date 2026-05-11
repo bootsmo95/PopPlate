@@ -33,14 +33,15 @@ async function processNextJob(): Promise<void> {
   try {
     const result = await handleGenerate(job.id, job.dishId)
 
-    // Mark job as ready and update dish with output URLs
     await db
       .update(generationJobs)
       .set({
         status: 'ready',
+        progress: 100,
         completedAt: new Date(),
         updatedAt: new Date(),
         outputPreviewModelGlbUrl: result.glbUrl,
+        outputPreviewModelUsdzUrl: result.usdzUrl,
         outputPosterUrl: result.posterUrl,
       })
       .where(eq(generationJobs.id, job.id))
@@ -50,6 +51,7 @@ async function processNextJob(): Promise<void> {
       .set({
         status: 'ready',
         previewModelGlbUrl: result.glbUrl,
+        previewModelUsdzUrl: result.usdzUrl,
         posterUrl: result.posterUrl,
         updatedAt: new Date(),
       })
