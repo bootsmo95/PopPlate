@@ -279,7 +279,13 @@ let pollInterval: ReturnType<typeof setInterval> | null = null
 function startPolling() {
   if (pollInterval) return
   pollInterval = setInterval(async () => {
-    await Promise.all([refresh(), refreshJobs()])
+    // Use $fetch directly to bypass useFetch cache and get fresh data
+    const [freshDish, freshJobs] = await Promise.all([
+      $fetch<DishDetail>(`/api/dishes/${id}`),
+      $fetch<GenerationJob[]>(`/api/dishes/${id}/jobs`),
+    ])
+    dish.value = freshDish
+    jobsData.value = freshJobs
     const status = latestJob.value?.status
     if (status !== 'queued' && status !== 'processing') {
       stopPolling()

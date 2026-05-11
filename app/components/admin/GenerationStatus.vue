@@ -36,12 +36,12 @@
       <div class="space-y-2">
         <div class="flex items-center justify-between">
           <p class="text-sm text-slate-700 font-medium">Generating 3D model&hellip;</p>
-          <span class="text-sm font-semibold text-slate-700 tabular-nums">{{ latestJob.progress ?? 0 }}%</span>
+          <span class="text-sm font-semibold text-slate-700 tabular-nums">{{ displayProgress }}%</span>
         </div>
         <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
           <div
-            class="h-2.5 bg-slate-600 rounded-full transition-all duration-500 ease-out"
-            :style="{ width: `${latestJob.progress ?? 0}%` }"
+            class="h-2.5 bg-slate-600 rounded-full transition-all duration-700 ease-out"
+            :style="{ width: `${displayProgress}%` }"
           />
         </div>
         <p class="text-xs text-gray-400">This typically takes 2–5 minutes. You can leave this page.</p>
@@ -117,6 +117,52 @@ const emit = defineEmits<{
 
 const loading = ref(false)
 const error = ref('')
+
+// Smooth progress: interpolate between polled values so the bar doesn't jump
+const serverProgress = computed(() => props.latestJob?.progress ?? 0)
+const interpolatedProgress = ref(0)
+let interpolationTimer: ReturnType<typeof setInterval> | null = null
+
+watch(serverProgress, (newVal) => {
+  if (interpolationTimer) clearInterval(interpolationTimer)
+
+  if (newVal <= interpolatedProgress.value) {
+    interpolatedProgress.value = newVal
+    return
+  }
+
+  // Smoothly step toward the new server value over ~2.5 seconds
+  const diff = newVal - interpolatedProgress.value
+  const steps = 10
+  const stepSize = diff / steps
+  let remaining = steps
+
+  interpolationTimer = setInterval(() => {
+    remaining--
+    if (remaining <= 0) {
+      interpolatedProgress.value = newVal
+      if (interpolationTimer) clearInterval(interpolationTimer)
+      interpolationTimer = null
+    } else {
+      interpolatedProgress.value = Math.round(interpolatedProgress.value + stepSize)
+    }
+  }, 250)
+}, { immediate: true })
+
+// Reset interpolation when job changes
+watch(() => props.latestJob?.id, () => {
+  interpolatedProgress.value = 0
+  if (interpolationTimer) {
+    clearInterval(interpolationTimer)
+    interpolationTimer = null
+  }
+})
+
+onUnmounted(() => {
+  if (interpolationTimer) clearInterval(interpolationTimer)
+})
+
+const displayProgress = computed(() => Math.min(interpolatedProgress.value, 99))
 
 async function startGeneration() {
   loading.value = true
