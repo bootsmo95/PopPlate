@@ -1,4 +1,5 @@
 import { readMultipartFormData, createError } from 'h3'
+import { eq } from 'drizzle-orm'
 import { db, schema } from '../../database/index'
 import { requireAuth } from '../../utils/auth'
 import { uploadFile, getPublicUrl } from '../../utils/storage'
@@ -20,16 +21,12 @@ export default defineEventHandler(async (event) => {
 
   // Extract fields
   let dishId: string | undefined
-  let restaurantId: string | undefined
   let filePart: (typeof parts)[number] | undefined
 
   for (const part of parts) {
     if (part.name === 'dishId') {
       dishId = part.data.toString('utf-8').trim()
-    } else if (part.name === 'restaurantId') {
-      restaurantId = part.data.toString('utf-8').trim()
     } else if (part.filename) {
-      // Treat any part with a filename as the file upload
       filePart = part
     }
   }
@@ -38,12 +35,21 @@ export default defineEventHandler(async (event) => {
   if (!dishId) {
     throw createError({ statusCode: 400, message: 'dishId is required' })
   }
-  if (!restaurantId) {
-    throw createError({ statusCode: 400, message: 'restaurantId is required' })
-  }
   if (!filePart) {
     throw createError({ statusCode: 400, message: 'No file provided' })
   }
+
+  // Look up dish and derive restaurantId server-side
+  const [dish] = await db
+    .select({ id: schema.dishes.id, restaurantId: schema.dishes.restaurantId })
+    .from(schema.dishes)
+    .where(eq(schema.dishes.id, dishId))
+    .limit(1)
+
+  if (!dish) {
+    throw createError({ statusCode: 404, message: 'Dish not found' })
+  }
+  const restaurantId = dish.restaurantId
 
   const rawFilename = filePart.filename!
   const ext = rawFilename.slice(rawFilename.lastIndexOf('.')).toLowerCase()

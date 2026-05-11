@@ -232,36 +232,35 @@ async function processQueue() {
         formData.append('dishId', props.dishId)
         formData.append('restaurantId', props.restaurantId)
 
-        // Simulate progress while uploading (actual XHR progress would require XMLHttpRequest)
         const progressInterval = setInterval(() => {
           if (next.progress < 85) {
             next.progress += 15
           }
         }, 200)
 
-        const result = await $fetch<SourceImage>('/api/upload/image', {
-          method: 'POST',
-          body: formData,
-        })
+        try {
+          const result = await $fetch<SourceImage>('/api/upload/image', {
+            method: 'POST',
+            body: formData,
+          })
 
-        clearInterval(progressInterval)
-        next.progress = 100
-        next.status = 'done'
+          next.progress = 100
+          next.status = 'done'
 
-        // Revoke the blob URL to free memory
-        URL.revokeObjectURL(next.previewUrl)
+          URL.revokeObjectURL(next.previewUrl)
 
-        // Remove done items from queue immediately (they'll appear in existingImages via emit)
-        await nextTick()
-        uploadQueue.value = uploadQueue.value.filter(i => i.id !== next.id)
+          await nextTick()
+          uploadQueue.value = uploadQueue.value.filter(i => i.id !== next.id)
 
-        emit('uploaded', result)
-      } catch (err: unknown) {
-        const e = err as { data?: { message?: string }; message?: string }
-        next.status = 'error'
-        next.progress = 0
-        next.error = e?.data?.message ?? e?.message ?? 'Upload failed'
-      }
+          emit('uploaded', result)
+        } catch (err: unknown) {
+          const e = err as { data?: { message?: string }; message?: string }
+          next.status = 'error'
+          next.progress = 0
+          next.error = e?.data?.message ?? e?.message ?? 'Upload failed'
+        } finally {
+          clearInterval(progressInterval)
+        }
     }
   } finally {
     isProcessing = false

@@ -1,6 +1,6 @@
 import { db } from '../../../database/index'
 import { dishes, dishSourceImages, generationJobs } from '../../../database/schema'
-import { eq, desc, count, inArray } from 'drizzle-orm'
+import { eq, desc, count, inArray, and } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
@@ -38,8 +38,7 @@ export default defineEventHandler(async (event) => {
   const [inflightJob] = await db
     .select()
     .from(generationJobs)
-    .where(eq(generationJobs.dishId, id))
-    .where(inArray(generationJobs.status, ['queued', 'processing']))
+    .where(and(eq(generationJobs.dishId, id), inArray(generationJobs.status, ['queued', 'processing'])))
     .limit(1)
 
   if (inflightJob) {
