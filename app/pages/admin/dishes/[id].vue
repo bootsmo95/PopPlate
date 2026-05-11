@@ -265,7 +265,7 @@ async function refreshJobs() {
 }
 
 await refreshJobs()
- 42195d3
+
 const latestJob = computed<GenerationJob | null>(() => jobsData.value?.[0] ?? null)
 
 // QR code
