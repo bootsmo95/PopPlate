@@ -35,11 +35,14 @@
       :ios-src="usdzUrl ?? undefined"
       :poster="posterUrl ?? undefined"
       :alt="alt ?? 'Dish 3D model'"
+      :scale="scaleAttr"
+      ar-scale="fixed"
       auto-rotate
       camera-controls
       ar
       ar-modes="webxr scene-viewer quick-look"
       shadow-intensity="1"
+      environment-image="neutral"
       class="w-full rounded-xl overflow-hidden"
       :style="{ height: viewerHeight, display: 'block' }"
       @error="handleError"
@@ -64,6 +67,7 @@ const props = withDefaults(
     posterUrl?: string | null
     alt?: string
     height?: string
+    scale?: number
     autoAr?: boolean
   }>(),
   {
@@ -71,12 +75,14 @@ const props = withDefaults(
     posterUrl: null,
     alt: 'Dish 3D model',
     height: '60vh',
+    scale: 0.18,
     autoAr: false,
   },
 )
 
 const viewerRef = ref<HTMLElement | null>(null)
 const viewerHeight = computed(() => props.height)
+const scaleAttr = computed(() => `${props.scale} ${props.scale} ${props.scale}`)
 const hasError = ref(false)
 const loaded = ref(false)
 const ready = ref(false)

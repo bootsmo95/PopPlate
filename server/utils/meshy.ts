@@ -33,26 +33,24 @@ export interface MeshyTaskStatus {
   finished_at?: number
 }
 
+const MESHY_PARAMS = {
+  ai_model: 'meshy-6',
+  topology: 'triangle',
+  target_polycount: 30000,
+  target_formats: ['glb'],
+  enable_pbr: true,
+  should_remesh: true,
+  texture_prompt: 'photorealistic food photography, appetizing, natural colors, glossy where wet, crisp detail, studio lighting',
+}
+
 export async function createImageTo3DTask(imageUrls: string[]): Promise<MeshyTaskResult> {
   const endpoint = imageUrls.length > 1
     ? '/openapi/v1/multi-image-to-3d'
     : '/openapi/v1/image-to-3d'
 
   const body = imageUrls.length > 1
-    ? {
-        image_urls: imageUrls,
-        ai_model: 'meshy-6',
-        target_formats: ['glb', 'usdz'],
-        topology: 'triangle',
-        target_polycount: 10000,
-      }
-    : {
-        image_url: imageUrls[0],
-        ai_model: 'meshy-6',
-        target_formats: ['glb', 'usdz'],
-        topology: 'triangle',
-        target_polycount: 10000,
-      }
+    ? { image_urls: imageUrls, ...MESHY_PARAMS }
+    : { image_url: imageUrls[0], ...MESHY_PARAMS }
 
   const response = await fetch(`${MESHY_BASE_URL}${endpoint}`, {
     method: 'POST',
