@@ -51,5 +51,5 @@ export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'public, max-age=86400')
 
   const arrayBuffer = await upstream.arrayBuffer()
-  return new Uint8Array(arrayBuffer)
+  return send(event, Buffer.from(arrayBuffer))
 })
