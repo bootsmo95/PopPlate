@@ -2,6 +2,7 @@ import { db } from '../../server/database/index.js'
 import { generationJobs, dishSourceImages } from '../../server/database/schema.js'
 import { eq, asc } from 'drizzle-orm'
 import { createImageTo3DTask, getTaskStatus } from '../../server/utils/meshy.js'
+import { compressGlb } from '../utils/compress-glb.js'
 
 export interface GenerateResult {
   glbUrl: string
@@ -10,7 +11,7 @@ export interface GenerateResult {
 }
 
 const POLL_INTERVAL_MS = 5000
-const MAX_POLL_ATTEMPTS = 360 // 30 minutes max
+const MAX_POLL_ATTEMPTS = 360
 
 export async function handleGenerate(
   jobId: string,
@@ -26,7 +27,6 @@ export async function handleGenerate(
     throw new Error('No source images found for dish')
   }
 
-  // Meshy multi-image accepts up to 4 images
   const imageUrls = images.slice(0, 4).map(img => img.imageUrl)
   const isMultiImage = imageUrls.length > 1
 
@@ -34,7 +34,6 @@ export async function handleGenerate(
 
   const { taskId } = await createImageTo3DTask(imageUrls)
 
-  // Store external task ID
   await db
     .update(generationJobs)
     .set({ externalTaskId: taskId, updatedAt: new Date() })
@@ -42,13 +41,11 @@ export async function handleGenerate(
 
   console.log(`[generate] Meshy task created: ${taskId}`)
 
-  // Poll until complete
   for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt++) {
     await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS))
 
     const status = await getTaskStatus(taskId, isMultiImage)
 
-    // Update progress in DB
     if (status.progress > 0) {
       await db
         .update(generationJobs)
@@ -57,11 +54,22 @@ export async function handleGenerate(
     }
 
     if (status.status === 'SUCCEEDED') {
-      console.log(`[generate] Meshy task ${taskId} succeeded`)
+      console.log(`[generate] Meshy task ${taskId} succeeded, compressing model...`)
+
+      const glbUrl = status.model_urls?.glb
+      if (!glbUrl) throw new Error('No GLB URL in Meshy response')
+
+      const compressedGlbDataUrl = await downloadAndCompress(glbUrl)
+      const posterDataUrl = status.thumbnail_url
+        ? await downloadAsDataUrl(status.thumbnail_url, 'image/png')
+        : null
+
+      console.log(`[generate] Compressed GLB: ${Math.round(compressedGlbDataUrl.length / 1024)}KB data URL`)
+
       return {
-        glbUrl: status.model_urls?.glb ?? '',
-        usdzUrl: status.model_urls?.usdz ?? null,
-        posterUrl: status.thumbnail_url ?? null,
+        glbUrl: compressedGlbDataUrl,
+        usdzUrl: null,
+        posterUrl: posterDataUrl,
       }
     }
 
@@ -81,4 +89,25 @@ export async function handleGenerate(
   }
 
   throw new Error('Generation timed out after 30 minutes')
+}
+
+async function downloadAndCompress(glbUrl: string): Promise<string> {
+  const response = await fetch(glbUrl)
+  if (!response.ok) throw new Error(`Failed to download GLB: ${response.status}`)
+
+  const rawBuffer = Buffer.from(await response.arrayBuffer())
+  console.log(`[generate] Downloaded GLB: ${Math.round(rawBuffer.length / 1024 / 1024)}MB`)
+
+  const compressed = await compressGlb(rawBuffer)
+  console.log(`[generate] Compressed to: ${Math.round(compressed.length / 1024)}KB`)
+
+  return `data:model/gltf-binary;base64,${compressed.toString('base64')}`
+}
+
+async function downloadAsDataUrl(url: string, mimeType: string): Promise<string> {
+  const response = await fetch(url)
+  if (!response.ok) return ''
+
+  const buffer = Buffer.from(await response.arrayBuffer())
+  return `data:${mimeType};base64,${buffer.toString('base64')}`
 }

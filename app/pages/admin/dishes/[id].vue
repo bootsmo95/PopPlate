@@ -129,9 +129,8 @@
       <section v-if="dish.previewModelGlbUrl" class="mb-8">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Preview</h2>
         <ViewerDishViewer
-          :glb-url="`/m/${dish.id}.glb`"
-          :usdz-url="dish.previewModelUsdzUrl ? `/m/${dish.id}.usdz` : undefined"
-          :poster-url="dish.posterUrl ? `/m/${dish.id}.png` : undefined"
+          :glb-url="modelGlbUrl"
+          :poster-url="modelPosterUrl"
           :alt="dish.name"
           height="400px"
         />
@@ -246,6 +245,14 @@ const {
   error: fetchError,
   refresh,
 } = await useFetch<DishDetail>(`/api/dishes/${id}`, { headers: ssrHeaders })
+
+function resolveModelUrl(url: string | null, ext: string): string | undefined {
+  if (!url) return undefined
+  if (url.startsWith('data:')) return url
+  return `/m/${id}.${ext}`
+}
+const modelGlbUrl = computed(() => resolveModelUrl(dish.value?.previewModelGlbUrl ?? null, 'glb')!)
+const modelPosterUrl = computed(() => resolveModelUrl(dish.value?.posterUrl ?? null, 'png'))
 
 // Source images
 const { data: sourceImagesData, refresh: refreshImages } = await useFetch<SourceImage[]>(

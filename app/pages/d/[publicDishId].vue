@@ -25,7 +25,7 @@
     <div class="relative w-full aspect-square bg-gray-100 overflow-hidden">
       <img
         v-if="dish.posterUrl"
-        :src="`/m/${dish.id}.png`"
+        :src="modelPosterUrl ?? dish.posterUrl!"
         :alt="dish.name"
         class="w-full h-full object-cover"
       />
@@ -94,9 +94,8 @@
         </h2>
         <ViewerDishViewer
           ref="viewerComponent"
-          :glb-url="`/m/${dish.id}.glb`"
-          :usdz-url="dish.previewModelUsdzUrl ? `/m/${dish.id}.usdz` : undefined"
-          :poster-url="dish.posterUrl ? `/m/${dish.id}.png` : undefined"
+          :glb-url="modelGlbUrl"
+          :poster-url="modelPosterUrl"
           :alt="dish.name"
           height="60vh"
           @viewer-loaded="onViewerLoaded"
@@ -138,6 +137,14 @@ const {
   error,
 } = await useFetch<PublicDish>(`/api/public/dishes/${publicDishId}`)
 
+function resolveUrl(url: string | null, ext: string): string | undefined {
+  if (!url) return undefined
+  if (url.startsWith('data:')) return url
+  return `/m/${dish.value!.id}.${ext}`
+}
+const modelGlbUrl = computed(() => resolveUrl(dish.value?.previewModelGlbUrl ?? null, 'glb')!)
+const modelPosterUrl = computed(() => resolveUrl(dish.value?.posterUrl ?? null, 'png'))
+
 const allergenList = computed<string[]>(() => {
   if (!dish.value?.allergens) return []
   return dish.value.allergens
@@ -169,27 +176,22 @@ function launchAr() {
 
   trackArLaunchClicked(dish.value.id, dish.value.restaurantId)
 
-  const glbUrl = `${window.location.origin}/m/${dish.value.id}.glb`
-  const usdzUrl = dish.value.previewModelUsdzUrl
-    ? `${window.location.origin}/m/${dish.value.id}.usdz`
-    : null
-
+  // AR apps need HTTP URLs (can't use data: URLs), so always use the proxy
+  const arGlbUrl = `${window.location.origin}/m/${dish.value.id}.glb`
+  const arUsdzUrl = `${window.location.origin}/m/${dish.value.id}.usdz`
   const ua = navigator.userAgent
 
-  if (/iPhone|iPad|iPod/i.test(ua) && usdzUrl) {
-    // iOS: Quick Look via anchor tag click
+  if (/iPhone|iPad|iPod/i.test(ua)) {
     const a = document.createElement('a')
     a.rel = 'ar'
-    a.href = usdzUrl
+    a.href = arUsdzUrl
     a.click()
     arAttempted.value = true
   } else if (/Android/i.test(ua)) {
-    // Android: Scene Viewer intent
-    const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbUrl)}&mode=ar_only&title=${encodeURIComponent(dish.value.name)}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`
+    const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(arGlbUrl)}&mode=ar_only&title=${encodeURIComponent(dish.value.name)}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`
     window.location.href = intentUrl
     arAttempted.value = true
   } else {
-    // Not supported — fall through to 3D viewer
     arAttempted.value = true
   }
 }
