@@ -2,8 +2,7 @@ import { readMultipartFormData, createError } from 'h3'
 import { eq } from 'drizzle-orm'
 import { db, schema } from '../../database/index'
 import { requireAuth } from '../../utils/auth'
-import { uploadFile, getPublicUrl } from '../../utils/storage'
-import { sourceImageKey } from '../../utils/storage-keys'
+import { toDataUrl } from '../../utils/inline-assets'
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp']
@@ -81,11 +80,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Build storage key and upload
-  const storageKey = sourceImageKey(restaurantId, dishId, filename)
-  await uploadFile(storageKey, filePart.data, mimeType)
-
-  const imageUrl = getPublicUrl(storageKey)
+  // MVP fallback: store inline in DB instead of external object storage.
+  // This avoids the current MinIO routing issues while keeping uploads functional.
+  const storageKey = `inline:${filename}`
+  const imageUrl = toDataUrl(filePart.data, mimeType)
 
   // Persist record in DB
   const [record] = await db

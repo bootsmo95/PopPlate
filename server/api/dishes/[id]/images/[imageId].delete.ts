@@ -3,6 +3,7 @@ import { dishSourceImages } from '../../../../database/schema'
 import { eq, and } from 'drizzle-orm'
 import { requireAuth } from '../../../../utils/auth'
 import { deleteFile } from '../../../../utils/storage'
+import { isInlineAsset } from '../../../../utils/inline-assets'
 
 export default defineEventHandler(async (event) => {
   await requireAuth(event)
@@ -27,8 +28,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Image not found' })
   }
 
-  // Delete from S3
-  await deleteFile(image.storageKey)
+  // Delete external file only when this isn't an inline DB-backed asset
+  if (!isInlineAsset(image.storageKey)) {
+    await deleteFile(image.storageKey)
+  }
 
   // Delete DB record
   await db

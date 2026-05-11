@@ -4,15 +4,16 @@ interface AuthUser {
 }
 
 export function useAuth() {
-  const user = useState<AuthUser | null>('auth-user', () => null)
-  const isAuthenticated = computed(() => user.value !== null)
+  const { user, loggedIn, fetch: fetchSession, clear } = useUserSession()
+  const isAuthenticated = computed(() => loggedIn.value)
 
   async function login(email: string, password: string): Promise<void> {
-    const data = await $fetch<{ user: AuthUser }>('/api/auth/login', {
+    await $fetch('/api/auth/login', {
       method: 'POST',
       body: { email, password },
     })
-    user.value = data.user
+
+    await fetchSession()
   }
 
   async function logout(): Promise<void> {
@@ -21,24 +22,18 @@ export function useAuth() {
     } catch {
       // Ignore logout errors — session may already be cleared
     } finally {
-      user.value = null
+      await clear()
       await navigateTo('/admin/login')
     }
   }
 
   async function fetchUser(): Promise<AuthUser | null> {
-    try {
-      const data = await $fetch<{ user: AuthUser }>('/api/auth/session')
-      user.value = data.user
-      return data.user
-    } catch {
-      user.value = null
-      return null
-    }
+    await fetchSession()
+    return (user.value as AuthUser | null) ?? null
   }
 
   return {
-    user: readonly(user),
+    user,
     isAuthenticated,
     login,
     logout,

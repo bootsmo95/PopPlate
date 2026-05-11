@@ -81,7 +81,17 @@
       </div>
 
       <!-- Error -->
-      <p v-if="errorMsg" class="text-red-600 text-sm">{{ errorMsg }}</p>
+      <div v-if="errorMsg" class="space-y-3">
+        <p class="text-red-600 text-sm">{{ errorMsg }}</p>
+        <NuxtLink
+          v-if="showRestaurantSetupLink"
+          to="/admin/settings"
+          class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+        >
+          <span>Set up restaurant first</span>
+          <span aria-hidden="true">→</span>
+        </NuxtLink>
+      </div>
 
       <!-- Submit -->
       <button
@@ -111,6 +121,7 @@ const form = reactive({
 
 const loading = ref(false)
 const errorMsg = ref('')
+const showRestaurantSetupLink = computed(() => errorMsg.value.includes('No restaurant found'))
 
 async function handleSubmit() {
   if (!form.name.trim()) {

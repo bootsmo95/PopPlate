@@ -25,7 +25,8 @@
       "Bash(npx nuxi *)",
       "Bash(git push *)",
       "Bash(git remote *)",
-      "Bash(gh auth *)"
+      "Bash(gh auth *)",
+      "Bash(git fetch *)"
     ]
   }
 }

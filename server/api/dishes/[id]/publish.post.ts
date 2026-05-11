@@ -2,8 +2,7 @@ import { db } from '../../../database/index'
 import { dishes, qrCodes } from '../../../database/schema'
 import { eq } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
-import { uploadFile, getPublicUrl } from '../../../utils/storage'
-import { qrImageKey } from '../../../utils/storage-keys'
+import { toDataUrl } from '../../../utils/inline-assets'
 import QRCode from 'qrcode'
 
 export default defineEventHandler(async (event) => {
@@ -53,10 +52,7 @@ export default defineEventHandler(async (event) => {
     margin: 2,
   })
 
-  // Upload QR image to S3 (outside transaction — compensate on failure)
-  const key = qrImageKey(dish.restaurantId, dish.id, 'qr.png')
-  await uploadFile(key, qrBuffer, 'image/png')
-  const imageUrl = getPublicUrl(key)
+  const imageUrl = toDataUrl(qrBuffer, 'image/png')
 
   // Wrap DB mutations in a transaction to avoid half-state
   const result = await db.transaction(async (tx) => {
