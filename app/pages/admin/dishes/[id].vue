@@ -275,14 +275,24 @@ const { data: analyticsData, refresh: refreshAnalytics } = await useFetch<Analyt
 
 // Auto-polling when job is queued or processing
 let pollInterval: ReturnType<typeof setInterval> | null = null
+let isPolling = false
 
 function startPolling() {
   if (pollInterval) return
   pollInterval = setInterval(async () => {
-    await Promise.all([refresh(), refreshJobs()])
-    const status = latestJob.value?.status
-    if (status !== 'queued' && status !== 'processing') {
-      stopPolling()
+    if (isPolling) return
+    isPolling = true
+
+    try {
+      await refreshJobs()
+      const status = latestJob.value?.status
+
+      if (status !== 'queued' && status !== 'processing') {
+        stopPolling()
+        await Promise.all([refresh(), refreshQr()])
+      }
+    } finally {
+      isPolling = false
     }
   }, 3000)
 }
