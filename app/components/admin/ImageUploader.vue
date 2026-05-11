@@ -118,8 +118,8 @@
 </template>
 
 <script setup lang="ts">
-const MIN_IMAGES = 5
-const MAX_IMAGES = 15
+const MIN_IMAGES = 2
+const MAX_IMAGES = 4
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp']
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']

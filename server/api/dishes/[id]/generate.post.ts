@@ -21,16 +21,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Dish not found' })
   }
 
-  // Validate dish has at least 5 source images
+  // Validate dish has enough source images
   const [imageCount] = await db
     .select({ count: count() })
     .from(dishSourceImages)
     .where(eq(dishSourceImages.dishId, id))
 
-  if ((imageCount?.count ?? 0) < 5) {
+  if ((imageCount?.count ?? 0) < 2) {
     throw createError({
       statusCode: 422,
-      message: 'Dish must have at least 5 source images before generating',
+      message: 'Dish must have at least 2 source images before generating',
     })
   }
 

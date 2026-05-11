@@ -61,6 +61,8 @@ export interface GenerationJob {
   attemptNumber: number
   requestedByUserId: string | null
   inputVersion: number
+  externalTaskId: string | null
+  progress: number
   outputPreviewModelGlbUrl: string | null
   outputPreviewModelUsdzUrl: string | null
   outputPosterUrl: string | null

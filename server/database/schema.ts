@@ -83,6 +83,8 @@ export const generationJobs = pgTable('generation_jobs', {
   attemptNumber: integer('attempt_number').notNull().default(1),
   requestedByUserId: uuid('requested_by_user_id').references(() => users.id),
   inputVersion: integer('input_version').notNull().default(1),
+  externalTaskId: text('external_task_id'),
+  progress: integer('progress').notNull().default(0),
   outputPreviewModelGlbUrl: text('output_preview_model_glb_url'),
   outputPreviewModelUsdzUrl: text('output_preview_model_usdz_url'),
   outputPosterUrl: text('output_poster_url'),
