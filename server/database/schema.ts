@@ -13,6 +13,7 @@ import { relations } from 'drizzle-orm'
 
 export const restaurants = pgTable('restaurants', {
   id: uuid('id').primaryKey().defaultRandom(),
+  ownerId: uuid('owner_id'),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   status: text('status').notNull().default('active'),
@@ -28,7 +29,7 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   displayName: text('display_name').notNull(),
   role: text('role').notNull().default('admin'),
-  isPayingUser: boolean('is_paying_user').notNull().default(false),
+  accountTier: text('account_tier').notNull().default('free'),
   passwordHash: text('password_hash').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -123,7 +124,11 @@ export const analyticsEvents = pgTable('analytics_events', {
 
 // ─── Relations ────────────────────────────────────────────────────────────────
 
-export const restaurantsRelations = relations(restaurants, ({ many }) => ({
+export const restaurantsRelations = relations(restaurants, ({ one, many }) => ({
+  owner: one(users, {
+    fields: [restaurants.ownerId],
+    references: [users.id],
+  }),
   users: many(users),
   dishes: many(dishes),
   analyticsEvents: many(analyticsEvents),

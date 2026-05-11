@@ -1,17 +1,18 @@
 import { db } from '../../../database/index'
-import { dishes, dishSourceImages, generationJobs } from '../../../database/schema'
+import { dishes, dishSourceImages, generationJobs, restaurants } from '../../../database/schema'
 import { eq, desc, count, inArray, and } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
+import { getTierLimits } from '../../../utils/tiers'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
 
   const id = getRouterParam(event, 'id')
   if (!id) {
     throw createError({ statusCode: 400, message: 'id is required' })
   }
 
-  // Verify dish exists
+  // Verify dish exists and user owns the restaurant
   const [dish] = await db
     .select()
     .from(dishes)
@@ -19,6 +20,16 @@ export default defineEventHandler(async (event) => {
 
   if (!dish) {
     throw createError({ statusCode: 404, message: 'Dish not found' })
+  }
+
+  const [restaurant] = await db
+    .select({ ownerId: restaurants.ownerId })
+    .from(restaurants)
+    .where(eq(restaurants.id, dish.restaurantId))
+    .limit(1)
+
+  if (restaurant?.ownerId !== user.id) {
+    throw createError({ statusCode: 403, message: 'You do not own this dish' })
   }
 
   // Validate dish has enough source images
@@ -48,7 +59,20 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Get the latest generation job for this dish (if any)
+  // Check regeneration tier limit
+  const limits = getTierLimits(user.accountTier)
+  const [{ count: completedCount }] = await db
+    .select({ count: count() })
+    .from(generationJobs)
+    .where(and(eq(generationJobs.dishId, id), eq(generationJobs.status, 'ready')))
+
+  if (completedCount >= limits.maxRegenerationsPerDish) {
+    throw createError({
+      statusCode: 403,
+      message: `Your ${user.accountTier} plan allows up to ${limits.maxRegenerationsPerDish} generation(s) per dish. Upgrade to regenerate more.`,
+    })
+  }
+
   const [latestJob] = await db
     .select()
     .from(generationJobs)
@@ -58,18 +82,16 @@ export default defineEventHandler(async (event) => {
 
   const nextAttemptNumber = latestJob ? latestJob.attemptNumber + 1 : 1
 
-  // Create new GenerationJob record
   const [newJob] = await db
     .insert(generationJobs)
     .values({
       dishId: id,
       status: 'queued',
       attemptNumber: nextAttemptNumber,
-      requestedByUserId: null, // MVP: session user has no DB id
+      requestedByUserId: user.id,
     })
     .returning()
 
-  // Update dish status to processing
   await db
     .update(dishes)
     .set({

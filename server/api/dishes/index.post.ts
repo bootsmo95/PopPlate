@@ -1,11 +1,12 @@
+import { eq, count, inArray } from 'drizzle-orm'
 import { db } from '../../database/index'
 import { dishes, restaurants } from '../../database/schema'
-import { eq } from 'drizzle-orm'
 import { requireAuth } from '../../utils/auth'
+import { getTierLimits } from '../../utils/tiers'
 import { nanoid } from 'nanoid'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
 
   const body = await readBody<{
     name: string
@@ -23,9 +24,33 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'restaurantId is required' })
   }
 
-  const [restaurant] = await db.select({ id: restaurants.id }).from(restaurants).where(eq(restaurants.id, body.restaurantId)).limit(1)
-  if (!restaurant) {
-    throw createError({ statusCode: 404, message: 'Restaurant not found' })
+  // Get all user's restaurant IDs and verify ownership
+  const userRestaurants = await db
+    .select({ id: restaurants.id })
+    .from(restaurants)
+    .where(eq(restaurants.ownerId, user.id))
+
+  const userRestaurantIds = userRestaurants.map(r => r.id)
+
+  if (!userRestaurantIds.includes(body.restaurantId)) {
+    throw createError({ statusCode: 403, message: 'You do not own this restaurant' })
+  }
+
+  // Check tier dish limit across all restaurants
+  const limits = getTierLimits(user.accountTier)
+
+  if (userRestaurantIds.length > 0) {
+    const [{ count: totalDishes }] = await db
+      .select({ count: count() })
+      .from(dishes)
+      .where(inArray(dishes.restaurantId, userRestaurantIds))
+
+    if (totalDishes >= limits.maxDishesTotal) {
+      throw createError({
+        statusCode: 403,
+        message: `Your ${user.accountTier} plan allows up to ${limits.maxDishesTotal} dishes total. Upgrade to add more.`,
+      })
+    }
   }
 
   const publicDishId = nanoid(8)
@@ -41,6 +66,7 @@ export default defineEventHandler(async (event) => {
       allergens: body.allergens ?? null,
       ingredients: body.ingredients ?? null,
       status: 'draft',
+      createdByUserId: user.id,
     })
     .returning()
 

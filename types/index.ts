@@ -2,10 +2,12 @@
 export type DishStatus = 'draft' | 'processing' | 'failed' | 'ready' | 'published' | 'archived'
 export type JobStatus = 'queued' | 'processing' | 'failed' | 'ready' | 'cancelled'
 export type UserRole = 'admin' | 'user'
+export type AccountTier = 'free' | 'basic' | 'pro'
 
 // Core types
 export interface Restaurant {
   id: string
+  ownerId: string | null
   name: string
   slug: string
   status: string
@@ -15,11 +17,11 @@ export interface Restaurant {
 
 export interface User {
   id: string
-  restaurantId: string
+  restaurantId: string | null
   email: string
   displayName: string
   role: UserRole
-  isPayingUser: boolean
+  accountTier: AccountTier
   createdAt: Date
   updatedAt: Date
 }

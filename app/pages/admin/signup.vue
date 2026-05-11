@@ -2,12 +2,26 @@
   <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
     <div class="w-full max-w-sm bg-white rounded-xl shadow-md p-8">
       <div class="mb-8 text-center">
-        <h1 class="text-2xl font-bold text-gray-900">PopPlate Admin</h1>
-        <p class="mt-1 text-sm text-gray-500">Sign in to your account</p>
+        <h1 class="text-2xl font-bold text-gray-900">Create Account</h1>
+        <p class="mt-1 text-sm text-gray-500">Start with a free plan — upgrade anytime</p>
       </div>
 
       <form @submit.prevent="handleSubmit" novalidate>
         <div class="space-y-5">
+          <div>
+            <label for="displayName" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <input
+              id="displayName"
+              v-model="displayName"
+              type="text"
+              autocomplete="name"
+              required
+              placeholder="Your name"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors"
+              :disabled="loading"
+            />
+          </div>
+
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
@@ -16,7 +30,7 @@
               type="email"
               autocomplete="email"
               required
-              placeholder="admin@example.com"
+              placeholder="you@example.com"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors"
               :disabled="loading"
             />
@@ -28,9 +42,9 @@
               id="password"
               v-model="password"
               type="password"
-              autocomplete="current-password"
+              autocomplete="new-password"
               required
-              placeholder="••••••••"
+              placeholder="Min. 8 characters"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors"
               :disabled="loading"
             />
@@ -52,12 +66,22 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            {{ loading ? 'Signing in...' : 'Sign In' }}
+            {{ loading ? 'Creating account…' : 'Create Account' }}
           </button>
 
+          <!-- Tier overview -->
+          <div class="rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-600 space-y-1.5">
+            <p class="font-semibold text-gray-700">Free plan includes:</p>
+            <ul class="space-y-0.5">
+              <li>1 restaurant</li>
+              <li>5 menu items</li>
+              <li>1 3D model generation per dish</li>
+            </ul>
+          </div>
+
           <p class="text-center text-sm text-gray-500">
-            Don't have an account?
-            <NuxtLink to="/admin/signup" class="text-slate-700 font-medium hover:underline">Create one</NuxtLink>
+            Already have an account?
+            <NuxtLink to="/admin/login" class="text-slate-700 font-medium hover:underline">Sign in</NuxtLink>
           </p>
         </div>
       </form>
@@ -68,8 +92,9 @@
 <script setup lang="ts">
 definePageMeta({ layout: false })
 
-const { login } = useAuth()
+const { fetchUser } = useAuth()
 
+const displayName = ref('')
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
@@ -80,16 +105,20 @@ async function handleSubmit() {
   loading.value = true
 
   try {
-    await login(email.value, password.value)
-    await navigateTo('/admin/dishes')
+    await $fetch('/api/auth/signup', {
+      method: 'POST',
+      body: {
+        email: email.value,
+        password: password.value,
+        displayName: displayName.value,
+      },
+    })
+
+    await fetchUser()
+    await navigateTo('/admin/settings')
   } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'statusMessage' in err) {
-      errorMessage.value = (err as { statusMessage: string }).statusMessage
-    } else if (err instanceof Error) {
-      errorMessage.value = err.message
-    } else {
-      errorMessage.value = 'Login failed. Please check your credentials.'
-    }
+    const e = err as { data?: { message?: string }; message?: string }
+    errorMessage.value = e?.data?.message ?? e?.message ?? 'Signup failed. Please try again.'
   } finally {
     loading.value = false
   }

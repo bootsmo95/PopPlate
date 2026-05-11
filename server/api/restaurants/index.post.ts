@@ -1,26 +1,41 @@
-import { eq } from 'drizzle-orm'
+import { eq, count } from 'drizzle-orm'
 import { db } from '../../database/index'
 import { restaurants } from '../../database/schema'
 import { requireAuth } from '../../utils/auth'
+import { getTierLimits } from '../../utils/tiers'
 
 function slugify(input: string) {
   return input
     .toLowerCase()
     .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-')
 }
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
 
   const body = await readBody<{ name: string }>(event)
   const name = body?.name?.trim()
 
   if (!name) {
     throw createError({ statusCode: 400, message: 'Restaurant name is required' })
+  }
+
+  // Check tier limit
+  const limits = getTierLimits(user.accountTier)
+  const [{ count: currentCount }] = await db
+    .select({ count: count() })
+    .from(restaurants)
+    .where(eq(restaurants.ownerId, user.id))
+
+  if (currentCount >= limits.maxRestaurants) {
+    throw createError({
+      statusCode: 403,
+      message: `Your ${user.accountTier} plan allows up to ${limits.maxRestaurants} restaurant(s). Upgrade to add more.`,
+    })
   }
 
   const baseSlug = slugify(name)
@@ -51,6 +66,7 @@ export default defineEventHandler(async (event) => {
       name,
       slug,
       status: 'active',
+      ownerId: user.id,
     })
     .returning()
 

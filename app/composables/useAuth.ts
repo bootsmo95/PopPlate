@@ -1,11 +1,15 @@
 interface AuthUser {
+  id: string
   email: string
   role: string
+  accountTier: string
 }
 
 export function useAuth() {
   const { user, loggedIn, fetch: fetchSession, clear } = useUserSession()
   const isAuthenticated = computed(() => loggedIn.value)
+  const authUser = computed(() => (user.value as AuthUser | null) ?? null)
+  const accountTier = computed(() => authUser.value?.accountTier ?? 'free')
 
   async function login(email: string, password: string): Promise<void> {
     await $fetch('/api/auth/login', {
@@ -29,12 +33,13 @@ export function useAuth() {
 
   async function fetchUser(): Promise<AuthUser | null> {
     await fetchSession()
-    return (user.value as AuthUser | null) ?? null
+    return authUser.value
   }
 
   return {
-    user,
+    user: authUser,
     isAuthenticated,
+    accountTier,
     login,
     logout,
     fetchUser,

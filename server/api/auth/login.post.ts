@@ -1,3 +1,8 @@
+import { eq } from 'drizzle-orm'
+import { db } from '../../database/index'
+import { users } from '../../database/schema'
+import { checkPassword, type SessionUser } from '../../utils/auth'
+
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ email: string; password: string }>(event)
 
@@ -5,31 +10,29 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Email and password are required' })
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, body.email.toLowerCase()))
+    .limit(1)
 
-  if (!adminEmail || !adminPasswordHash) {
-    throw createError({ statusCode: 500, message: 'Admin credentials not configured' })
-  }
-
-  const emailMatch = body.email.toLowerCase() === adminEmail.toLowerCase()
-
-  if (!emailMatch) {
+  if (!user) {
     throw createError({ statusCode: 401, message: 'Invalid credentials' })
   }
 
-  const passwordValid = await checkPassword(body.password, adminPasswordHash)
-
+  const passwordValid = await checkPassword(body.password, user.passwordHash)
   if (!passwordValid) {
     throw createError({ statusCode: 401, message: 'Invalid credentials' })
   }
 
-  const user = {
-    email: adminEmail,
-    role: 'admin' as const,
+  const sessionUser: SessionUser = {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    accountTier: user.accountTier,
   }
 
-  await setUserSession(event, { user })
+  await setUserSession(event, { user: sessionUser })
 
-  return { user }
+  return { user: sessionUser }
 })

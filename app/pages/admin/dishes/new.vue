@@ -8,7 +8,32 @@
 
     <h1 class="text-2xl font-bold text-gray-900 mb-6">Create New Dish</h1>
 
-    <form @submit.prevent="handleSubmit" class="space-y-5">
+    <!-- No restaurants -->
+    <div v-if="!restaurantsPending && (!restaurants || restaurants.length === 0)" class="text-center py-12">
+      <p class="text-gray-600 mb-3">You need a restaurant before creating dishes.</p>
+      <NuxtLink
+        to="/admin/settings"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white text-sm font-semibold rounded-lg hover:bg-slate-700"
+      >
+        Set up restaurant →
+      </NuxtLink>
+    </div>
+
+    <form v-else @submit.prevent="handleSubmit" class="space-y-5">
+      <!-- Restaurant selector (if multiple) -->
+      <div v-if="restaurants && restaurants.length > 1">
+        <label for="restaurantId" class="block text-sm font-medium text-gray-700 mb-1">
+          Restaurant <span class="text-red-500">*</span>
+        </label>
+        <select
+          id="restaurantId"
+          v-model="form.restaurantId"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white"
+        >
+          <option v-for="r in restaurants" :key="r.id" :value="r.id">{{ r.name }}</option>
+        </select>
+      </div>
+
       <!-- Name -->
       <div>
         <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
@@ -81,17 +106,7 @@
       </div>
 
       <!-- Error -->
-      <div v-if="errorMsg" class="space-y-3">
-        <p class="text-red-600 text-sm">{{ errorMsg }}</p>
-        <NuxtLink
-          v-if="showRestaurantSetupLink"
-          to="/admin/settings"
-          class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
-        >
-          <span>Set up restaurant first</span>
-          <span aria-hidden="true">→</span>
-        </NuxtLink>
-      </div>
+      <p v-if="errorMsg" class="text-red-600 text-sm">{{ errorMsg }}</p>
 
       <!-- Submit -->
       <button
@@ -108,10 +123,15 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'admin' })
 
-// For MVP, we use the first restaurant. In production this would come from the user's session.
-const HARDCODED_RESTAURANT_ID = useRuntimeConfig().public.defaultRestaurantId as string | undefined
+interface Restaurant {
+  id: string
+  name: string
+}
+
+const { data: restaurants, pending: restaurantsPending } = await useFetch<Restaurant[]>('/api/restaurants')
 
 const form = reactive({
+  restaurantId: '',
   name: '',
   shortDescription: '',
   priceText: '',
@@ -119,13 +139,27 @@ const form = reactive({
   ingredients: '',
 })
 
+// Auto-select first restaurant
+watch(
+  () => restaurants.value,
+  (list) => {
+    if (list?.length && !form.restaurantId) {
+      form.restaurantId = list[0].id
+    }
+  },
+  { immediate: true },
+)
+
 const loading = ref(false)
 const errorMsg = ref('')
-const showRestaurantSetupLink = computed(() => errorMsg.value.includes('No restaurant found'))
 
 async function handleSubmit() {
   if (!form.name.trim()) {
     errorMsg.value = 'Name is required.'
+    return
+  }
+  if (!form.restaurantId) {
+    errorMsg.value = 'Please select a restaurant.'
     return
   }
 
@@ -133,19 +167,6 @@ async function handleSubmit() {
   errorMsg.value = ''
 
   try {
-    // Fetch the first restaurant if no hardcoded ID is set
-    let restaurantId = HARDCODED_RESTAURANT_ID
-
-    if (!restaurantId) {
-      const restaurants = await $fetch<{ id: string }[]>('/api/restaurants')
-      restaurantId = restaurants?.[0]?.id
-    }
-
-    if (!restaurantId) {
-      errorMsg.value = 'No restaurant found. Please set up a restaurant first.'
-      return
-    }
-
     const dish = await $fetch<{ id: string }>('/api/dishes', {
       method: 'POST',
       body: {
@@ -154,7 +175,7 @@ async function handleSubmit() {
         priceText: form.priceText.trim() || undefined,
         allergens: form.allergens.trim() || undefined,
         ingredients: form.ingredients.trim() || undefined,
-        restaurantId,
+        restaurantId: form.restaurantId,
       },
     })
 

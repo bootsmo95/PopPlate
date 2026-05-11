@@ -16,12 +16,24 @@
         </button>
         <span class="font-semibold text-base tracking-wide">PopPlate Admin</span>
       </div>
-      <button
-        class="text-sm px-3 py-1.5 rounded bg-slate-700 hover:bg-slate-600 transition-colors"
-        @click="handleLogout"
-      >
-        Logout
-      </button>
+      <div class="flex items-center gap-3">
+        <span
+          class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+          :class="{
+            'bg-gray-600 text-gray-300': accountTier === 'free',
+            'bg-blue-600 text-blue-100': accountTier === 'basic',
+            'bg-amber-500 text-amber-950': accountTier === 'pro',
+          }"
+        >
+          {{ accountTier }}
+        </span>
+        <button
+          class="text-sm px-3 py-1.5 rounded bg-slate-700 hover:bg-slate-600 transition-colors"
+          @click="handleLogout"
+        >
+          Logout
+        </button>
+      </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
@@ -84,7 +96,7 @@
 
 <script setup lang="ts">
 const sidebarOpen = ref(false)
-const { logout } = useAuth()
+const { logout, accountTier } = useAuth()
 
 async function handleLogout() {
   await logout()
