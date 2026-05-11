@@ -226,41 +226,40 @@ async function processQueue() {
       next.status = 'uploading'
       next.progress = 0
 
-      try {
-        const formData = new FormData()
-        formData.append('file', next.file)
-        formData.append('dishId', props.dishId)
-        formData.append('restaurantId', props.restaurantId)
+      const formData = new FormData()
+      formData.append('file', next.file)
+      formData.append('dishId', props.dishId)
+      formData.append('restaurantId', props.restaurantId)
 
-        const progressInterval = setInterval(() => {
-          if (next.progress < 85) {
-            next.progress += 15
-          }
-        }, 200)
-
-        try {
-          const result = await $fetch<SourceImage>('/api/upload/image', {
-            method: 'POST',
-            body: formData,
-          })
-
-          next.progress = 100
-          next.status = 'done'
-
-          URL.revokeObjectURL(next.previewUrl)
-
-          await nextTick()
-          uploadQueue.value = uploadQueue.value.filter(i => i.id !== next.id)
-
-          emit('uploaded', result)
-        } catch (err: unknown) {
-          const e = err as { data?: { message?: string }; message?: string }
-          next.status = 'error'
-          next.progress = 0
-          next.error = e?.data?.message ?? e?.message ?? 'Upload failed'
-        } finally {
-          clearInterval(progressInterval)
+      const progressInterval = setInterval(() => {
+        if (next.progress < 85) {
+          next.progress += 15
         }
+      }, 200)
+
+      try {
+        const result = await $fetch<SourceImage>('/api/upload/image', {
+          method: 'POST',
+          body: formData,
+        })
+
+        next.progress = 100
+        next.status = 'done'
+
+        URL.revokeObjectURL(next.previewUrl)
+
+        await nextTick()
+        uploadQueue.value = uploadQueue.value.filter(i => i.id !== next.id)
+
+        emit('uploaded', result)
+      } catch (err: unknown) {
+        const e = err as { data?: { message?: string }; message?: string }
+        next.status = 'error'
+        next.progress = 0
+        next.error = e?.data?.message ?? e?.message ?? 'Upload failed'
+      } finally {
+        clearInterval(progressInterval)
+      }
     }
   } finally {
     isProcessing = false
