@@ -75,9 +75,9 @@
         View in 3D
       </h2>
       <ViewerDishViewer
-        :glb-url="dish.previewModelGlbUrl"
-        :usdz-url="dish.previewModelUsdzUrl"
-        :poster-url="dish.posterUrl"
+        :glb-url="`/api/dishes/${dish.id}/model`"
+        :usdz-url="dish.previewModelUsdzUrl ? `/api/dishes/${dish.id}/model?format=usdz` : undefined"
+        :poster-url="dish.posterUrl ? `/api/dishes/${dish.id}/model?format=poster` : undefined"
         :alt="dish.name"
         height="60vh"
         @viewer-loaded="onViewerLoaded"
