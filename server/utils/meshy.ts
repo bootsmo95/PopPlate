@@ -44,14 +44,14 @@ export async function createImageTo3DTask(imageUrls: string[]): Promise<MeshyTas
         ai_model: 'meshy-6',
         target_formats: ['glb', 'usdz'],
         topology: 'triangle',
-        target_polycount: 30000,
+        target_polycount: 10000,
       }
     : {
         image_url: imageUrls[0],
         ai_model: 'meshy-6',
         target_formats: ['glb', 'usdz'],
         topology: 'triangle',
-        target_polycount: 30000,
+        target_polycount: 10000,
       }
 
   const response = await fetch(`${MESHY_BASE_URL}${endpoint}`, {

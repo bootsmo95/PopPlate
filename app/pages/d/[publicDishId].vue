@@ -25,7 +25,7 @@
     <div class="relative w-full aspect-square bg-gray-100 overflow-hidden">
       <img
         v-if="dish.posterUrl"
-        :src="dish.posterUrl"
+        :src="`/m/${dish.id}.png`"
         :alt="dish.name"
         class="w-full h-full object-cover"
       />
@@ -69,21 +69,40 @@
       </div>
     </div>
 
-    <!-- 3D Viewer -->
+    <!-- AR / 3D Viewer -->
     <div v-if="dish.previewModelGlbUrl" class="px-5 mt-6">
-      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-        View in 3D
-      </h2>
-      <ViewerDishViewer
-        :glb-url="`/m/${dish.id}.glb`"
-        :usdz-url="dish.previewModelUsdzUrl ? `/m/${dish.id}.usdz` : undefined"
-        :poster-url="dish.posterUrl ? `/m/${dish.id}.png` : undefined"
-        :alt="dish.name"
-        height="60vh"
-        :auto-ar="isMobile"
-        @viewer-loaded="onViewerLoaded"
-        @ar-clicked="onArClicked"
-      />
+      <!-- AR prompt (mobile, before AR attempted) -->
+      <div v-if="showArPrompt" class="flex flex-col items-center gap-4 py-8">
+        <button
+          class="flex items-center gap-3 px-8 py-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-lg rounded-2xl shadow-lg transition-colors"
+          @click="launchAr"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+          </svg>
+          View on your table
+        </button>
+        <button class="text-sm text-gray-400 underline" @click="skipAr">
+          View in 3D instead
+        </button>
+      </div>
+
+      <!-- 3D Viewer fallback -->
+      <div v-else>
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          View in 3D
+        </h2>
+        <ViewerDishViewer
+          ref="viewerComponent"
+          :glb-url="`/m/${dish.id}.glb`"
+          :usdz-url="dish.previewModelUsdzUrl ? `/m/${dish.id}.usdz` : undefined"
+          :poster-url="dish.posterUrl ? `/m/${dish.id}.png` : undefined"
+          :alt="dish.name"
+          height="60vh"
+          @viewer-loaded="onViewerLoaded"
+          @ar-clicked="onArClicked"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -110,10 +129,8 @@ interface PublicDish {
 }
 
 const isMobile = ref(false)
-
-onMounted(() => {
-  isMobile.value = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-})
+const arAttempted = ref(false)
+const showArPrompt = computed(() => isMobile.value && !arAttempted.value)
 
 const {
   data: dish,
@@ -121,7 +138,6 @@ const {
   error,
 } = await useFetch<PublicDish>(`/api/public/dishes/${publicDishId}`)
 
-// Parse comma-separated allergens into an array
 const allergenList = computed<string[]>(() => {
   if (!dish.value?.allergens) return []
   return dish.value.allergens
@@ -130,7 +146,6 @@ const allergenList = computed<string[]>(() => {
     .filter(Boolean)
 })
 
-// Set page title dynamically
 useHead({
   title: computed(() => dish.value?.name ?? 'Dish'),
   meta: [
@@ -141,12 +156,47 @@ useHead({
   ],
 })
 
-// Analytics — only fire on client
 onMounted(() => {
+  isMobile.value = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+
   if (dish.value) {
     trackPageOpen(dish.value.id, dish.value.restaurantId)
   }
 })
+
+function launchAr() {
+  if (!dish.value) return
+
+  trackArLaunchClicked(dish.value.id, dish.value.restaurantId)
+
+  const glbUrl = `${window.location.origin}/m/${dish.value.id}.glb`
+  const usdzUrl = dish.value.previewModelUsdzUrl
+    ? `${window.location.origin}/m/${dish.value.id}.usdz`
+    : null
+
+  const ua = navigator.userAgent
+
+  if (/iPhone|iPad|iPod/i.test(ua) && usdzUrl) {
+    // iOS: Quick Look via anchor tag click
+    const a = document.createElement('a')
+    a.rel = 'ar'
+    a.href = usdzUrl
+    a.click()
+    arAttempted.value = true
+  } else if (/Android/i.test(ua)) {
+    // Android: Scene Viewer intent
+    const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbUrl)}&mode=ar_only&title=${encodeURIComponent(dish.value.name)}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`
+    window.location.href = intentUrl
+    arAttempted.value = true
+  } else {
+    // Not supported — fall through to 3D viewer
+    arAttempted.value = true
+  }
+}
+
+function skipAr() {
+  arAttempted.value = true
+}
 
 function onViewerLoaded() {
   if (dish.value) {
