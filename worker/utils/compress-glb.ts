@@ -37,8 +37,8 @@ function compressTexturesToWebP() {
 
         texture.setImage(new Uint8Array(webpBuffer))
         texture.setMimeType('image/webp')
-      } catch {
-        // Keep original if conversion fails
+      } catch (err) {
+        console.warn(`[compress-glb] WebP conversion failed for texture, keeping original:`, err)
       }
     }
   }

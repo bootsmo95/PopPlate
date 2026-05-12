@@ -8,9 +8,17 @@ type EventType = (typeof VALID_EVENT_TYPES)[number]
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX = 30
+const RATE_LIMIT_MAP_MAX_SIZE = 10_000
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
+
+  if (rateLimitMap.size > RATE_LIMIT_MAP_MAX_SIZE) {
+    for (const [key, val] of rateLimitMap) {
+      if (now > val.resetAt) rateLimitMap.delete(key)
+    }
+  }
+
   const entry = rateLimitMap.get(ip)
   if (!entry || now > entry.resetAt) {
     rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS })
@@ -33,6 +41,9 @@ export default defineEventHandler(async (event) => {
   if (!dishId || typeof dishId !== 'string') {
     throw createError({ statusCode: 400, message: 'dishId is required' })
   }
+  if (dishId.length > 100) {
+    throw createError({ statusCode: 400, message: 'dishId too long' })
+  }
   if (!eventType || typeof eventType !== 'string') {
     throw createError({ statusCode: 400, message: 'eventType is required' })
   }
@@ -43,22 +54,23 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(dishId)
   const [dish] = await db
     .select({ id: dishes.id, restaurantId: dishes.restaurantId })
     .from(dishes)
-    .where(eq(dishes.id, dishId))
+    .where(isUuid ? eq(dishes.id, dishId) : eq(dishes.publicDishId, dishId))
     .limit(1)
   if (!dish) {
     throw createError({ statusCode: 404, message: 'Dish not found' })
   }
 
   await db.insert(analyticsEvents).values({
-    dishId,
+    dishId: dish.id,
     restaurantId: dish.restaurantId,
     eventType,
-    sessionId: typeof sessionId === 'string' ? sessionId : null,
-    userAgent: typeof userAgent === 'string' ? userAgent : null,
-    referrer: typeof referrer === 'string' ? referrer : null,
+    sessionId: typeof sessionId === 'string' ? sessionId.slice(0, 255) : null,
+    userAgent: typeof userAgent === 'string' ? userAgent.slice(0, 512) : null,
+    referrer: typeof referrer === 'string' ? referrer.slice(0, 2048) : null,
   })
 
   return { ok: true }

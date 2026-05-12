@@ -104,9 +104,9 @@ async function downloadAndCompress(glbUrl: string): Promise<string> {
   return `data:model/gltf-binary;base64,${compressed.toString('base64')}`
 }
 
-async function downloadAsDataUrl(url: string, mimeType: string): Promise<string> {
+async function downloadAsDataUrl(url: string, mimeType: string): Promise<string | null> {
   const response = await fetch(url)
-  if (!response.ok) return ''
+  if (!response.ok) return null
 
   const buffer = Buffer.from(await response.arrayBuffer())
   return `data:${mimeType};base64,${buffer.toString('base64')}`

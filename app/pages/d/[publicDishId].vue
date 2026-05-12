@@ -24,8 +24,8 @@
     <!-- Hero poster -->
     <div class="relative w-full aspect-square bg-gray-100 overflow-hidden">
       <img
-        v-if="dish.posterUrl"
-        :src="modelPosterUrl ?? dish.posterUrl!"
+        v-if="dish.hasPoster"
+        :src="modelPosterUrl!"
         :alt="dish.name"
         class="w-full h-full object-cover"
       />
@@ -70,7 +70,7 @@
     </div>
 
     <!-- AR / 3D Viewer -->
-    <div v-if="dish.previewModelGlbUrl" class="px-5 mt-6">
+    <div v-if="dish.hasModel" class="px-5 mt-6">
       <!-- AR prompt (mobile, before AR attempted) -->
       <div v-if="showArPrompt" class="flex flex-col items-center gap-4 py-8">
         <button
@@ -115,16 +115,14 @@ const route = useRoute()
 const publicDishId = route.params.publicDishId as string
 
 interface PublicDish {
-  id: string
+  publicDishId: string
   name: string
   shortDescription: string | null
   priceText: string | null
   allergens: string | null
-  posterUrl: string | null
-  previewModelGlbUrl: string | null
-  previewModelUsdzUrl: string | null
+  hasModel: boolean
+  hasPoster: boolean
   restaurantId: string
-  publicDishId: string
 }
 
 const isMobile = ref(false)
@@ -137,13 +135,8 @@ const {
   error,
 } = await useFetch<PublicDish>(`/api/public/dishes/${publicDishId}`)
 
-function resolveUrl(url: string | null, ext: string): string | undefined {
-  if (!url) return undefined
-  if (url.startsWith('data:')) return url
-  return `/m/${dish.value!.id}.${ext}`
-}
-const modelGlbUrl = computed(() => resolveUrl(dish.value?.previewModelGlbUrl ?? null, 'glb')!)
-const modelPosterUrl = computed(() => resolveUrl(dish.value?.posterUrl ?? null, 'png'))
+const modelGlbUrl = computed(() => `/m/${publicDishId}.glb`)
+const modelPosterUrl = computed(() => dish.value?.hasPoster ? `/m/${publicDishId}.png` : undefined)
 
 const allergenList = computed<string[]>(() => {
   if (!dish.value?.allergens) return []
@@ -167,18 +160,17 @@ onMounted(() => {
   isMobile.value = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   if (dish.value) {
-    trackPageOpen(dish.value.id, dish.value.restaurantId)
+    trackPageOpen(publicDishId, dish.value.restaurantId)
   }
 })
 
 function launchAr() {
   if (!dish.value) return
 
-  trackArLaunchClicked(dish.value.id, dish.value.restaurantId)
+  trackArLaunchClicked(publicDishId, dish.value.restaurantId)
 
-  // AR apps need HTTP URLs (can't use data: URLs), so always use the proxy
-  const arGlbUrl = `${window.location.origin}/m/${dish.value.id}.glb`
-  const arUsdzUrl = `${window.location.origin}/m/${dish.value.id}.usdz`
+  const arGlbUrl = `${window.location.origin}/m/${publicDishId}.glb`
+  const arUsdzUrl = `${window.location.origin}/m/${publicDishId}.usdz`
   const ua = navigator.userAgent
 
   if (/iPhone|iPad|iPod/i.test(ua)) {
@@ -202,13 +194,13 @@ function skipAr() {
 
 function onViewerLoaded() {
   if (dish.value) {
-    trackViewerLoaded(dish.value.id, dish.value.restaurantId)
+    trackViewerLoaded(publicDishId, dish.value.restaurantId)
   }
 }
 
 function onArClicked() {
   if (dish.value) {
-    trackArLaunchClicked(dish.value.id, dish.value.restaurantId)
+    trackArLaunchClicked(publicDishId, dish.value.restaurantId)
   }
 }
 </script>
