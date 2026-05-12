@@ -2,6 +2,7 @@ import { eq, count } from 'drizzle-orm'
 import { db } from '../../database/index'
 import { restaurants } from '../../database/schema'
 import { requireAuth } from '../../utils/auth'
+import { hasUnlimitedAccess } from '../../utils/access'
 import { getTierLimits } from '../../utils/tiers'
 
 function slugify(input: string) {
@@ -25,17 +26,19 @@ export default defineEventHandler(async (event) => {
   }
 
   // Check tier limit
-  const limits = getTierLimits(user.accountTier)
-  const [{ count: currentCount }] = await db
-    .select({ count: count() })
-    .from(restaurants)
-    .where(eq(restaurants.ownerId, user.id))
+  if (!hasUnlimitedAccess(user)) {
+    const limits = getTierLimits(user.accountTier)
+    const [{ count: currentCount }] = await db
+      .select({ count: count() })
+      .from(restaurants)
+      .where(eq(restaurants.ownerId, user.id))
 
-  if (currentCount >= limits.maxRestaurants) {
-    throw createError({
-      statusCode: 403,
-      message: `Your ${user.accountTier} plan allows up to ${limits.maxRestaurants} restaurant(s). Upgrade to add more.`,
-    })
+    if (currentCount >= limits.maxRestaurants) {
+      throw createError({
+        statusCode: 403,
+        message: `Your ${user.accountTier} plan allows up to ${limits.maxRestaurants} restaurant(s). Upgrade to add more.`,
+      })
+    }
   }
 
   const baseSlug = slugify(name)

@@ -1,9 +1,7 @@
 import { Document, NodeIO } from '@gltf-transform/core'
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
-import { dedup, prune, textureResize, flatten, join } from '@gltf-transform/functions'
+import { dedup, prune, flatten, join } from '@gltf-transform/functions'
 import sharp from 'sharp'
-
-const MAX_TEXTURE_SIZE = 1024
 
 export async function compressGlb(inputBuffer: Buffer): Promise<Buffer> {
   const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
@@ -15,7 +13,6 @@ export async function compressGlb(inputBuffer: Buffer): Promise<Buffer> {
     prune(),
     flatten(),
     join(),
-    textureResize({ size: [MAX_TEXTURE_SIZE, MAX_TEXTURE_SIZE] }),
     compressTexturesToWebP(),
   )
 

@@ -237,7 +237,9 @@ export async function syncUserFromAuthentikClaims(claims: OidcUserInfo): Promise
     .limit(1)
 
   const role = resolveRole(claims, existingUser?.role)
-  const accountTier = resolveAccountTier(claims, existingUser?.accountTier)
+  const accountTier = role === 'admin'
+    ? 'pro'
+    : resolveAccountTier(claims, existingUser?.accountTier)
   const displayName = resolveDisplayName(claims)
 
   const [user] = await db

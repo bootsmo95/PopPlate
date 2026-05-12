@@ -2,6 +2,7 @@ import { eq, count, inArray } from 'drizzle-orm'
 import { db } from '../../database/index'
 import { dishes, restaurants } from '../../database/schema'
 import { requireAuth } from '../../utils/auth'
+import { hasUnlimitedAccess } from '../../utils/access'
 import { getTierLimits } from '../../utils/tiers'
 import { nanoid } from 'nanoid'
 
@@ -37,9 +38,8 @@ export default defineEventHandler(async (event) => {
   }
 
   // Check tier dish limit across all restaurants
-  const limits = getTierLimits(user.accountTier)
-
-  if (userRestaurantIds.length > 0) {
+  if (!hasUnlimitedAccess(user) && userRestaurantIds.length > 0) {
+    const limits = getTierLimits(user.accountTier)
     const [{ count: totalDishes }] = await db
       .select({ count: count() })
       .from(dishes)

@@ -2,6 +2,7 @@ import { db } from '../../../database/index'
 import { dishes, dishSourceImages, generationJobs, restaurants } from '../../../database/schema'
 import { eq, desc, count, inArray, and } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
+import { hasUnlimitedAccess } from '../../../utils/access'
 import { getTierLimits } from '../../../utils/tiers'
 
 export default defineEventHandler(async (event) => {
@@ -60,17 +61,19 @@ export default defineEventHandler(async (event) => {
   }
 
   // Check regeneration tier limit
-  const limits = getTierLimits(user.accountTier)
-  const [{ count: completedCount }] = await db
-    .select({ count: count() })
-    .from(generationJobs)
-    .where(and(eq(generationJobs.dishId, id), eq(generationJobs.status, 'ready')))
+  if (!hasUnlimitedAccess(user)) {
+    const limits = getTierLimits(user.accountTier)
+    const [{ count: completedCount }] = await db
+      .select({ count: count() })
+      .from(generationJobs)
+      .where(and(eq(generationJobs.dishId, id), eq(generationJobs.status, 'ready')))
 
-  if (completedCount >= limits.maxRegenerationsPerDish) {
-    throw createError({
-      statusCode: 403,
-      message: `Your ${user.accountTier} plan allows up to ${limits.maxRegenerationsPerDish} generation(s) per dish. Upgrade to regenerate more.`,
-    })
+    if (completedCount >= limits.maxRegenerationsPerDish) {
+      throw createError({
+        statusCode: 403,
+        message: `Your ${user.accountTier} plan allows up to ${limits.maxRegenerationsPerDish} generation(s) per dish. Upgrade to regenerate more.`,
+      })
+    }
   }
 
   const [latestJob] = await db
