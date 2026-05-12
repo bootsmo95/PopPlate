@@ -37,7 +37,7 @@ const MESHY_PARAMS = {
   ai_model: 'meshy-6',
   topology: 'triangle',
   target_polycount: 30000,
-  target_formats: ['glb'],
+  target_formats: ['glb', 'usdz'],
   enable_pbr: true,
   should_remesh: true,
   texture_prompt: 'photorealistic food photography, appetizing, natural colors, glossy where wet, crisp detail, studio lighting',

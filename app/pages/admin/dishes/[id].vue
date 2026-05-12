@@ -130,6 +130,7 @@
         <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Preview</h2>
         <ViewerDishViewer
           :glb-url="modelGlbUrl"
+          :usdz-url="modelUsdzUrl"
           :poster-url="modelPosterUrl"
           :alt="dish.name"
           height="400px"
@@ -252,6 +253,7 @@ function resolveModelUrl(url: string | null, ext: string): string | undefined {
   return `/m/${id}.${ext}`
 }
 const modelGlbUrl = computed(() => resolveModelUrl(dish.value?.previewModelGlbUrl ?? null, 'glb')!)
+const modelUsdzUrl = computed(() => resolveModelUrl(dish.value?.previewModelUsdzUrl ?? null, 'usdz'))
 const modelPosterUrl = computed(() => resolveModelUrl(dish.value?.posterUrl ?? null, 'png'))
 
 // Source images

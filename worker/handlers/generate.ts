@@ -60,15 +60,19 @@ export async function handleGenerate(
       if (!glbUrl) throw new Error('No GLB URL in Meshy response')
 
       const compressedGlbDataUrl = await downloadAndCompress(glbUrl)
+      const usdzUrl = status.model_urls?.usdz ?? null
       const posterDataUrl = status.thumbnail_url
         ? await downloadAsDataUrl(status.thumbnail_url, 'image/png')
         : null
 
       console.log(`[generate] Compressed GLB: ${Math.round(compressedGlbDataUrl.length / 1024)}KB data URL`)
+      if (usdzUrl) {
+        console.log(`[generate] USDZ available for iOS Quick Look`)
+      }
 
       return {
         glbUrl: compressedGlbDataUrl,
-        usdzUrl: null,
+        usdzUrl,
         posterUrl: posterDataUrl,
       }
     }

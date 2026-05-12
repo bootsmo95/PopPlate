@@ -95,6 +95,7 @@
         <ViewerDishViewer
           ref="viewerComponent"
           :glb-url="modelGlbUrl"
+          :usdz-url="modelUsdzUrl"
           :poster-url="modelPosterUrl"
           :alt="dish.name"
           height="60vh"
@@ -121,6 +122,7 @@ interface PublicDish {
   priceText: string | null
   allergens: string | null
   hasModel: boolean
+  hasUsdz: boolean
   hasPoster: boolean
   restaurantId: string
 }
@@ -136,6 +138,7 @@ const {
 } = await useFetch<PublicDish>(`/api/public/dishes/${publicDishId}`)
 
 const modelGlbUrl = computed(() => `/m/${publicDishId}.glb`)
+const modelUsdzUrl = computed(() => dish.value?.hasUsdz ? `/m/${publicDishId}.usdz` : undefined)
 const modelPosterUrl = computed(() => dish.value?.hasPoster ? `/m/${publicDishId}.png` : undefined)
 
 const allergenList = computed<string[]>(() => {
@@ -174,10 +177,17 @@ function launchAr() {
   const ua = navigator.userAgent
 
   if (/iPhone|iPad|iPod/i.test(ua)) {
+    if (!dish.value.hasUsdz) {
+      arAttempted.value = true
+      return
+    }
+
     const a = document.createElement('a')
     a.rel = 'ar'
     a.href = arUsdzUrl
+    document.body.appendChild(a)
     a.click()
+    a.remove()
     arAttempted.value = true
   } else if (/Android/i.test(ua)) {
     const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(arGlbUrl)}&mode=ar_only&title=${encodeURIComponent(dish.value.name)}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`

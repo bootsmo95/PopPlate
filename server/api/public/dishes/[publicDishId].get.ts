@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
     priceText: dish.priceText,
     allergens: dish.allergens,
     hasModel: !!dish.previewModelGlbUrl,
+    hasUsdz: !!dish.previewModelUsdzUrl,
     hasPoster: !!dish.posterUrl,
     restaurantId: dish.restaurantId,
   }
