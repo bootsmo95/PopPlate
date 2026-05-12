@@ -111,10 +111,6 @@ function tryActivateAr() {
 }
 
 onMounted(() => {
-  setTimeout(() => {
-    if (!hasError.value) {
-      ready.value = true
-    }
-  }, 300)
+  ready.value = true
 })
 </script>

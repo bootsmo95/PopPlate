@@ -22,15 +22,13 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    id: dish.id,
+    publicDishId: dish.publicDishId,
     name: dish.name,
     shortDescription: dish.shortDescription,
     priceText: dish.priceText,
     allergens: dish.allergens,
-    posterUrl: dish.posterUrl,
-    previewModelGlbUrl: dish.previewModelGlbUrl,
-    previewModelUsdzUrl: dish.previewModelUsdzUrl,
+    hasModel: !!dish.previewModelGlbUrl,
+    hasPoster: !!dish.posterUrl,
     restaurantId: dish.restaurantId,
-    publicDishId: dish.publicDishId,
   }
 })
