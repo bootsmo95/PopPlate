@@ -71,37 +71,45 @@
 
     <!-- AR / 3D Viewer -->
     <div v-if="dish.hasModel" class="px-5 mt-6">
-      <!-- AR prompt (mobile, before AR attempted) -->
-      <div v-if="showArPrompt" class="flex flex-col items-center gap-4 py-8">
-        <button
-          class="flex items-center gap-3 px-8 py-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-lg rounded-2xl shadow-lg transition-colors"
-          @click="launchAr"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-          </svg>
-          View on your table
-        </button>
-        <button class="text-sm text-gray-400 underline" @click="skipAr">
-          View in 3D instead
-        </button>
-      </div>
+      <div class="space-y-4">
+        <!-- AR prompt (mobile, before AR attempted) -->
+        <div v-if="showArPrompt" class="rounded-3xl border border-orange-100 bg-orange-50/70 p-4 shadow-sm">
+          <div class="flex flex-col items-center gap-4 text-center">
+            <button
+              class="flex items-center gap-3 px-8 py-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-lg rounded-2xl shadow-lg transition-colors disabled:opacity-70 disabled:cursor-wait"
+              :disabled="arLaunching"
+              @click="launchAr"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+              </svg>
+              {{ arLaunching ? 'Opening AR…' : 'View on your table' }}
+            </button>
+            <p class="text-sm text-gray-500">
+              {{ viewerLoaded ? 'AR is ready.' : 'Preparing AR in the background…' }}
+            </p>
+            <button class="text-sm text-gray-400 underline" @click="skipAr">
+              View in 3D instead
+            </button>
+          </div>
+        </div>
 
-      <!-- 3D Viewer fallback -->
-      <div v-else>
-        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-          View in 3D
-        </h2>
-        <ViewerDishViewer
-          ref="viewerComponent"
-          :glb-url="modelGlbUrl"
-          :usdz-url="modelUsdzUrl"
-          :poster-url="modelPosterUrl"
-          :alt="dish.name"
-          height="60vh"
-          @viewer-loaded="onViewerLoaded"
-          @ar-clicked="onArClicked"
-        />
+        <!-- 3D Viewer fallback -->
+        <div>
+          <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            View in 3D
+          </h2>
+          <ViewerDishViewer
+            ref="viewerComponent"
+            :glb-url="modelGlbUrl"
+            :usdz-url="modelUsdzUrl"
+            :poster-url="modelPosterUrl"
+            :alt="dish.name"
+            height="60vh"
+            @viewer-loaded="onViewerLoaded"
+            @ar-clicked="onArClicked"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -127,8 +135,16 @@ interface PublicDish {
   restaurantId: string
 }
 
+type ViewerExpose = {
+  activateAr: () => Promise<boolean>
+  isLoaded: boolean
+}
+
+const viewerComponent = ref<ViewerExpose | null>(null)
 const isMobile = ref(false)
 const arAttempted = ref(false)
+const arLaunching = ref(false)
+const viewerLoaded = ref(false)
 const showArPrompt = computed(() => isMobile.value && !arAttempted.value)
 
 const {
@@ -157,6 +173,23 @@ useHead({
       content: computed(() => dish.value?.shortDescription ?? ''),
     },
   ],
+  link: computed(() => {
+    const links: Array<Record<string, string>> = []
+
+    if (dish.value?.hasModel) {
+      links.push({ rel: 'preload', href: modelGlbUrl.value, as: 'fetch', crossorigin: 'anonymous' })
+    }
+
+    if (dish.value?.hasUsdz && modelUsdzUrl.value) {
+      links.push({ rel: 'prefetch', href: modelUsdzUrl.value })
+    }
+
+    if (dish.value?.hasPoster && modelPosterUrl.value) {
+      links.push({ rel: 'preload', href: modelPosterUrl.value, as: 'image', fetchpriority: 'high' })
+    }
+
+    return links
+  }),
 })
 
 onMounted(() => {
@@ -167,34 +200,22 @@ onMounted(() => {
   }
 })
 
-function launchAr() {
+async function launchAr() {
   if (!dish.value) return
 
   trackArLaunchClicked(publicDishId, dish.value.restaurantId)
+  arLaunching.value = true
 
-  const arGlbUrl = `${window.location.origin}/m/${publicDishId}.glb`
-  const arUsdzUrl = `${window.location.origin}/m/${publicDishId}.usdz`
-  const ua = navigator.userAgent
+  try {
+    const activated = await viewerComponent.value?.activateAr?.()
 
-  if (/iPhone|iPad|iPod/i.test(ua)) {
-    if (!dish.value.hasUsdz) {
+    if (!activated) {
       arAttempted.value = true
-      return
     }
-
-    const a = document.createElement('a')
-    a.rel = 'ar'
-    a.href = arUsdzUrl
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    arAttempted.value = true
-  } else if (/Android/i.test(ua)) {
-    const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(arGlbUrl)}&mode=ar_only&title=${encodeURIComponent(dish.value.name)}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`
-    window.location.href = intentUrl
-    arAttempted.value = true
-  } else {
-    arAttempted.value = true
+  } finally {
+    window.setTimeout(() => {
+      arLaunching.value = false
+    }, 600)
   }
 }
 
@@ -203,6 +224,8 @@ function skipAr() {
 }
 
 function onViewerLoaded() {
+  viewerLoaded.value = true
+
   if (dish.value) {
     trackViewerLoaded(publicDishId, dish.value.restaurantId)
   }

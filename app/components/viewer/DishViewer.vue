@@ -1,36 +1,7 @@
 <template>
   <div class="w-full relative">
-    <!-- Error fallback -->
-    <div
-      v-if="hasError"
-      class="w-full flex flex-col items-center justify-center bg-gray-100 rounded-xl text-gray-400 gap-2"
-      :style="{ height: viewerHeight }"
-    >
-      <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-      </svg>
-      <p class="text-sm">3D preview unavailable</p>
-    </div>
-
-    <!-- Loading placeholder while model-viewer loads -->
-    <div
-      v-else-if="!ready"
-      class="w-full flex items-center justify-center bg-gray-50 rounded-xl"
-      :style="{ height: viewerHeight }"
-    >
-      <div class="flex items-center gap-2 text-gray-400 text-sm">
-        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg>
-        Loading 3D viewer…
-      </div>
-    </div>
-
-    <!-- model-viewer web component -->
     <model-viewer
       ref="viewerRef"
-      v-show="ready && !hasError"
       :src="glbUrl"
       :ios-src="usdzUrl ?? undefined"
       :poster="posterUrl ?? undefined"
@@ -43,7 +14,8 @@
       ar-modes="webxr scene-viewer quick-look"
       shadow-intensity="1"
       environment-image="neutral"
-      class="w-full rounded-xl overflow-hidden"
+      class="w-full rounded-xl overflow-hidden bg-gray-50 transition-opacity duration-300"
+      :class="hasError ? 'opacity-0 pointer-events-none absolute inset-0' : modelLoaded ? 'opacity-100' : 'opacity-[0.02]'"
       :style="{ height: viewerHeight, display: 'block' }"
       @error="handleError"
       @load="handleLoad"
@@ -51,6 +23,31 @@
       <source v-if="usdzUrl" :src="usdzUrl" type="model/vnd.usdz+zip" />
       <ViewerArButton @ar-clicked="emit('ar-clicked')" />
     </model-viewer>
+
+    <div
+      v-if="!hasError && !modelLoaded"
+      class="absolute inset-0 flex items-center justify-center rounded-xl bg-gray-50/92 backdrop-blur-[1px]"
+      :style="{ height: viewerHeight }"
+    >
+      <div class="flex items-center gap-2 text-gray-400 text-sm">
+        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+        Loading 3D viewer…
+      </div>
+    </div>
+
+    <div
+      v-if="hasError"
+      class="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-xl text-gray-400 gap-2"
+      :style="{ height: viewerHeight }"
+    >
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+      </svg>
+      <p class="text-sm">3D preview unavailable</p>
+    </div>
   </div>
 </template>
 
@@ -80,37 +77,57 @@ const props = withDefaults(
   },
 )
 
-const viewerRef = ref<HTMLElement | null>(null)
+type ModelViewerElement = HTMLElement & {
+  canActivateAR?: boolean
+  activateAR?: () => Promise<void>
+}
+
+const viewerRef = ref<ModelViewerElement | null>(null)
 const viewerHeight = computed(() => props.height)
 const scaleAttr = computed(() => `${props.scale} ${props.scale} ${props.scale}`)
 const hasError = ref(false)
-const loaded = ref(false)
-const ready = ref(false)
+const modelLoaded = ref(false)
+const pendingArActivation = ref(false)
 
-function handleLoad() {
-  loaded.value = true
-  ready.value = true
+async function handleLoad() {
+  modelLoaded.value = true
   emit('viewer-loaded')
 
-  if (props.autoAr) {
-    tryActivateAr()
+  if (props.autoAr || pendingArActivation.value) {
+    await activateAr()
   }
 }
 
 function handleError() {
-  if (!loaded.value) {
+  if (!modelLoaded.value) {
     hasError.value = true
   }
 }
 
-function tryActivateAr() {
-  const viewer = viewerRef.value as (HTMLElement & { canActivateAR?: boolean; activateAR?: () => Promise<void> }) | null
-  if (viewer?.canActivateAR) {
-    viewer.activateAR?.()
+async function activateAr() {
+  const viewer = viewerRef.value
+
+  if (!viewer || hasError.value) {
+    return false
   }
+
+  if (!modelLoaded.value) {
+    pendingArActivation.value = true
+    return true
+  }
+
+  if (!viewer.canActivateAR || !viewer.activateAR) {
+    pendingArActivation.value = false
+    return false
+  }
+
+  pendingArActivation.value = false
+  await viewer.activateAR()
+  return true
 }
 
-onMounted(() => {
-  ready.value = true
+defineExpose({
+  activateAr,
+  isLoaded: modelLoaded,
 })
 </script>
