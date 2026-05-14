@@ -72,7 +72,7 @@ const props = withDefaults(
     posterUrl: null,
     alt: 'Dish 3D model',
     height: '60vh',
-    scale: 0.18,
+    scale: 0.05,
     autoAr: false,
   },
 )

@@ -31,5 +31,6 @@ export default defineEventHandler(async (event) => {
     hasUsdz: !!dish.previewModelUsdzUrl,
     hasPoster: !!dish.posterUrl,
     restaurantId: dish.restaurantId,
+    scaleCm: dish.scaleCm,
   }
 })

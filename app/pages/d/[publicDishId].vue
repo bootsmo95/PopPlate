@@ -19,7 +19,38 @@
     </div>
   </div>
 
-  <!-- Dish content -->
+  <!-- QR landing: AR-first only -->
+  <div v-else-if="showQrArLoader" class="min-h-screen bg-stone-950 text-stone-100 flex items-center justify-center px-6">
+    <div class="flex max-w-sm flex-col items-center gap-4 text-center">
+      <div class="flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5">
+        <svg class="h-10 w-10 animate-spin text-orange-300" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+        </svg>
+      </div>
+      <div class="space-y-2">
+        <p class="text-xs font-semibold uppercase tracking-[0.35em] text-orange-300/80">PopPlate AR</p>
+        <h1 class="text-2xl font-semibold">{{ dish.name }}</h1>
+        <p class="text-sm text-stone-300">{{ arLoaderText }}</p>
+      </div>
+    </div>
+
+    <div class="pointer-events-none absolute inset-0 opacity-0">
+      <ViewerDishViewer
+        ref="viewerComponent"
+        :glb-url="modelGlbUrl"
+        :usdz-url="modelUsdzUrl"
+        :poster-url="modelPosterUrl"
+        :alt="dish.name"
+        :scale="viewerScale"
+        height="1px"
+        @viewer-loaded="onViewerLoaded"
+        @ar-clicked="onArClicked"
+      />
+    </div>
+  </div>
+
+  <!-- Dish content / fallback -->
   <div v-else class="max-w-lg mx-auto pb-12">
     <!-- Hero poster -->
     <div class="relative w-full aspect-square bg-gray-100 overflow-hidden">
@@ -41,7 +72,6 @@
 
     <!-- Dish info -->
     <div class="px-5 pt-6 space-y-4">
-      <!-- Name + Price -->
       <div class="flex items-start justify-between gap-3">
         <h1 class="text-3xl font-bold text-gray-900 leading-tight">{{ dish.name }}</h1>
         <span
@@ -52,12 +82,10 @@
         </span>
       </div>
 
-      <!-- Description -->
       <p v-if="dish.shortDescription" class="text-gray-600 text-base leading-relaxed">
         {{ dish.shortDescription }}
       </p>
 
-      <!-- Allergen pills -->
       <div v-if="allergenList.length > 0" class="flex flex-wrap gap-2">
         <span
           v-for="allergen in allergenList"
@@ -69,42 +97,25 @@
       </div>
     </div>
 
-    <!-- AR / 3D Viewer -->
     <div v-if="dish.hasModel" class="px-5 mt-6">
       <div class="space-y-4">
-        <!-- AR prompt (mobile, before AR attempted) -->
-        <div v-if="showArPrompt" class="rounded-3xl border border-orange-100 bg-orange-50/70 p-4 shadow-sm">
-          <div class="flex flex-col items-center gap-4 text-center">
-            <button
-              class="flex items-center gap-3 px-8 py-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-lg rounded-2xl shadow-lg transition-colors disabled:opacity-70 disabled:cursor-wait"
-              :disabled="arLaunching"
-              @click="launchAr"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-              </svg>
-              {{ arLaunching ? 'Opening AR…' : 'View on your table' }}
-            </button>
-            <p class="text-sm text-gray-500">
-              {{ viewerLoaded ? 'AR is ready.' : 'Preparing AR in the background…' }}
-            </p>
-            <button class="text-sm text-gray-400 underline" @click="skipAr">
-              View in 3D instead
-            </button>
-          </div>
+        <div v-if="showFallbackNotice" class="rounded-3xl border border-orange-100 bg-orange-50/70 p-4 text-center shadow-sm">
+          <p class="text-sm font-medium text-gray-700">AR kunne ikke åbnes på den her enhed.</p>
+          <p class="mt-1 text-sm text-gray-500">Du får 3D-visningen i stedet.</p>
         </div>
 
-        <!-- 3D Viewer fallback -->
         <div>
           <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
             View in 3D
           </h2>
           <ViewerDishViewer
+            v-if="!showQrArLoader"
             ref="viewerComponent"
             :glb-url="modelGlbUrl"
             :usdz-url="modelUsdzUrl"
             :poster-url="modelPosterUrl"
             :alt="dish.name"
+            :scale="viewerScale"
             height="60vh"
             @viewer-loaded="onViewerLoaded"
             @ar-clicked="onArClicked"
@@ -133,6 +144,7 @@ interface PublicDish {
   hasUsdz: boolean
   hasPoster: boolean
   restaurantId: string
+  scaleCm: number | null
 }
 
 type ViewerExpose = {
@@ -142,10 +154,19 @@ type ViewerExpose = {
 
 const viewerComponent = ref<ViewerExpose | null>(null)
 const isMobile = ref(false)
-const arAttempted = ref(false)
 const arLaunching = ref(false)
 const viewerLoaded = ref(false)
-const showArPrompt = computed(() => isMobile.value && !arAttempted.value)
+const arLandingActive = ref(false)
+const arFallbackVisible = ref(false)
+const arActivated = ref(false)
+const arLaunchStarted = ref(false)
+const showQrArLoader = computed(() => arLandingActive.value && !arFallbackVisible.value)
+const showFallbackNotice = computed(() => isMobile.value && arLandingActive.value && arFallbackVisible.value)
+const arLoaderText = computed(() => {
+  if (!viewerLoaded.value) return 'Vi klargør AR-oplevelsen…'
+  if (arLaunching.value) return 'Åbner kamera og placering på bordet…'
+  return 'Næsten klar…'
+})
 
 const {
   data: dish,
@@ -156,6 +177,10 @@ const {
 const modelGlbUrl = computed(() => `/m/${publicDishId}.glb`)
 const modelUsdzUrl = computed(() => dish.value?.hasUsdz ? `/m/${publicDishId}.usdz` : undefined)
 const modelPosterUrl = computed(() => dish.value?.hasPoster ? `/m/${publicDishId}.png` : undefined)
+const viewerScale = computed(() => {
+  const scaleCm = dish.value?.scaleCm
+  return scaleCm && scaleCm > 0 ? scaleCm / 100 : 0.05
+})
 
 const allergenList = computed<string[]>(() => {
   if (!dish.value?.allergens) return []
@@ -194,6 +219,7 @@ useHead({
 
 onMounted(() => {
   isMobile.value = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  arLandingActive.value = isMobile.value && !!dish.value?.hasModel
 
   if (dish.value) {
     trackPageOpen(publicDishId, dish.value.restaurantId)
@@ -201,8 +227,9 @@ onMounted(() => {
 })
 
 async function launchAr() {
-  if (!dish.value) return
+  if (!dish.value || arLaunchStarted.value) return
 
+  arLaunchStarted.value = true
   trackArLaunchClicked(publicDishId, dish.value.restaurantId)
   arLaunching.value = true
 
@@ -210,8 +237,11 @@ async function launchAr() {
     const activated = await viewerComponent.value?.activateAr?.()
 
     if (!activated) {
-      arAttempted.value = true
+      arFallbackVisible.value = true
+      return
     }
+
+    arActivated.value = true
   } finally {
     window.setTimeout(() => {
       arLaunching.value = false
@@ -219,15 +249,15 @@ async function launchAr() {
   }
 }
 
-function skipAr() {
-  arAttempted.value = true
-}
-
 function onViewerLoaded() {
+  if (!viewerLoaded.value && dish.value) {
+    trackViewerLoaded(publicDishId, dish.value.restaurantId)
+  }
+
   viewerLoaded.value = true
 
-  if (dish.value) {
-    trackViewerLoaded(publicDishId, dish.value.restaurantId)
+  if (arLandingActive.value && !arFallbackVisible.value) {
+    void launchAr()
   }
 }
 

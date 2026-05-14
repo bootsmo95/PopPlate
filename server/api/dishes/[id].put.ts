@@ -13,10 +13,11 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<{
     name?: string
-    shortDescription?: string
-    priceText?: string
-    allergens?: string
-    ingredients?: string
+    shortDescription?: string | null
+    priceText?: string | null
+    allergens?: string | null
+    ingredients?: string | null
+    scaleCm?: number | null
   }>(event)
 
   const updateData: Record<string, unknown> = {
@@ -28,6 +29,14 @@ export default defineEventHandler(async (event) => {
   if (body.priceText !== undefined) updateData.priceText = body.priceText
   if (body.allergens !== undefined) updateData.allergens = body.allergens
   if (body.ingredients !== undefined) updateData.ingredients = body.ingredients
+
+  if (body.scaleCm !== undefined) {
+    if (body.scaleCm !== null && (!Number.isFinite(body.scaleCm) || body.scaleCm <= 0 || body.scaleCm > 200)) {
+      throw createError({ statusCode: 400, message: 'Dish size must be between 0 and 200 cm.' })
+    }
+
+    updateData.scaleCm = body.scaleCm
+  }
 
   const [updated] = await db
     .update(dishes)

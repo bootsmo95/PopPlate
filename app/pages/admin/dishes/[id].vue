@@ -61,6 +61,24 @@
           />
         </div>
 
+        <!-- Dish size -->
+        <div>
+          <label for="scaleCm" class="block text-sm font-medium text-gray-700 mb-1">
+            Dish size in AR (cm)
+          </label>
+          <input
+            id="scaleCm"
+            v-model.number="form.scaleCm"
+            type="number"
+            min="1"
+            max="200"
+            step="0.1"
+            placeholder="24"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+          />
+          <p class="mt-1 text-xs text-gray-500">Use the real plate width/diameter, e.g. 24 cm.</p>
+        </div>
+
         <!-- Allergens -->
         <div>
           <label for="allergens" class="block text-sm font-medium text-gray-700 mb-1">
@@ -133,6 +151,7 @@
           :usdz-url="modelUsdzUrl"
           :poster-url="modelPosterUrl"
           :alt="dish.name"
+          :scale="viewerScale"
           height="400px"
         />
       </section>
@@ -236,6 +255,7 @@ interface DishDetail {
   posterUrl: string | null
   previewModelGlbUrl: string | null
   previewModelUsdzUrl: string | null
+  scaleCm: number | null
   createdAt: string
   updatedAt: string
 }
@@ -255,6 +275,10 @@ function resolveModelUrl(url: string | null, ext: string): string | undefined {
 const modelGlbUrl = computed(() => resolveModelUrl(dish.value?.previewModelGlbUrl ?? null, 'glb')!)
 const modelUsdzUrl = computed(() => resolveModelUrl(dish.value?.previewModelUsdzUrl ?? null, 'usdz'))
 const modelPosterUrl = computed(() => resolveModelUrl(dish.value?.posterUrl ?? null, 'png'))
+const viewerScale = computed(() => {
+  const scaleCm = dish.value?.scaleCm
+  return scaleCm && scaleCm > 0 ? scaleCm / 100 : 0.05
+})
 
 // Source images
 const { data: sourceImagesData, refresh: refreshImages } = await useFetch<SourceImage[]>(
@@ -364,6 +388,7 @@ const form = reactive({
   priceText: dish.value?.priceText ?? '',
   allergens: dish.value?.allergens ?? '',
   ingredients: dish.value?.ingredients ?? '',
+  scaleCm: (dish.value?.scaleCm ?? null) as number | null,
 })
 
 watch(
@@ -375,6 +400,7 @@ watch(
       form.priceText = d.priceText ?? ''
       form.allergens = d.allergens ?? ''
       form.ingredients = d.ingredients ?? ''
+      form.scaleCm = d.scaleCm ?? null
     }
   },
 )
@@ -394,6 +420,10 @@ async function handleSave() {
   saveSuccess.value = false
 
   try {
+    const normalizedScaleCm = typeof form.scaleCm === 'number' && Number.isFinite(form.scaleCm)
+      ? form.scaleCm
+      : null
+
     await $fetch(`/api/dishes/${id}`, {
       method: 'PUT',
       body: {
@@ -402,6 +432,7 @@ async function handleSave() {
         priceText: form.priceText.trim() || null,
         allergens: form.allergens.trim() || null,
         ingredients: form.ingredients.trim() || null,
+        scaleCm: normalizedScaleCm,
       },
     })
 
