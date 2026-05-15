@@ -1,7 +1,7 @@
 <template>
   <div class="p-6 max-w-2xl">
     <div class="mb-6">
-      <NuxtLink to="/admin/dishes" class="text-sm text-gray-500 hover:text-gray-700">
+      <NuxtLink to="/platform/dishes" class="text-sm text-gray-500 hover:text-gray-700">
         ← Back to Dishes
       </NuxtLink>
     </div>
@@ -12,7 +12,7 @@
     <div v-if="!restaurantsPending && (!restaurants || restaurants.length === 0)" class="text-center py-12">
       <p class="text-gray-600 mb-3">You need a restaurant before creating dishes.</p>
       <NuxtLink
-        to="/admin/settings"
+        to="/platform/settings"
         class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white text-sm font-semibold rounded-lg hover:bg-slate-700"
       >
         Set up restaurant →
@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'platform' })
 
 interface Restaurant {
   id: string
@@ -180,7 +180,7 @@ async function handleSubmit() {
       },
     })
 
-    await navigateTo(`/admin/dishes/${dish.id}`)
+    await navigateTo(`/platform/dishes/${dish.id}`)
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
     errorMsg.value = e?.data?.message ?? e?.message ?? 'Failed to create dish.'

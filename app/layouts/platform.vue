@@ -14,7 +14,7 @@
             <path v-else stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <span class="font-semibold text-base tracking-wide">PopPlate Admin</span>
+        <span class="font-semibold text-base tracking-wide">PopPlate Platform</span>
       </div>
       <div class="flex items-center gap-3">
         <span
@@ -54,7 +54,20 @@
         <ul class="flex-1 py-4 space-y-1 px-2">
           <li>
             <NuxtLink
-              to="/admin/dishes"
+              to="/platform"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors hover:bg-slate-700"
+              active-class="bg-slate-700 text-white"
+              @click="sidebarOpen = false"
+            >
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 5.5A1.5 1.5 0 015.5 4h4A1.5 1.5 0 0111 5.5v4A1.5 1.5 0 019.5 11h-4A1.5 1.5 0 014 9.5v-4zM13 5.5A1.5 1.5 0 0114.5 4h4A1.5 1.5 0 0120 5.5v4a1.5 1.5 0 01-1.5 1.5h-4A1.5 1.5 0 0113 9.5v-4zM4 14.5A1.5 1.5 0 015.5 13h4a1.5 1.5 0 011.5 1.5v4A1.5 1.5 0 019.5 20h-4A1.5 1.5 0 014 18.5v-4zM13 14.5a1.5 1.5 0 011.5-1.5h4a1.5 1.5 0 011.5 1.5v4a1.5 1.5 0 01-1.5 1.5h-4a1.5 1.5 0 01-1.5-1.5v-4z" />
+              </svg>
+              Overview
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink
+              to="/platform/dishes"
               class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors hover:bg-slate-700"
               active-class="bg-slate-700 text-white"
               @click="sidebarOpen = false"
@@ -70,7 +83,20 @@
           </li>
           <li>
             <NuxtLink
-              to="/admin/settings"
+              to="/platform/dishes/new"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors hover:bg-slate-700"
+              active-class="bg-slate-700 text-white"
+              @click="sidebarOpen = false"
+            >
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
+              </svg>
+              New dish
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink
+              to="/platform/settings"
               class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors hover:bg-slate-700"
               active-class="bg-slate-700 text-white"
               @click="sidebarOpen = false"
@@ -84,6 +110,28 @@
             </NuxtLink>
           </li>
         </ul>
+        <div class="border-t border-slate-700 p-2">
+          <NuxtLink
+            to="/pricing"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+            @click="sidebarOpen = false"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h10" />
+            </svg>
+            Plans
+          </NuxtLink>
+          <NuxtLink
+            to="/"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+            @click="sidebarOpen = false"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 4l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9.5z" />
+            </svg>
+            Public site
+          </NuxtLink>
+        </div>
       </nav>
 
       <!-- Main content -->

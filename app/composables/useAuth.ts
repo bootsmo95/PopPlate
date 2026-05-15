@@ -11,13 +11,13 @@ export function useAuth() {
   const authUser = computed(() => (user.value as AuthUser | null) ?? null)
   const accountTier = computed(() => authUser.value?.accountTier ?? 'free')
 
-  async function login(next = '/admin/dishes'): Promise<void> {
+  async function login(next = '/platform/dishes'): Promise<void> {
     await navigateTo(`/api/auth/authentik/login?next=${encodeURIComponent(next)}`, {
       external: true,
     })
   }
 
-  async function signup(next = '/admin/settings'): Promise<void> {
+  async function signup(next = '/platform/settings'): Promise<void> {
     await navigateTo(`/api/auth/authentik/signup?next=${encodeURIComponent(next)}`, {
       external: true,
     })

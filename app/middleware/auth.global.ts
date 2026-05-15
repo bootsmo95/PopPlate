@@ -1,13 +1,13 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  // Only protect /admin/* routes
-  if (!to.path.startsWith('/admin')) return
+  // Only protect /platform/* routes
+  if (!to.path.startsWith('/platform')) return
 
   // Allow auth pages through without auth check
-  if (to.path === '/admin/login' || to.path === '/admin/signup') {
+  if (to.path === '/platform/login' || to.path === '/platform/signup') {
     const { loggedIn } = useUserSession()
 
     if (loggedIn.value)
-      return navigateTo('/admin/dishes')
+      return navigateTo('/platform/dishes')
 
     return
   }
@@ -15,6 +15,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { loggedIn } = useUserSession()
 
   if (!loggedIn.value) {
-    return navigateTo('/admin/login')
+    return navigateTo('/platform/login')
   }
 })

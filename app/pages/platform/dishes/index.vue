@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold text-gray-900">Dishes</h1>
       <NuxtLink
-        to="/admin/dishes/new"
+        to="/platform/dishes/new"
         class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-lg transition-colors"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -31,7 +31,7 @@
       <NuxtLink
         v-for="dish in dishes"
         :key="dish.id"
-        :to="`/admin/dishes/${dish.id}`"
+        :to="`/platform/dishes/${dish.id}`"
         class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-gray-300 transition-all"
       >
         <div class="flex items-start justify-between gap-3 mb-3">
@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import type { DishStatus } from '~/types'
 
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'platform' })
 
 interface DishItem {
   id: string

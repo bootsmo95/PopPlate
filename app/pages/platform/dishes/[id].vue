@@ -1,7 +1,7 @@
 <template>
   <div class="p-6 max-w-2xl">
     <div class="mb-6">
-      <NuxtLink to="/admin/dishes" class="text-sm text-gray-500 hover:text-gray-700">
+      <NuxtLink to="/platform/dishes" class="text-sm text-gray-500 hover:text-gray-700">
         ← Back to Dishes
       </NuxtLink>
     </div>
@@ -207,7 +207,7 @@
 <script setup lang="ts">
 import type { DishStatus } from '~/types'
 
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'platform' })
 
 const route = useRoute()
 const id = route.params.id as string

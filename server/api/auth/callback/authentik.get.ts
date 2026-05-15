@@ -11,17 +11,17 @@ export default defineEventHandler(async (event) => {
   const error = typeof query.error === 'string' ? query.error : ''
   const cookieNames = getOidcCookieNames()
   const expectedState = getCookie(event, cookieNames.state)
-  const next = getCookie(event, cookieNames.next) || '/admin/dishes'
+  const next = getCookie(event, cookieNames.next) || '/platform/dishes'
 
   deleteCookie(event, cookieNames.state, { path: '/' })
   deleteCookie(event, cookieNames.next, { path: '/' })
 
   if (error) {
-    return sendRedirect(event, `/admin/login?error=${encodeURIComponent('Authentik login was cancelled or failed.')}`)
+    return sendRedirect(event, `/platform/login?error=${encodeURIComponent('Authentik login was cancelled or failed.')}`)
   }
 
   if (!code || !state || !expectedState || state !== expectedState) {
-    return sendRedirect(event, `/admin/login?error=${encodeURIComponent('Invalid Authentik login state. Please try again.')}`)
+    return sendRedirect(event, `/platform/login?error=${encodeURIComponent('Invalid Authentik login state. Please try again.')}`)
   }
 
   const claims = await exchangeCodeForUser(code)
@@ -29,5 +29,5 @@ export default defineEventHandler(async (event) => {
 
   await setUserSession(event, { user: sessionUser })
 
-  return sendRedirect(event, next.startsWith('/') ? next : '/admin/dishes')
+  return sendRedirect(event, next.startsWith('/') ? next : '/platform/dishes')
 })

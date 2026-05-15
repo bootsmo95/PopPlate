@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   const cookieNames = getOidcCookieNames()
 
   if (typeof result === 'string') {
-    setCookie(event, cookieNames.next, typeof next === 'string' && next.startsWith('/') ? next : '/admin/settings', {
+    setCookie(event, cookieNames.next, typeof next === 'string' && next.startsWith('/') ? next : '/platform/settings', {
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     maxAge: 60 * 10,
   })
 
-  setCookie(event, cookieNames.next, typeof next === 'string' && next.startsWith('/') ? next : '/admin/settings', {
+  setCookie(event, cookieNames.next, typeof next === 'string' && next.startsWith('/') ? next : '/platform/settings', {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

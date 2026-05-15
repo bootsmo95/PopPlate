@@ -2,13 +2,13 @@
   <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
     <div class="w-full max-w-sm bg-white rounded-xl shadow-md p-8">
       <div class="mb-8 text-center">
-        <h1 class="text-2xl font-bold text-gray-900">PopPlate Admin</h1>
-        <p class="mt-1 text-sm text-gray-500">Sign in securely with Authentik</p>
+        <h1 class="text-2xl font-bold text-gray-900">Create Account</h1>
+        <p class="mt-1 text-sm text-gray-500">Provision users through Authentik</p>
       </div>
 
       <div class="space-y-5">
         <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          Auth is now handled by Authentik. Password login in PopPlate is disabled.
+          New users should be created through Authentik. Once they complete signup there, PopPlate will auto-provision their local profile on first login.
         </div>
 
         <div v-if="errorMessage" class="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2.5">
@@ -22,18 +22,27 @@
           type="button"
           :disabled="loading"
           class="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-400 text-white text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-600"
-          @click="handleLogin"
+          @click="handleSignup"
         >
           <svg v-if="loading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          {{ loading ? 'Redirecting…' : 'Continue with Authentik' }}
+          {{ loading ? 'Redirecting…' : 'Continue to Authentik signup' }}
         </button>
 
+        <div class="rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-600 space-y-1.5">
+          <p class="font-semibold text-gray-700">Free plan includes:</p>
+          <ul class="space-y-0.5">
+            <li>1 restaurant</li>
+            <li>5 menu items</li>
+            <li>1 3D model generation per dish</li>
+          </ul>
+        </div>
+
         <p class="text-center text-sm text-gray-500">
-          Need an account?
-          <NuxtLink to="/admin/signup" class="text-slate-700 font-medium hover:underline">Create one via Authentik</NuxtLink>
+          Already have an account?
+          <NuxtLink to="/platform/login" class="text-slate-700 font-medium hover:underline">Sign in</NuxtLink>
         </p>
       </div>
 
@@ -45,7 +54,7 @@
 definePageMeta({ layout: false })
 
 const route = useRoute()
-const { login } = useAuth()
+const { signup } = useAuth()
 
 const loading = ref(false)
 const errorMessage = computed(() => {
@@ -53,11 +62,11 @@ const errorMessage = computed(() => {
   return typeof error === 'string' ? error : ''
 })
 
-async function handleLogin() {
+async function handleSignup() {
   loading.value = true
 
   try {
-    await login('/admin/dishes')
+    await signup('/platform/settings')
   } finally {
     loading.value = false
   }

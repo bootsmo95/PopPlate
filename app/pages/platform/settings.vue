@@ -15,8 +15,7 @@
             </h1>
             <p class="mt-4 max-w-xl text-sm leading-6 text-slate-600 md:text-base">
               Right now dishes are attached to the first restaurant in the database. Create one here,
-              and the rest of the admin flow starts behaving like a real product instead of an MVP held
-              together with vibes.
+              and the rest of the platform flow starts behaving like a real product instead of an MVP setup.
             </p>
           </div>
 
@@ -81,7 +80,7 @@
               </button>
 
               <NuxtLink
-                to="/admin/dishes/new"
+                to="/platform/dishes/new"
                 class="inline-flex items-center justify-center rounded-2xl border border-stone-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-stone-50"
               >
                 Continue to dishes
@@ -130,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'platform' })
 
 interface Restaurant {
   id: string

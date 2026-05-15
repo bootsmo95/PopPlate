@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     maxAge: 60 * 10,
   })
 
-  setCookie(event, cookieNames.next, typeof next === 'string' && next.startsWith('/') ? next : '/admin/dishes', {
+  setCookie(event, cookieNames.next, typeof next === 'string' && next.startsWith('/') ? next : '/platform/dishes', {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
