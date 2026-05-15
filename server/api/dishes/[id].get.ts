@@ -1,24 +1,18 @@
 import { db } from '../../database/index'
-import { dishes, dishSourceImages, generationJobs } from '../../database/schema'
+import { dishSourceImages, generationJobs } from '../../database/schema'
 import { eq, desc } from 'drizzle-orm'
 import { requireAuth } from '../../utils/auth'
+import { requireOwnedDish } from '../../utils/dish-ownership'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
 
   const id = getRouterParam(event, 'id')
   if (!id) {
     throw createError({ statusCode: 400, message: 'id is required' })
   }
 
-  const [dish] = await db
-    .select()
-    .from(dishes)
-    .where(eq(dishes.id, id))
-
-  if (!dish) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
-  }
+  const dish = await requireOwnedDish(id, user)
 
   const sourceImages = await db
     .select()

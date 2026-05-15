@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import { Readable } from 'node:stream'
 import { db } from '../../database/index'
 import { dishes } from '../../database/schema'
+import { getAllowedStorageHosts } from '../../utils/storage'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const ALLOWED_UPSTREAM_HOSTS = ['assets.meshy.ai', 'cdn.meshy.ai']
@@ -74,7 +75,8 @@ export default defineEventHandler(async (event) => {
   } catch {
     throw createError({ statusCode: 500, message: 'Invalid upstream URL' })
   }
-  if (!ALLOWED_UPSTREAM_HOSTS.includes(parsedUrl.hostname)) {
+  const allowedHosts = new Set([...ALLOWED_UPSTREAM_HOSTS, ...getAllowedStorageHosts()])
+  if (!allowedHosts.has(parsedUrl.hostname)) {
     throw createError({ statusCode: 403, message: 'Upstream host not allowed' })
   }
 

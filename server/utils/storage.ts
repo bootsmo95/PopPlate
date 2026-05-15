@@ -37,7 +37,7 @@ export function getS3Client(): S3Client {
   return _s3Client
 }
 
-function getBucket(): string {
+export function getBucketName(): string {
   const bucket = process.env.S3_BUCKET
   if (!bucket) throw new Error('S3_BUCKET environment variable is not set')
   return bucket
@@ -52,7 +52,7 @@ export async function uploadFile(
   contentType: string,
 ): Promise<void> {
   const client = getS3Client()
-  const bucket = getBucket()
+  const bucket = getBucketName()
 
   await client.send(
     new PutObjectCommand({
@@ -71,7 +71,7 @@ export async function uploadFile(
  */
 export async function getSignedUrl(key: string, expiresIn = 3600): Promise<string> {
   const client = getS3Client()
-  const bucket = getBucket()
+  const bucket = getBucketName()
 
   const command = new GetObjectCommand({ Bucket: bucket, Key: key })
   return awsGetSignedUrl(client, command, { expiresIn })
@@ -82,18 +82,32 @@ export async function getSignedUrl(key: string, expiresIn = 3600): Promise<strin
  */
 export async function deleteFile(key: string): Promise<void> {
   const client = getS3Client()
-  const bucket = getBucket()
+  const bucket = getBucketName()
 
   await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }))
 }
 
 /**
  * Construct the public URL for an object.
- * Format: {S3_ENDPOINT}/{S3_BUCKET}/{key}
+ * Format: {S3_PUBLIC_BASE_URL || S3_ENDPOINT}/{S3_BUCKET}/{key}
  */
 export function getPublicUrl(key: string): string {
-  const endpoint = process.env.S3_ENDPOINT
-  if (!endpoint) throw new Error('S3_ENDPOINT environment variable is not set')
-  const bucket = getBucket()
+  const endpoint = process.env.S3_PUBLIC_BASE_URL ?? process.env.S3_ENDPOINT
+  if (!endpoint) {
+    throw new Error('S3_PUBLIC_BASE_URL or S3_ENDPOINT environment variable is not set')
+  }
+  const bucket = getBucketName()
   return `${endpoint.replace(/\/$/, '')}/${bucket}/${key}`
+}
+
+export function getAllowedStorageHosts(): string[] {
+  return [process.env.S3_PUBLIC_BASE_URL, process.env.S3_ENDPOINT]
+    .filter((value): value is string => !!value)
+    .flatMap((value) => {
+      try {
+        return [new URL(value).hostname]
+      } catch {
+        return []
+      }
+    })
 }

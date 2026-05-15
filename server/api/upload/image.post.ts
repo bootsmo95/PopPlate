@@ -1,8 +1,9 @@
 import { readMultipartFormData, createError } from 'h3'
-import { eq } from 'drizzle-orm'
 import { db, schema } from '../../database/index'
 import { requireAuth } from '../../utils/auth'
-import { toDataUrl } from '../../utils/inline-assets'
+import { requireOwnedDish } from '../../utils/dish-ownership'
+import { getPublicUrl, uploadFile } from '../../utils/storage'
+import { sourceImageKey } from '../../utils/storage-keys'
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp']
@@ -10,7 +11,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 
 export default defineEventHandler(async (event) => {
   // Require authentication
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
 
   // Parse multipart form data
   const parts = await readMultipartFormData(event)
@@ -38,16 +39,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'No file provided' })
   }
 
-  // Look up dish and derive restaurantId server-side
-  const [dish] = await db
-    .select({ id: schema.dishes.id, restaurantId: schema.dishes.restaurantId })
-    .from(schema.dishes)
-    .where(eq(schema.dishes.id, dishId))
-    .limit(1)
-
-  if (!dish) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
-  }
+  const dish = await requireOwnedDish(dishId, user)
   const restaurantId = dish.restaurantId
 
   const rawFilename = filePart.filename!
@@ -80,10 +72,9 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // MVP fallback: store inline in DB instead of external object storage.
-  // This avoids the current MinIO routing issues while keeping uploads functional.
-  const storageKey = `inline:${filename}`
-  const imageUrl = toDataUrl(filePart.data, mimeType)
+  const storageKey = sourceImageKey(restaurantId, dishId, filename)
+  await uploadFile(storageKey, filePart.data, mimeType)
+  const imageUrl = getPublicUrl(storageKey)
 
   // Persist record in DB
   const [record] = await db

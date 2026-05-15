@@ -1,9 +1,10 @@
 import { db } from '../../../database/index'
-import { dishes, dishSourceImages, generationJobs, restaurants } from '../../../database/schema'
+import { dishes, dishSourceImages, generationJobs } from '../../../database/schema'
 import { eq, desc, count, inArray, and } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
 import { hasUnlimitedAccess } from '../../../utils/access'
 import { getTierLimits } from '../../../utils/tiers'
+import { requireOwnedDish } from '../../../utils/dish-ownership'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
@@ -13,25 +14,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'id is required' })
   }
 
-  // Verify dish exists and user owns the restaurant
-  const [dish] = await db
-    .select()
-    .from(dishes)
-    .where(eq(dishes.id, id))
-
-  if (!dish) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
-  }
-
-  const [restaurant] = await db
-    .select({ ownerId: restaurants.ownerId })
-    .from(restaurants)
-    .where(eq(restaurants.id, dish.restaurantId))
-    .limit(1)
-
-  if (restaurant?.ownerId !== user.id) {
-    throw createError({ statusCode: 403, message: 'You do not own this dish' })
-  }
+  await requireOwnedDish(id, user)
 
   // Validate dish has enough source images
   const [imageCount] = await db

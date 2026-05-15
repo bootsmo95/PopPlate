@@ -2,14 +2,16 @@ import { db } from '../../../database/index'
 import { analyticsEvents } from '../../../database/schema'
 import { eq, sql } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
+import { requireOwnedDish } from '../../../utils/dish-ownership'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
 
   const id = getRouterParam(event, 'id')
   if (!id) {
     throw createError({ statusCode: 400, message: 'id is required' })
   }
+  await requireOwnedDish(id, user)
 
   const rows = await db
     .select({

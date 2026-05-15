@@ -4,6 +4,7 @@ import { dishes, restaurants } from '../../database/schema'
 import { requireAuth } from '../../utils/auth'
 import { hasUnlimitedAccess } from '../../utils/access'
 import { getTierLimits } from '../../utils/tiers'
+import { requireAccessibleRestaurant } from '../../utils/restaurant-ownership'
 import { nanoid } from 'nanoid'
 
 export default defineEventHandler(async (event) => {
@@ -25,20 +26,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'restaurantId is required' })
   }
 
-  // Get all user's restaurant IDs and verify ownership
-  const userRestaurants = await db
-    .select({ id: restaurants.id })
-    .from(restaurants)
-    .where(eq(restaurants.ownerId, user.id))
-
-  const userRestaurantIds = userRestaurants.map(r => r.id)
-
-  if (!userRestaurantIds.includes(body.restaurantId)) {
-    throw createError({ statusCode: 403, message: 'You do not own this restaurant' })
-  }
+  await requireAccessibleRestaurant(body.restaurantId, user)
 
   // Check tier dish limit across all restaurants
-  if (!hasUnlimitedAccess(user) && userRestaurantIds.length > 0) {
+  if (!hasUnlimitedAccess(user)) {
+    const userRestaurants = await db
+      .select({ id: restaurants.id })
+      .from(restaurants)
+      .where(eq(restaurants.ownerId, user.id))
+    const userRestaurantIds = userRestaurants.map(r => r.id)
     const limits = getTierLimits(user.accountTier)
     const [{ count: totalDishes }] = await db
       .select({ count: count() })

@@ -4,9 +4,10 @@ import { eq, and } from 'drizzle-orm'
 import { requireAuth } from '../../../../utils/auth'
 import { deleteFile } from '../../../../utils/storage'
 import { isInlineAsset } from '../../../../utils/inline-assets'
+import { requireOwnedDish } from '../../../../utils/dish-ownership'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
 
   const id = getRouterParam(event, 'id')
   const imageId = getRouterParam(event, 'imageId')
@@ -17,6 +18,7 @@ export default defineEventHandler(async (event) => {
   if (!imageId) {
     throw createError({ statusCode: 400, message: 'imageId is required' })
   }
+  await requireOwnedDish(id, user)
 
   // Find the record first to get the storageKey
   const [image] = await db

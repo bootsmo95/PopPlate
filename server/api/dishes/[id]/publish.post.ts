@@ -2,22 +2,20 @@ import { db } from '../../../database/index'
 import { dishes, qrCodes } from '../../../database/schema'
 import { eq } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
-import { toDataUrl } from '../../../utils/inline-assets'
+import { requireOwnedDish } from '../../../utils/dish-ownership'
+import { getPublicUrl, uploadFile } from '../../../utils/storage'
+import { qrImageKey } from '../../../utils/storage-keys'
 import QRCode from 'qrcode'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
 
   const id = getRouterParam(event, 'id')
   if (!id) {
     throw createError({ statusCode: 400, message: 'id is required' })
   }
 
-  // Fetch dish
-  const [dish] = await db.select().from(dishes).where(eq(dishes.id, id))
-  if (!dish) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
-  }
+  const dish = await requireOwnedDish(id, user)
 
   // Validate publish gate
   if (dish.status !== 'ready') {
@@ -52,7 +50,9 @@ export default defineEventHandler(async (event) => {
     margin: 2,
   })
 
-  const imageUrl = toDataUrl(qrBuffer, 'image/png')
+  const storageKey = qrImageKey(dish.restaurantId, id, `${dish.publicDishId}.png`)
+  await uploadFile(storageKey, qrBuffer, 'image/png')
+  const imageUrl = getPublicUrl(storageKey)
 
   // Wrap DB mutations in a transaction to avoid half-state
   const result = await db.transaction(async (tx) => {
