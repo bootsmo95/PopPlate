@@ -155,9 +155,27 @@ p,
 label,
 .pf-c-form__label,
 .pf-v5-c-form__label,
+.pf-c-form__label-text,
+.pf-v5-c-form__label-text,
 .pf-c-form__helper-text,
-.pf-v5-c-form__helper-text {
+.pf-v5-c-form__helper-text,
+.pf-c-form__helper-text *,
+.pf-v5-c-form__helper-text *,
+.pf-c-form__group-label,
+.pf-v5-c-form__group-label {
   color: #475569;
+}
+
+.pf-c-form__label,
+.pf-v5-c-form__label,
+.pf-c-form__label-text,
+.pf-v5-c-form__label-text,
+.pf-c-form__label-required,
+.pf-v5-c-form__label-required,
+.pf-c-form__group-label label,
+.pf-v5-c-form__group-label label {
+  color: #334155 !important;
+  font-weight: 700;
 }
 
 input,
@@ -169,6 +187,13 @@ input,
   background: #ffffff;
   color: #020617;
   box-shadow: none;
+}
+
+input::placeholder,
+.pf-c-form-control::placeholder,
+.pf-v5-c-form-control::placeholder {
+  color: #64748b;
+  opacity: 1;
 }
 
 input:focus,
