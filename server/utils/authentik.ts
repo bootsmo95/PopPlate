@@ -174,7 +174,17 @@ export async function buildAuthentikSignupUrl(): Promise<string | AuthentikAutho
   if (process.env.AUTHENTIK_SIGNUP_URL?.trim())
     return process.env.AUTHENTIK_SIGNUP_URL.trim()
 
-  return await buildAuthorizationRequest()
+  const authorizationRequest = await buildAuthorizationRequest()
+  const authorizationUrl = new URL(authorizationRequest.url)
+  const signupFlowSlug = process.env.AUTHENTIK_SIGNUP_FLOW_SLUG?.trim() || 'default-source-enrollment'
+  const signupUrl = new URL(`/if/flow/${signupFlowSlug}/`, getAuthentikBaseUrl().replace(/\/$/, ''))
+
+  signupUrl.searchParams.set('next', `${authorizationUrl.pathname}${authorizationUrl.search}`)
+
+  return {
+    state: authorizationRequest.state,
+    url: signupUrl.toString(),
+  }
 }
 
 export async function exchangeCodeForUser(code: string): Promise<OidcUserInfo> {
