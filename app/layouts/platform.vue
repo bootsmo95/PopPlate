@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white">
     <!-- Top bar -->
-    <header class="flex items-center justify-between h-14 px-4 bg-slate-900 text-white flex-shrink-0">
+    <header class="relative z-40 flex h-14 flex-shrink-0 items-center justify-between bg-slate-900 px-4 text-white">
       <div class="flex items-center gap-3">
         <!-- Hamburger (mobile only) -->
         <button
@@ -40,14 +40,14 @@
       <!-- Sidebar overlay (mobile) -->
       <div
         v-if="sidebarOpen"
-        class="fixed inset-0 z-20 bg-black/50 lg:hidden"
+        class="fixed inset-x-0 bottom-0 top-14 z-20 bg-black/50 lg:hidden"
         @click="sidebarOpen = false"
       />
 
       <!-- Sidebar -->
       <nav
         :class="[
-          'fixed lg:static inset-y-0 left-0 z-30 w-56 bg-slate-800 text-slate-100 flex flex-col pt-14 lg:pt-0 transform transition-transform duration-200',
+          'fixed bottom-0 left-0 top-14 z-30 flex w-56 transform flex-col bg-slate-800 text-slate-100 transition-transform duration-200 lg:static lg:top-auto',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         ]"
       >
