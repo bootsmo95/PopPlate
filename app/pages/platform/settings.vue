@@ -137,7 +137,7 @@
                 </div>
               </div>
 
-              <div class="mt-3 grid gap-2 sm:grid-cols-2">
+              <div class="mt-3 grid gap-2 sm:grid-cols-3">
                 <NuxtLink
                   :to="`/platform/r/${restaurant.slug}`"
                   class="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-stone-100 transition hover:bg-white/10"
@@ -150,6 +150,15 @@
                 >
                   Edit dishes
                 </NuxtLink>
+                <button
+                  v-if="isAdmin"
+                  type="button"
+                  :disabled="deletingSlug === restaurant.slug"
+                  class="inline-flex items-center justify-center rounded-full border border-red-400/40 px-4 py-2 text-xs font-bold text-red-200 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                  @click="handleDeleteRestaurant(restaurant)"
+                >
+                  {{ deletingSlug === restaurant.slug ? 'Deleting...' : 'Delete' }}
+                </button>
               </div>
             </article>
           </div>
@@ -173,9 +182,12 @@ const name = ref('')
 const submitting = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
+const deletingSlug = ref('')
 
 const ssrHeaders = useAuthHeaders()
 const { data: restaurants, pending, error, refresh } = await useFetch<Restaurant[]>('/api/restaurants', { headers: ssrHeaders })
+const { user } = useAuth()
+const isAdmin = computed(() => user.value?.role === 'admin')
 
 const slugPreview = computed(() => {
   const slug = name.value
@@ -214,6 +226,28 @@ async function handleSubmit() {
     errorMessage.value = e?.data?.message ?? e?.message ?? 'Failed to create restaurant.'
   } finally {
     submitting.value = false
+  }
+}
+
+async function handleDeleteRestaurant(restaurant: Restaurant) {
+  if (!confirm('Permanently delete this restaurant? This also deletes its dishes, QR codes, analytics, jobs, and source image records.')) return
+
+  deletingSlug.value = restaurant.slug
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  try {
+    await $fetch('/api/restaurants/' + restaurant.slug, {
+      method: 'DELETE',
+      query: { hard: 'true' },
+    })
+    successMessage.value = 'Deleted ' + restaurant.name + '.'
+    await refresh()
+  } catch (err: unknown) {
+    const e = err as { data?: { message?: string }; message?: string }
+    errorMessage.value = e?.data?.message ?? e?.message ?? 'Failed to delete restaurant.'
+  } finally {
+    deletingSlug.value = ''
   }
 }
 </script>

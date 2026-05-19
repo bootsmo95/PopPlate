@@ -189,15 +189,25 @@
       <!-- Archive -->
       <div class="border-t border-gray-200 pt-6">
         <h2 class="text-sm font-semibold text-gray-700 mb-2">Danger Zone</h2>
-        <button
-          v-if="dish.status !== 'archived'"
-          :disabled="archiving"
-          class="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
-          @click="handleArchive"
-        >
-          {{ archiving ? 'Archiving…' : 'Archive Dish' }}
-        </button>
-        <p v-else class="text-sm text-gray-500">This dish is archived.</p>
+        <div class="flex flex-col gap-2 sm:flex-row">
+          <button
+            v-if="dish.status !== 'archived'"
+            :disabled="archiving || deleting"
+            class="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
+            @click="handleArchive"
+          >
+            {{ archiving ? 'Archiving…' : 'Archive Dish' }}
+          </button>
+          <button
+            v-if="isAdmin"
+            :disabled="archiving || deleting"
+            class="px-4 py-2 text-sm font-semibold text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+            @click="handlePermanentDelete"
+          >
+            {{ deleting ? 'Deleting…' : 'Delete Dish' }}
+          </button>
+        </div>
+        <p v-if="dish.status === 'archived'" class="text-sm text-gray-500">This dish is archived.</p>
         <p v-if="archiveError" class="text-red-600 text-sm mt-2">{{ archiveError }}</p>
       </div>
     </template>
@@ -212,6 +222,8 @@ definePageMeta({ layout: 'platform' })
 const route = useRoute()
 const id = route.params.id as string
 const ssrHeaders = useAuthHeaders()
+const { user } = useAuth()
+const isAdmin = computed(() => user.value?.role === 'admin')
 
 interface SourceImage {
   id: string
@@ -447,6 +459,7 @@ async function handleSave() {
 }
 
 const archiving = ref(false)
+const deleting = ref(false)
 const archiveError = ref('')
 
 async function handleArchive() {
@@ -463,6 +476,26 @@ async function handleArchive() {
     archiveError.value = e?.data?.message ?? e?.message ?? 'Failed to archive dish.'
   } finally {
     archiving.value = false
+  }
+}
+
+async function handlePermanentDelete() {
+  if (!confirm('Permanently delete this dish? This removes its QR code, analytics, jobs, and source image records.')) return
+
+  deleting.value = true
+  archiveError.value = ''
+
+  try {
+    await $fetch(`/api/dishes/${id}`, {
+      method: 'DELETE',
+      query: { hard: 'true' },
+    })
+    await navigateTo('/platform/dishes')
+  } catch (err: unknown) {
+    const e = err as { data?: { message?: string }; message?: string }
+    archiveError.value = e?.data?.message ?? e?.message ?? 'Failed to delete dish.'
+  } finally {
+    deleting.value = false
   }
 }
 </script>

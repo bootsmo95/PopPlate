@@ -26,25 +26,35 @@
       <p class="text-sm">Create your first dish to get started.</p>
     </div>
 
-    <!-- Dish grid -->
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <NuxtLink
-        v-for="dish in dishes"
-        :key="dish.id"
-        :to="`/platform/dishes/${dish.id}`"
-        class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-gray-300 transition-all"
-      >
-        <div class="flex items-start justify-between gap-3 mb-3">
-          <h2 class="font-semibold text-gray-900 text-base leading-snug line-clamp-2">
-            {{ dish.name }}
-          </h2>
-          <AdminStatusBadge :status="dish.status" />
-        </div>
-        <p class="text-xs text-gray-400">
-          {{ formatDate(dish.createdAt) }}
-        </p>
-      </NuxtLink>
-    </div>
+   <!-- Dish grid -->
+   <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <article
+       v-for="dish in dishes"
+       :key="dish.id"
+        class="bg-white border border-gray-200 rounded-xl p-5 transition-all hover:border-gray-300 hover:shadow-md"
+     >
+        <NuxtLink :to="`/platform/dishes/${dish.id}`" class="block">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <h2 class="font-semibold text-gray-900 text-base leading-snug line-clamp-2">
+              {{ dish.name }}
+            </h2>
+            <AdminStatusBadge :status="dish.status" />
+          </div>
+          <p class="text-xs text-gray-400">
+            {{ formatDate(dish.createdAt) }}
+          </p>
+        </NuxtLink>
+        <button
+          v-if="isAdmin"
+          type="button"
+          :disabled="deletingId === dish.id"
+          class="mt-4 w-full rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+          @click="handleDeleteDish(dish)"
+        >
+          {{ deletingId === dish.id ? 'Deleting...' : 'Delete dish' }}
+        </button>
+      </article>
+   </div>
   </div>
 </template>
 
@@ -61,7 +71,10 @@ interface DishItem {
 }
 
 const ssrHeaders = useAuthHeaders()
-const { data: dishes, pending, error } = await useFetch<DishItem[]>('/api/dishes', { headers: ssrHeaders })
+const { user } = useAuth()
+const isAdmin = computed(() => user.value?.role === 'admin')
+const deletingId = ref('')
+const { data: dishes, pending, error, refresh } = await useFetch<DishItem[]>('/api/dishes', { headers: ssrHeaders })
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -69,5 +82,21 @@ function formatDate(dateStr: string) {
     month: 'short',
     year: 'numeric',
   })
+}
+
+async function handleDeleteDish(dish: DishItem) {
+  if (!confirm('Permanently delete this dish? This removes its QR code, analytics, jobs, and source image records.')) return
+
+  deletingId.value = dish.id
+
+  try {
+    await $fetch('/api/dishes/' + dish.id, {
+      method: 'DELETE',
+      query: { hard: 'true' },
+    })
+    await refresh()
+  } finally {
+    deletingId.value = ''
+  }
 }
 </script>
