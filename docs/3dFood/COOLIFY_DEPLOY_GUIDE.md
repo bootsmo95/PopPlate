@@ -75,7 +75,7 @@ Step-by-step guide to deploy the PopPlate MVP on Coolify.
    - **Install command**: `npm install`
    - **Build command**: `npm run build`
    - **Start command**: `node .output/server/index.mjs`
-4. Add a domain (e.g., `app.popplate.dk`)
+4. Add the domains `https://popplate.dk,https://api.popplate.dk,https://www.popplate.dk,https://app.popplate.dk`
 5. Set up HTTPS (Coolify handles Let's Encrypt automatically)
 6. **Add environment variables** (see table below)
 7. Click **Deploy**
@@ -96,7 +96,14 @@ Set these in Coolify → Application → **Environment Variables**:
 | `S3_ACCESS_KEY_ID` | Your MinIO access key | Step 2 → Access Keys |
 | `S3_SECRET_ACCESS_KEY` | Your MinIO secret key | Step 2 → Access Keys |
 | `S3_FORCE_PATH_STYLE` | `true` | Always true for MinIO |
-| `NUXT_PUBLIC_APP_URL` | `https://app.popplate.dk` | The domain you set for this app |
+| `NUXT_PUBLIC_APP_URL` | `https://popplate.dk` | Canonical app/public URL |
+| `NUXT_PUBLIC_API_URL` | `https://api.popplate.dk` | API alias for the same Nuxt backend |
+| `AUTHENTIK_BASE_URL` | `https://auth.popplate.dk` | Authentik public URL |
+| `NUXT_PUBLIC_AUTHENTIK_BASE_URL` | `https://auth.popplate.dk` | Authentik public URL |
+| `AUTHENTIK_ISSUER` | `https://auth.popplate.dk/application/o/popplate/` | Authentik provider issuer |
+| `AUTHENTIK_DISCOVERY_URL` | `https://auth.popplate.dk/application/o/popplate/.well-known/openid-configuration` | Authentik OIDC discovery URL |
+| `AUTHENTIK_REDIRECT_URI` | `https://popplate.dk/api/auth/callback/authentik` | OIDC callback URL |
+| `AUTHENTIK_LOGOUT_REDIRECT_URI` | `https://popplate.dk/` | Post-logout redirect |
 | `NODE_ENV` | `production` | Standard |
 
 ### Generating the Admin Password Hash
@@ -171,8 +178,9 @@ Note the restaurant ID — or just log in to the admin and it will auto-discover
    - **Install command**: `npm install`
    - **Build command**: `npm run build` (needed for dependencies)
    - **Start command**: `npx tsx worker/index.ts`
-   - **Port**: remove or set to 0 (worker has no HTTP port)
-   - **Health check**: disable (no HTTP endpoint)
+   - **Port**: `3000`
+   - **Domain**: `https://worker.popplate.dk`
+   - **Health check**: enable path `/healthz` on port `3000`
 4. Set up environment variables (subset of web app):
 
 | Variable | Value | Where to find it |
@@ -184,6 +192,8 @@ Note the restaurant ID — or just log in to the admin and it will auto-discover
 | `S3_ACCESS_KEY_ID` | Same as web app | Step 2 |
 | `S3_SECRET_ACCESS_KEY` | Same as web app | Step 2 |
 | `S3_FORCE_PATH_STYLE` | `true` | Same |
+| `S3_PUBLIC_BASE_URL` | `https://storage.popplate.dk` | Public MinIO API URL |
+| `WORKER_HEALTH_PORT` | `3000` | Matches Coolify exposed worker port |
 | `NODE_ENV` | `production` | Standard |
 
 5. Click **Deploy**
@@ -194,8 +204,8 @@ Note the restaurant ID — or just log in to the admin and it will auto-discover
 
 ## Step 7: Verify Everything Works
 
-1. **Open your app**: Visit `https://app.popplate.dk` — you should see the PopPlate landing page
-2. **Admin login**: Go to `https://app.popplate.dk/admin/login` — sign in with your ADMIN_EMAIL and password
+1. **Open your app**: Visit `https://popplate.dk` — you should see the PopPlate landing page
+2. **Platform login**: Go to `https://popplate.dk/platform/login` — sign in through Authentik
 3. **Create a dish**: Go to Dishes → Create New Dish → fill in details
 4. **Upload images**: On the dish detail page, upload 5+ images
 5. **Generate**: Click "Start Generation" — the worker should pick it up within 5 seconds
@@ -232,8 +242,11 @@ Note the restaurant ID — or just log in to the admin and it will auto-discover
 └─────────────────────────────────────────────────┘
 
 External access:
-  app.popplate.dk     → popplate-web:3000
+  popplate.dk         → popplate-web:3000
+  api.popplate.dk     → popplate-web:3000 (/api/* alias)
+  auth.popplate.dk    → popplate-authentik:9000
   storage.popplate.dk → popplate-minio:9000 (public read)
+  worker.popplate.dk  → popplate-worker:3000 (/healthz)
 ```
 
 ---
@@ -260,7 +273,7 @@ External access:
 - The worker polls every 5 seconds — check logs for `[worker] Picked up job...`
 
 ### QR codes point to localhost
-- Set `NUXT_PUBLIC_APP_URL` to your actual domain (`https://app.popplate.dk`)
+- Set `NUXT_PUBLIC_APP_URL` to your actual domain (`https://popplate.dk`)
 - Redeploy after changing env vars
 
 ### Migrations fail

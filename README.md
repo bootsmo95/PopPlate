@@ -27,7 +27,7 @@ PopPlate expects these environment variables in both the web app and worker:
 
 ```env
 S3_ENDPOINT=http://minio:9000
-S3_PUBLIC_BASE_URL=https://storage.example.com
+S3_PUBLIC_BASE_URL=https://storage.popplate.dk
 S3_REGION=us-east-1
 S3_BUCKET=popplate-assets
 S3_ACCESS_KEY_ID=your-access-key-id
@@ -38,7 +38,15 @@ S3_FORCE_PATH_STYLE=true
 `S3_ENDPOINT` can be the internal Coolify service URL used by the app and worker.
 `S3_PUBLIC_BASE_URL` must be a public HTTPS URL that Meshy and browsers can access.
 For the Coolify demo setup, point it at the MinIO API domain, for example
-`https://storage.example.com`.
+`https://storage.popplate.dk`.
+
+## Production Domains
+
+- `https://popplate.dk` - canonical app, marketing, platform, public menus, and public dish pages
+- `https://api.popplate.dk` - API alias for `/api/*` endpoints on the same Nuxt backend
+- `https://auth.popplate.dk` - Authentik login/signup/logout
+- `https://storage.popplate.dk` - public MinIO object downloads for Meshy and browsers
+- `https://worker.popplate.dk/healthz` - worker health endpoint
 
 The MinIO bucket should allow public object downloads while keeping bucket listing disabled.
 Source images must be externally reachable because Meshy pulls them directly during generation.
@@ -63,6 +71,7 @@ curl http://localhost:3001/healthz
 ```
 
 Set `WORKER_HEALTH_PORT` to choose the port. Use `WORKER_HEALTH_PORT=0` to disable it.
+In Coolify, expose the worker health endpoint on port `3000` with `WORKER_HEALTH_PORT=3000`.
 
 ## Notes
 

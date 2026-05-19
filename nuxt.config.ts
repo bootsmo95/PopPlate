@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       appUrl: 'http://localhost:3000',
+      apiUrl: 'http://localhost:3000',
       defaultRestaurantId: '',
     },
   },
