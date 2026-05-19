@@ -97,6 +97,20 @@
           </li>
           <li>
             <NuxtLink
+              :to="publicMenuPath"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors hover:bg-slate-700"
+              active-class="bg-slate-700 text-white"
+              @click="sidebarOpen = false"
+            >
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5.5A1.5 1.5 0 016.5 4h11A1.5 1.5 0 0119 5.5v13a.75.75 0 01-1.14.64L12 15.62l-5.86 3.52A.75.75 0 015 18.5v-13z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 8h7M8.5 11h5" />
+              </svg>
+              Menu
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink
               to="/platform/dishes/new"
               class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors hover:bg-slate-700"
               active-class="bg-slate-700 text-white"
@@ -144,6 +158,20 @@
 <script setup lang="ts">
 const sidebarOpen = ref(false)
 const { logout, accountTier } = useAuth()
+const ssrHeaders = useAuthHeaders()
+
+interface RestaurantNavItem {
+  slug: string
+}
+
+const { data: navRestaurants } = await useFetch<RestaurantNavItem[]>('/api/restaurants', {
+  headers: ssrHeaders,
+})
+
+const publicMenuPath = computed(() => {
+  const firstRestaurant = navRestaurants.value?.[0]
+  return firstRestaurant ? `/r/${firstRestaurant.slug}` : '/platform/settings'
+})
 
 async function handleLogout() {
   await logout()
