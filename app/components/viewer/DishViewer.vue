@@ -8,7 +8,9 @@
       :alt="alt ?? 'Dish 3D model'"
       :scale="scaleAttr"
       ar-scale="fixed"
-      auto-rotate
+      :auto-rotate="autoRotate ? true : undefined"
+      :auto-rotate-delay="autoRotate ? 0 : undefined"
+      :rotation-per-second="autoRotate ? rotationPerSecond : undefined"
       camera-controls
       ar
       ar-modes="webxr scene-viewer quick-look"
@@ -66,6 +68,8 @@ const props = withDefaults(
     height?: string
     scale?: number
     autoAr?: boolean
+    autoRotate?: boolean
+    rotationPerSecond?: string
   }>(),
   {
     usdzUrl: null,
@@ -74,6 +78,8 @@ const props = withDefaults(
     height: '60vh',
     scale: 0.05,
     autoAr: false,
+    autoRotate: true,
+    rotationPerSecond: '18deg',
   },
 )
 
@@ -88,6 +94,15 @@ const scaleAttr = computed(() => `${props.scale} ${props.scale} ${props.scale}`)
 const hasError = ref(false)
 const modelLoaded = ref(false)
 const pendingArActivation = ref(false)
+
+watch(
+  () => props.glbUrl,
+  () => {
+    hasError.value = false
+    modelLoaded.value = false
+    pendingArActivation.value = false
+  },
+)
 
 async function handleLoad() {
   modelLoaded.value = true

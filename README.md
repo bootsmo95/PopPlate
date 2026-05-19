@@ -54,6 +54,16 @@ npm run db:migrate
 npm run worker:start
 ```
 
+## Worker Health
+
+The worker exposes a lightweight health endpoint for Coolify and manual checks:
+
+```bash
+curl http://localhost:3001/healthz
+```
+
+Set `WORKER_HEALTH_PORT` to choose the port. Use `WORKER_HEALTH_PORT=0` to disable it.
+
 ## Notes
 
 - The web app handles admin and public pages.

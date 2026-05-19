@@ -2,7 +2,7 @@ import { db } from '../../database/index'
 import { analyticsEvents, dishes } from '../../database/schema'
 import { eq } from 'drizzle-orm'
 
-const VALID_EVENT_TYPES = ['page_open', 'viewer_loaded', 'ar_launch_clicked'] as const
+const VALID_EVENT_TYPES = ['page_open', 'viewer_loaded', 'ar_launch_clicked', 'menu_open', 'menu_dish_selected', 'menu_ar_launch_clicked'] as const
 type EventType = (typeof VALID_EVENT_TYPES)[number]
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()

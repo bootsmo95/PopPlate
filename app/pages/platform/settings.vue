@@ -120,6 +120,22 @@
                   {{ restaurant.status }}
                 </span>
               </div>
+
+              <div class="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-orange-300">Full menu</p>
+                    <p class="mt-1 break-all text-sm text-stone-300">/r/{{ restaurant.slug }}</p>
+                  </div>
+
+                  <NuxtLink
+                    :to="`/r/${restaurant.slug}`"
+                    class="inline-flex items-center justify-center rounded-full bg-orange-400 px-4 py-2 text-xs font-bold text-slate-950 transition hover:bg-orange-300"
+                  >
+                    Open menu
+                  </NuxtLink>
+                </div>
+              </div>
             </article>
           </div>
         </section>

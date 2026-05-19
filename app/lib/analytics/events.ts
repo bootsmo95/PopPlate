@@ -13,7 +13,7 @@ export function getSessionId(): string {
 }
 
 export function trackEvent(
-  eventType: 'page_open' | 'viewer_loaded' | 'ar_launch_clicked',
+  eventType: 'page_open' | 'viewer_loaded' | 'ar_launch_clicked' | 'menu_open' | 'menu_dish_selected' | 'menu_ar_launch_clicked',
   dishId: string,
   restaurantId: string,
 ): void {
