@@ -8,6 +8,18 @@
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <NuxtLink
+        to="/platform/settings"
+        class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow"
+      >
+        <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.5L12 4l9 5.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 21v-6h6v6" />
+        </svg>
+        <h2 class="mt-4 font-semibold text-slate-950">Restaurants</h2>
+        <p class="mt-2 text-sm leading-6 text-slate-600">Open each restaurant workspace, menu link, and scoped dishes.</p>
+      </NuxtLink>
+
+      <NuxtLink
         to="/platform/dishes"
         class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow"
       >
@@ -29,17 +41,6 @@
         </svg>
         <h2 class="mt-4 font-semibold text-slate-950">Create dish</h2>
         <p class="mt-2 text-sm leading-6 text-slate-600">Add the next menu item and prepare its 3D preview.</p>
-      </NuxtLink>
-
-      <NuxtLink
-        to="/platform/settings"
-        class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow"
-      >
-        <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12M6 12h12" />
-        </svg>
-        <h2 class="mt-4 font-semibold text-slate-950">Restaurant setup</h2>
-        <p class="mt-2 text-sm leading-6 text-slate-600">Create or update the restaurant context used by dishes.</p>
       </NuxtLink>
 
       <NuxtLink

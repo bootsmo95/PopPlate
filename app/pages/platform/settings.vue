@@ -136,6 +136,21 @@
                   </NuxtLink>
                 </div>
               </div>
+
+              <div class="mt-3 grid gap-2 sm:grid-cols-2">
+                <NuxtLink
+                  :to="`/platform/r/${restaurant.slug}`"
+                  class="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-stone-100 transition hover:bg-white/10"
+                >
+                  Manage restaurant
+                </NuxtLink>
+                <NuxtLink
+                  :to="`/platform/r/${restaurant.slug}/dishes`"
+                  class="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-stone-100 transition hover:bg-white/10"
+                >
+                  Edit dishes
+                </NuxtLink>
+              </div>
             </article>
           </div>
         </section>

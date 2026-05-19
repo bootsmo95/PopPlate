@@ -130,6 +130,7 @@ interface Restaurant {
 
 const ssrHeaders = useAuthHeaders()
 const { data: restaurants, pending: restaurantsPending } = await useFetch<Restaurant[]>('/api/restaurants', { headers: ssrHeaders })
+const route = useRoute()
 
 const form = reactive({
   restaurantId: '',
@@ -145,7 +146,9 @@ watch(
   () => restaurants.value,
   (list) => {
     if (list?.length && !form.restaurantId) {
-      form.restaurantId = list[0].id
+      const restaurantIdFromQuery = typeof route.query.restaurantId === 'string' ? route.query.restaurantId : ''
+      const matchingRestaurant = list.find(restaurant => restaurant.id === restaurantIdFromQuery)
+      form.restaurantId = matchingRestaurant?.id ?? list[0].id
     }
   },
   { immediate: true },
