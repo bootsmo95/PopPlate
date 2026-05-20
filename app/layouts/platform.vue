@@ -19,6 +19,11 @@ const publicMenuPath = computed(() => {
   return firstRestaurant ? `/r/${firstRestaurant.slug}` : '/platform/settings'
 })
 
+const restaurantPath = computed(() => {
+  const firstRestaurant = navRestaurants.value?.[0]
+  return firstRestaurant ? `/platform/r/${firstRestaurant.slug}` : '/platform/settings#restaurants'
+})
+
 const restaurantName = computed(() => {
   return navRestaurants.value?.[0]?.name ?? 'Restaurant'
 })
@@ -28,7 +33,7 @@ const route = useRoute()
 const active = computed<SidebarKey>(() => {
   const p = route.path
   if (p.startsWith('/platform/dishes')) return 'dishes'
-  if (p.startsWith('/platform/workspace')) return 'workspace'
+  if (p.startsWith('/platform/r')) return 'workspace'
   if (p.startsWith('/platform/settings')) return 'settings'
   if (p.startsWith('/platform/analytics')) return 'analytics'
   return 'home'
@@ -48,6 +53,7 @@ async function handleLogout() {
       :user-email="user?.email ?? ''"
       :account-tier="accountTier"
       :restaurant-name="restaurantName"
+      :restaurant-path="restaurantPath"
       :public-menu-path="publicMenuPath"
       @logout="handleLogout"
     />

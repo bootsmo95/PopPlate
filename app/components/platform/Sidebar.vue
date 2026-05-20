@@ -12,6 +12,7 @@ const props = withDefaults(
     userEmail?: string
     accountTier?: string
     restaurantName?: string
+    restaurantPath?: string
     dishCount?: number
     publicMenuPath?: string
   }>(),
@@ -22,6 +23,7 @@ const props = withDefaults(
     userEmail: '',
     accountTier: 'free',
     restaurantName: 'Restaurant',
+    restaurantPath: '/platform/settings#restaurants',
     dishCount: 0,
     publicMenuPath: '/platform/settings',
   },
@@ -109,10 +111,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         <span v-if="dishCount" class="count">{{ dishCount }}</span>
       </NuxtLink>
       <NuxtLink
-        to="/platform/workspace" class="nav-item" :class="active === 'workspace' && 'active'"
+        :to="restaurantPath" class="nav-item" :class="active === 'workspace' && 'active'"
         :aria-current="active === 'workspace' ? 'page' : undefined" @click="close"
       >
         <Icon name="restaurant" /> {{ restaurantName }}
+      </NuxtLink>
+      <NuxtLink
+        to="/platform/settings#restaurants" class="nav-item"
+        @click="close"
+      >
+        <Icon name="restaurant" /> Restauranter
       </NuxtLink>
       <NuxtLink
         :to="publicMenuPath" class="nav-item"

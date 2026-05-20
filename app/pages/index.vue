@@ -7,12 +7,12 @@ useHead({ title: 'popplate · Menu i 3D' })
 <template>
   <main data-screen-label="Landing">
     <!-- HERO -->
-    <section class="relative pt-20 pb-15 overflow-hidden">
+    <section class="hero-section relative pt-20 pb-15 overflow-hidden">
       <!-- Texture / glow overlays -->
       <div class="absolute inset-0 pointer-events-none z-0 opacity-50"
            style="background: radial-gradient(ellipse 1200px 700px at 50% 20%, rgba(212, 168, 128, 0.35), transparent 65%), radial-gradient(ellipse 800px 600px at 20% 80%, rgba(139, 78, 44, 0.18), transparent 60%);" />
 
-      <div class="relative z-[2] grid place-items-center pt-5" style="height: min(78vh, 720px);">
+      <div class="hero-stage relative z-[2] grid place-items-center pt-5" style="height: min(78vh, 720px);">
         <!-- Giant wordmark behind -->
         <div
           class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display italic font-medium text-ink whitespace-nowrap z-[2] pointer-events-none select-none"
@@ -49,8 +49,8 @@ useHead({ title: 'popplate · Menu i 3D' })
       </div>
 
       <!-- Caption -->
-      <div class="relative z-[5] text-center mx-auto mt-10" style="width: min(680px, 90vw);">
-        <h1 class="font-display font-normal text-ink-soft max-w-[540px] mx-auto" style="font-size: clamp(26px, 2.8vw, 40px); letter-spacing: -0.015em; line-height: 1.15;">
+      <div class="hero-caption relative z-[5] text-center mx-auto mt-10" style="width: min(680px, 90vw);">
+        <h1 class="hero-copy font-display font-normal text-ink-soft max-w-[540px] mx-auto" style="font-size: clamp(26px, 2.8vw, 40px); letter-spacing: -0.015em; line-height: 1.15;">
           En menu der ikke <span class="italic text-clay-deep">står stille</span> — gæsten kan se hver ret i 3D, før den ankommer.
         </h1>
         <div class="flex justify-center gap-3.5 mt-8 flex-wrap">
@@ -79,4 +79,43 @@ useHead({ title: 'popplate · Menu i 3D' })
   @apply font-body font-medium text-[15px] px-7 py-4.5 rounded-full border border-line-strong text-ink inline-flex items-center gap-3 transition whitespace-nowrap;
 }
 .btn-ghost:hover { border-color: theme('colors.ink.DEFAULT'); background: rgba(26,20,16,0.04); }
+
+@media (max-width: 720px) {
+  .hero-section {
+    padding-top: 34px;
+  }
+
+  .hero-stage {
+    height: min(74vh, 620px) !important;
+    padding-top: 0;
+  }
+
+  .hero-caption {
+    position: absolute;
+    left: 50%;
+    bottom: 70px;
+    transform: translateX(-50%);
+    margin-top: 0;
+    color: #f8f3e9;
+    text-shadow: 0 2px 18px rgba(26, 20, 16, 0.85);
+  }
+
+  .hero-caption .hero-copy {
+    color: #fff8ee;
+    max-width: 330px;
+    font-size: 29px !important;
+  }
+
+  .hero-caption .btn-primary {
+    background: #f8f3e9;
+    color: #1a1410;
+    box-shadow: 0 18px 45px rgba(26, 20, 16, 0.36);
+  }
+
+  .hero-caption .btn-ghost {
+    border-color: rgba(248, 243, 233, 0.72);
+    color: #fff8ee;
+    background: rgba(26, 20, 16, 0.24);
+  }
+}
 </style>

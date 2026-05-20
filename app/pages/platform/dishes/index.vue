@@ -23,6 +23,7 @@ const isAdmin = computed(() => user.value?.role === 'admin')
 const deletingId = ref('')
 
 const { data: apiDishes, pending, error, refresh } = await useFetch<ApiDishItem[]>('/api/dishes', { headers: ssrHeaders })
+const route = useRoute()
 
 /** Map API dish to the design Dish shape */
 function toDesignDish(d: ApiDishItem): DesignDish {
@@ -44,7 +45,14 @@ function toDesignDish(d: ApiDishItem): DesignDish {
 const dishes = computed(() => (apiDishes.value ?? []).map(toDesignDish))
 
 const filter = ref<DishStatus | 'all'>('all')
-const search = ref('')
+const search = ref(typeof route.query.search === 'string' ? route.query.search : '')
+
+watch(
+  () => route.query.search,
+  (value) => {
+    search.value = typeof value === 'string' ? value : ''
+  },
+)
 
 const filtered = computed(() =>
   dishes.value.filter((d) => {
@@ -130,7 +138,7 @@ async function handleDeleteDish(dish: DesignDish) {
         <div class="flex items-center gap-2.5 bg-paper border border-line rounded-full px-[18px] py-2.5 min-w-[280px] max-[600px]:w-full">
           <Icon name="search" :size="14" />
           <input
-            v-model="search" type="text" placeholder="Soeg..."
+            v-model="search" type="text" placeholder="Søg..."
             class="border-0 outline-none bg-transparent font-body text-sm text-ink flex-1 min-w-0"
           >
         </div>

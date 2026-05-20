@@ -6,15 +6,15 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
         </svg>
-        Loading menu...
+        Indlæser menu...
       </div>
     </div>
 
     <div v-else-if="error || !menu" class="flex min-h-screen items-center justify-center px-6">
       <div class="max-w-sm text-center">
         <p class="text-sm font-bold uppercase tracking-[0.24em] text-orange-600">PopPlate</p>
-        <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950">Menu not found</h1>
-        <p class="mt-3 text-sm leading-6 text-slate-600">This restaurant menu may not be published yet.</p>
+        <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950">Menuen blev ikke fundet</h1>
+        <p class="mt-3 text-sm leading-6 text-slate-600">Restaurantens menu er muligvis ikke publiceret endnu.</p>
       </div>
     </div>
 
@@ -25,19 +25,19 @@
             PopPlate
           </NuxtLink>
           <div class="mt-10 max-w-3xl">
-            <p class="text-xs font-bold uppercase tracking-[0.28em] text-orange-700">3D restaurant menu</p>
+            <p class="text-xs font-bold uppercase tracking-[0.28em] text-orange-700">3D-restaurantmenu</p>
             <h1 class="mt-4 text-5xl font-black leading-none tracking-tight text-slate-950 sm:text-6xl">
               {{ menu.restaurant.name }}
             </h1>
             <p class="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-              Browse the dishes, rotate each plate in 3D, and open the selected dish on your table when your device supports AR.
+              Se retterne, roter tallerkenen i 3D, og åbn den valgte ret på dit bord når din enhed understøtter AR.
             </p>
           </div>
         </header>
 
         <div v-if="menu.dishes.length === 0" class="mt-10 rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center">
-          <h2 class="text-xl font-bold text-slate-950">No published dishes yet</h2>
-          <p class="mt-2 text-sm text-slate-600">Published dishes will appear here automatically.</p>
+          <h2 class="text-xl font-bold text-slate-950">Ingen publicerede retter endnu</h2>
+          <p class="mt-2 text-sm text-slate-600">Publicerede retter vises automatisk her.</p>
         </div>
 
         <div v-else class="mt-8 space-y-3">
@@ -87,7 +87,7 @@
             <div class="hidden self-start text-right sm:block">
               <p v-if="dish.priceText" class="text-lg font-black text-slate-950">{{ dish.priceText }}</p>
               <p class="mt-2 text-xs font-bold uppercase tracking-[0.18em]" :class="dish.hasModel ? 'text-emerald-700' : 'text-slate-400'">
-                {{ dish.hasModel ? '3D ready' : 'Info only' }}
+                {{ dish.hasModel ? '3D klar' : 'Kun info' }}
               </p>
             </div>
           </button>
@@ -97,7 +97,7 @@
       <aside class="lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)]">
         <div class="flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-900/10 bg-slate-950 text-white shadow-2xl shadow-slate-900/20">
           <div class="border-b border-white/10 p-5">
-            <p class="text-xs font-bold uppercase tracking-[0.26em] text-orange-300">Selected dish</p>
+            <p class="text-xs font-bold uppercase tracking-[0.26em] text-orange-300">Valgt ret</p>
             <div v-if="selectedDish" class="mt-3 flex items-start justify-between gap-3">
               <div>
                 <h2 class="text-2xl font-black leading-tight">{{ selectedDish.name }}</h2>
@@ -108,7 +108,7 @@
                 class="inline-flex shrink-0 items-center rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-orange-100"
                 @click="trackMenuArClick(selectedDish)"
               >
-                AR view
+                AR-visning
               </NuxtLink>
             </div>
           </div>
@@ -131,8 +131,8 @@
               <svg class="h-14 w-14 text-white/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
               </svg>
-              <h3 class="mt-4 text-xl font-black">3D model coming soon</h3>
-              <p class="mt-2 text-sm leading-6 text-white/60">This dish can still be listed while the model is being prepared.</p>
+              <h3 class="mt-4 text-xl font-black">3D-model på vej</h3>
+              <p class="mt-2 text-sm leading-6 text-white/60">Retten kan stadig vises, mens modellen bliver gjort klar.</p>
             </div>
           </div>
 
@@ -145,7 +145,7 @@
               class="flex w-full items-center justify-center rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-white transition hover:bg-orange-600"
               @click="trackMenuArClick(selectedDish)"
             >
-              View on your table
+              Se på dit bord
             </NuxtLink>
           </div>
         </div>

@@ -300,7 +300,6 @@ const {
 
 function resolveModelUrl(url: string | null, ext: string): string | undefined {
   if (!url) return undefined
-  if (url.startsWith('data:')) return url
   return `/api/dishes/${id}/model/${ext}`
 }
 const modelGlbUrl = computed(() => resolveModelUrl(dish.value?.previewModelGlbUrl ?? null, 'glb')!)
