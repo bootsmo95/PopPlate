@@ -35,6 +35,15 @@ export async function handleModelProxy(event: H3Event, headOnly = false) {
     throw createError({ statusCode: 404, message: 'Dish not found' })
   }
 
+  return sendModelAsset(event, dish, ext, headOnly)
+}
+
+export async function sendModelAsset(
+  event: H3Event,
+  dish: { glb: string | null; usdz: string | null; poster: string | null },
+  ext: string,
+  headOnly = false,
+) {
   const { url, contentType } = resolveAsset(dish, ext)
   if (!url) {
     throw createError({ statusCode: 404, message: `No ${ext} file available` })

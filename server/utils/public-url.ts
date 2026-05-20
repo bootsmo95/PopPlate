@@ -1,7 +1,10 @@
 import type { H3Event } from 'h3'
 import { getRequestURL, getHeader } from 'h3'
 
-const FALLBACK_APP_URL = 'http://localhost:3000'
+const CANONICAL_APP_URL = 'https://popplate.dk'
+const APP_HOST = 'popplate.dk'
+const API_HOST = 'api.popplate.dk'
+const LEGACY_APP_HOSTS = new Set(['www.popplate.dk', 'app.popplate.dk'])
 
 export function getPublicAppBaseUrl(event?: H3Event): string {
   const requestOrigin = event ? getRequestOrigin(event) : null
@@ -15,7 +18,7 @@ export function getPublicAppBaseUrl(event?: H3Event): string {
     return configuredOrigin
   }
 
-  return configuredOrigin ?? requestOrigin ?? FALLBACK_APP_URL
+  return CANONICAL_APP_URL
 }
 
 export function buildPublicDishUrl(publicDishId: string, event?: H3Event): string {
@@ -45,7 +48,26 @@ function normalizeOrigin(value?: string | null): string | null {
 
 function isPublicOrigin(origin: string): boolean {
   const { hostname } = new URL(origin)
-  return hostname !== 'localhost'
-    && hostname !== '127.0.0.1'
-    && !hostname.endsWith('.sslip.io')
+  return hostname === APP_HOST
+}
+
+export function canonicalizePublicDishUrl(url: string | null | undefined, publicDishId: string): string {
+  if (!url) return buildPublicDishUrl(publicDishId)
+
+  try {
+    const parsed = new URL(url)
+    if (
+      parsed.hostname === API_HOST
+      || LEGACY_APP_HOSTS.has(parsed.hostname)
+      || parsed.hostname === 'localhost'
+      || parsed.hostname === '127.0.0.1'
+      || parsed.hostname.endsWith('.sslip.io')
+    ) {
+      return buildPublicDishUrl(publicDishId)
+    }
+
+    return parsed.href
+  } catch {
+    return buildPublicDishUrl(publicDishId)
+  }
 }

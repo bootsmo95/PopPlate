@@ -3,6 +3,7 @@ import { qrCodes } from '../../../database/schema'
 import { eq, desc } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
 import { requireOwnedDish } from '../../../utils/dish-ownership'
+import { canonicalizePublicDishUrl } from '../../../utils/public-url'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
   if (!id) {
     throw createError({ statusCode: 400, message: 'id is required' })
   }
-  await requireOwnedDish(id, user)
+  const dish = await requireOwnedDish(id, user)
 
   const [qrCode] = await db
     .select()
@@ -20,5 +21,10 @@ export default defineEventHandler(async (event) => {
     .orderBy(desc(qrCodes.createdAt))
     .limit(1)
 
-  return qrCode ?? null
+  if (!qrCode) return null
+
+  return {
+    ...qrCode,
+    publicUrl: canonicalizePublicDishUrl(qrCode.publicUrl, dish.publicDishId),
+  }
 })

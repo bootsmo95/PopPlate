@@ -180,6 +180,9 @@ function normalizeOrigin(url?: unknown): URL | null {
 function isLegacyHost(url: URL): boolean {
   return url.hostname === 'localhost'
     || url.hostname === '127.0.0.1'
+    || url.hostname === 'api.popplate.dk'
+    || url.hostname === 'app.popplate.dk'
+    || url.hostname === 'www.popplate.dk'
     || url.hostname.endsWith('.sslip.io')
 }
 
