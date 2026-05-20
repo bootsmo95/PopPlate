@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { createError, getRouterParam, send, setResponseHeader, setResponseStatus } from 'h3'
+import { createError, getRouterParam, send, setResponseHeader } from 'h3'
 import { eq } from 'drizzle-orm'
 import { Readable } from 'node:stream'
 import { db } from '../database/index'
@@ -69,8 +69,9 @@ export async function handleModelProxy(event: H3Event, headOnly = false) {
 
   if (headOnly) {
     await applyUpstreamHeadHeaders(event, url)
-    setResponseStatus(event, 200)
-    return null
+    event.node.res.statusCode = 200
+    event.node.res.end()
+    return
   }
 
   const upstream = await fetch(url)
