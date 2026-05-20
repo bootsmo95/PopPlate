@@ -30,8 +30,10 @@ interface ApiRestaurant {
 const ssrHeaders = useAuthHeaders()
 const { user } = useAuth()
 
-const { data: apiDishes } = await useFetch<ApiDish[]>('/api/dishes', { headers: ssrHeaders })
-const { data: restaurants } = await useFetch<ApiRestaurant[]>('/api/restaurants', { headers: ssrHeaders })
+const { data: apiDishes, status: dishesStatus } = useLazyFetch<ApiDish[]>('/api/dishes', { headers: ssrHeaders })
+const { data: restaurants, status: restaurantsStatus } = useLazyFetch<ApiRestaurant[]>('/api/restaurants', { headers: ssrHeaders })
+
+const loading = computed(() => dishesStatus.value === 'pending' || restaurantsStatus.value === 'pending')
 
 const dishCount = computed(() => apiDishes.value?.length ?? 0)
 const restaurantCount = computed(() => restaurants.value?.length ?? 0)
@@ -82,6 +84,9 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
   <div data-screen-label="Dashboard">
     <TopBar />
 
+    <PageSkeleton v-if="loading" variant="dashboard" />
+
+    <div v-else>
     <PageHead :eyebrow="eyebrow">
       <template #title>
         <h1 class="page-title">
@@ -185,6 +190,7 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
           </div>
         </NuxtLink>
       </div>
+    </div>
     </div>
   </div>
 </template>

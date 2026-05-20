@@ -18,10 +18,10 @@ const ssrHeaders = useAuthHeaders()
 const { user, logout } = useAuth()
 const isAdmin = computed(() => user.value?.role === 'admin')
 
-const { data: restaurants, pending, error, refresh } = await useFetch<ApiRestaurant[]>('/api/restaurants', { headers: ssrHeaders })
+const { data: restaurants, pending, error, refresh } = useLazyFetch<ApiRestaurant[]>('/api/restaurants', { headers: ssrHeaders })
 
 // Dish count for tier tab
-const { data: apiDishes } = await useFetch<Array<{ id: string }>>('/api/dishes', { headers: ssrHeaders })
+const { data: apiDishes } = useLazyFetch<Array<{ id: string }>>('/api/dishes', { headers: ssrHeaders })
 const apiDishCount = computed(() => apiDishes.value?.length ?? 0)
 
 // Create restaurant form state

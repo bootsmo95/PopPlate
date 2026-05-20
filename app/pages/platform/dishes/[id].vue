@@ -297,7 +297,7 @@ const {
   pending,
   error: fetchError,
   refresh,
-} = await useFetch<DishDetail>(`/api/dishes/${id}`, { headers: ssrHeaders })
+} = useLazyFetch<DishDetail>(`/api/dishes/${id}`, { headers: ssrHeaders })
 
 function resolveModelUrl(url: string | null, ext: string): string | undefined {
   if (!url) return undefined
@@ -312,7 +312,7 @@ const viewerScale = computed(() => {
 })
 
 // Source images
-const { data: sourceImagesData, refresh: refreshImages } = await useFetch<SourceImage[]>(
+const { data: sourceImagesData, refresh: refreshImages } = useLazyFetch<SourceImage[]>(
   `/api/dishes/${id}/images`,
   { headers: ssrHeaders },
 )
@@ -328,12 +328,12 @@ async function refreshJobs() {
   })
 }
 
-await refreshJobs()
+refreshJobs()
 
 const latestJob = computed<GenerationJob | null>(() => jobsData.value?.[0] ?? null)
 
 // QR code
-const { data: qrCode, refresh: refreshQr } = await useFetch<QrCode | null>(
+const { data: qrCode, refresh: refreshQr } = useLazyFetch<QrCode | null>(
   `/api/dishes/${id}/qr`,
   { headers: ssrHeaders },
 )
@@ -344,7 +344,7 @@ interface AnalyticsData {
   viewer_loaded: number
   ar_launch_clicked: number
 }
-const { data: analyticsData, refresh: refreshAnalytics } = await useFetch<AnalyticsData>(
+const { data: analyticsData, refresh: refreshAnalytics } = useLazyFetch<AnalyticsData>(
   `/api/dishes/${id}/analytics`,
   { headers: ssrHeaders },
 )
