@@ -6,6 +6,7 @@ import { users } from '../database/schema'
 export interface SessionUser {
   id: string
   email: string
+  displayName?: string
   role: string
   accountTier: string
 }

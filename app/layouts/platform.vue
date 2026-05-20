@@ -48,8 +48,8 @@ async function handleLogout() {
   <div class="platform-shell grid min-h-screen" style="grid-template-columns: 260px 1fr;">
     <Sidebar
       :active="active"
-      :user-name="user?.email ?? ''"
-      :user-initials="user?.email?.charAt(0)?.toUpperCase() ?? '?'"
+      :user-name="user?.displayName || user?.email || ''"
+      :user-initials="(user?.displayName || user?.email)?.charAt(0)?.toUpperCase() ?? '?'"
       :user-email="user?.email ?? ''"
       :account-tier="accountTier"
       :restaurant-name="restaurantName"

@@ -6,7 +6,7 @@ const props = withDefaults(
       | 'home' | 'dish' | 'restaurant' | 'analytics' | 'settings'
       | 'plus' | 'search' | 'bell' | 'arrow' | 'arrow-up-right'
       | 'more' | 'qr' | 'edit' | 'check' | 'close' | 'menu'
-      | 'download' | 'refresh' | 'copy' | 'ar' | 'image' | 'info'
+      | 'download' | 'refresh' | 'copy' | 'ar' | 'image' | 'info' | 'logout'
     size?: number | string
     stroke?: number | string
   }>(),
@@ -149,6 +149,11 @@ const props = withDefaults(
     <template v-else-if="name === 'info'">
       <circle cx="8" cy="8" r="6.5" stroke="currentColor" :stroke-width="stroke" />
       <path d="M8 5v.01M8 7v4" stroke="currentColor" :stroke-width="stroke" stroke-linecap="round" />
+    </template>
+
+    <!-- logout (door with arrow) -->
+    <template v-else-if="name === 'logout'">
+      <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M10 11l3-3-3-3M13 8H6" stroke="currentColor" :stroke-width="stroke" stroke-linecap="round" stroke-linejoin="round" />
     </template>
   </svg>
 </template>

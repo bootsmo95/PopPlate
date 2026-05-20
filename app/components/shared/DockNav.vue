@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LogoMark from './LogoMark.vue'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     activeKey?: 'home' | 'menu' | 'pricing' | 'about' | null
     ctaLabel?: string
@@ -15,6 +15,12 @@ withDefaults(
     showLogin: true,
   },
 )
+
+const { isAuthenticated } = useAuth()
+
+const effectiveCtaLabel = computed(() => isAuthenticated.value ? 'Gå til platform' : props.ctaLabel)
+const effectiveCtaHref = computed(() => isAuthenticated.value ? '/platform' : props.ctaHref)
+const effectiveShowLogin = computed(() => isAuthenticated.value ? false : props.showLogin)
 
 const drawerOpen = ref(false)
 
@@ -48,10 +54,10 @@ watch(drawerOpen, (open) => {
 
     <div class="flex items-center gap-2">
       <NuxtLink
-        :to="ctaHref"
+        :to="effectiveCtaHref"
         class="dock-mobile-cta"
       >
-        {{ ctaLabel }}
+        {{ effectiveCtaLabel }}
       </NuxtLink>
       <button class="dock-mobile-burger" :aria-expanded="drawerOpen" aria-label="Åbn menu" @click="toggleDrawer">
         <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
@@ -88,11 +94,11 @@ watch(drawerOpen, (open) => {
       </nav>
 
       <div class="mt-auto flex flex-col gap-3">
-        <NuxtLink v-if="showLogin" to="/platform/login" class="dock-drawer-login" @click="closeDrawer">
+        <NuxtLink v-if="effectiveShowLogin" to="/platform/login" class="dock-drawer-login" @click="closeDrawer">
           Log ind
         </NuxtLink>
-        <NuxtLink :to="ctaHref" class="dock-drawer-cta" @click="closeDrawer">
-          <span>{{ ctaLabel }}</span>
+        <NuxtLink :to="effectiveCtaHref" class="dock-drawer-cta" @click="closeDrawer">
+          <span>{{ effectiveCtaLabel }}</span>
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
             <path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -124,17 +130,17 @@ watch(drawerOpen, (open) => {
     <span class="w-px h-[22px] mx-1.5" style="background: rgba(26, 20, 16, 0.12);" />
 
     <NuxtLink
-      v-if="showLogin"
+      v-if="effectiveShowLogin"
       to="/platform/login"
       class="font-body text-sm font-medium text-ink px-[18px] py-2.5 rounded-full bg-paper border border-line transition hover:bg-card-alt whitespace-nowrap"
     >
       Log ind
     </NuxtLink>
     <NuxtLink
-      :to="ctaHref"
+      :to="effectiveCtaHref"
       class="font-body text-sm font-medium px-[18px] py-2.5 rounded-full bg-clay text-white inline-flex items-center gap-2 transition hover:-translate-y-px hover:bg-clay-deep whitespace-nowrap"
     >
-      <span>{{ ctaLabel }}</span>
+      <span>{{ effectiveCtaLabel }}</span>
       <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
         <path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
       </svg>

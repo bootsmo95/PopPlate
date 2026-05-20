@@ -146,19 +146,29 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     </nav>
 
     <div class="mt-auto pt-4 border-t border-line">
-      <button
-        type="button"
-        class="flex w-full items-center gap-3 p-2.5 rounded-[10px] transition hover:bg-[rgba(26,20,16,0.05)]"
-        @click="emit('logout')"
-      >
-        <span class="grid place-items-center w-9 h-9 rounded-full bg-clay text-white font-display italic text-base shrink-0">
-          {{ userInitials || userName?.charAt(0) || '?' }}
-        </span>
-        <span class="flex-1 text-left min-w-0">
-          <span class="block text-[13px] font-medium text-ink truncate">{{ userName || userEmail || 'User' }}</span>
-          <span class="block text-[11px] text-ink-faint font-mono uppercase tracking-wider">{{ accountTier }}</span>
-        </span>
-      </button>
+      <div class="flex items-center gap-2">
+        <NuxtLink
+          to="/platform/settings?tab=account"
+          class="flex flex-1 items-center gap-3 p-2.5 rounded-[10px] transition hover:bg-[rgba(26,20,16,0.05)] min-w-0"
+          @click="close"
+        >
+          <span class="grid place-items-center w-9 h-9 rounded-full bg-clay text-white font-display italic text-base shrink-0">
+            {{ userInitials || userName?.charAt(0) || '?' }}
+          </span>
+          <span class="flex-1 text-left min-w-0">
+            <span class="block text-[13px] font-medium text-ink truncate">{{ userName || userEmail || 'User' }}</span>
+            <span class="block text-[11px] text-ink-faint font-mono uppercase tracking-wider">{{ accountTier }}</span>
+          </span>
+        </NuxtLink>
+        <button
+          type="button"
+          class="grid place-items-center w-8 h-8 rounded-md text-ink-faint transition hover:bg-[rgba(26,20,16,0.06)] hover:text-ink shrink-0"
+          title="Log ud"
+          @click="emit('logout')"
+        >
+          <Icon name="logout" :size="14" />
+        </button>
+      </div>
     </div>
   </aside>
 </template>
