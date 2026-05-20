@@ -36,7 +36,7 @@ const isAdmin = computed(() => user.value?.role === 'admin')
 const deleting = ref(false)
 const deleteError = ref('')
 
-const { data: restaurant, pending, error } = await useFetch<RestaurantDetail>(
+const { data: restaurant, pending, error } = useLazyFetch<RestaurantDetail>(
   () => '/api/restaurants/' + slug.value,
   { headers: ssrHeaders },
 )
@@ -113,9 +113,7 @@ async function handleDeleteRestaurant() {
     <TopBar v-model:search="search" search-placeholder="Søg i restaurantens retter..." />
 
     <!-- Loading -->
-    <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
-      Indlaeser restaurant...
-    </div>
+    <PageSkeleton v-if="pending" variant="dashboard" />
 
     <!-- Error -->
     <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">

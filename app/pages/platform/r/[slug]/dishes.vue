@@ -33,7 +33,7 @@ const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 const ssrHeaders = useAuthHeaders()
 
-const { data, pending, error } = await useFetch<RestaurantDishesResponse>(
+const { data, pending, error } = useLazyFetch<RestaurantDishesResponse>(
   () => '/api/restaurants/' + slug.value + '/dishes',
   { headers: ssrHeaders },
 )
@@ -74,9 +74,7 @@ const filteredDishes = computed(() => {
     <TopBar v-model:search="search" search-placeholder="Søg i restaurantens retter..." />
 
     <!-- Loading -->
-    <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
-      Indlaeser retter...
-    </div>
+    <PageSkeleton v-if="pending" variant="list" />
 
     <!-- Error -->
     <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">

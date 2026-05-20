@@ -161,7 +161,7 @@ interface Restaurant {
 }
 
 const ssrHeaders = useAuthHeaders()
-const { data: restaurants, pending: restaurantsPending } = await useFetch<Restaurant[]>('/api/restaurants', { headers: ssrHeaders })
+const { data: restaurants, pending: restaurantsPending } = useLazyFetch<Restaurant[]>('/api/restaurants', { headers: ssrHeaders })
 const route = useRoute()
 
 const form = reactive({

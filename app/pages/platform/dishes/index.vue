@@ -22,7 +22,7 @@ const { user } = useAuth()
 const isAdmin = computed(() => user.value?.role === 'admin')
 const deletingId = ref('')
 
-const { data: apiDishes, pending, error, refresh } = await useFetch<ApiDishItem[]>('/api/dishes', { headers: ssrHeaders })
+const { data: apiDishes, pending, error, refresh } = useLazyFetch<ApiDishItem[]>('/api/dishes', { headers: ssrHeaders })
 const route = useRoute()
 
 /** Map API dish to the design Dish shape */
@@ -112,9 +112,7 @@ async function handleDeleteDish(dish: DesignDish) {
     </PageHead>
 
     <!-- Loading -->
-    <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
-      Indlaeser retter...
-    </div>
+    <PageSkeleton v-if="pending" variant="list" />
 
     <!-- Error -->
     <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
