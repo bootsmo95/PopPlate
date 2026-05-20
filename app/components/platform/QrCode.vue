@@ -52,5 +52,9 @@ const cells = computed(() => {
       width="9" height="9"
       :fill="c.fill ? (inverted ? '#f3ede2' : '#1a1410') : 'transparent'"
     />
+    <!-- Brand center mark -->
+    <circle cx="76.5" cy="76.5" r="18" :fill="inverted ? '#1a1410' : '#f3ede2'" />
+    <ellipse cx="76.5" cy="78.5" rx="12" ry="3.2" fill="#8b4e2c" />
+    <ellipse cx="76.5" cy="76" rx="10" ry="2.4" fill="#b87a4e" />
   </svg>
 </template>
