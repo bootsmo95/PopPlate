@@ -7,6 +7,10 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  experimental: {
+    viewTransition: true,
+  },
+
   app: {
     head: {
       link: [
