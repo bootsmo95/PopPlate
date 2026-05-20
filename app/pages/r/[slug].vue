@@ -1,7 +1,8 @@
 <template>
-  <div class="min-h-screen bg-[#f8f5ee] text-slate-950">
+  <div class="r-page">
+    <!-- Loading -->
     <div v-if="pending" class="flex min-h-screen items-center justify-center px-6">
-      <div class="flex items-center gap-3 text-sm font-medium text-slate-500">
+      <div class="flex items-center gap-3 text-sm font-medium text-ink-faint">
         <svg class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
@@ -10,146 +11,128 @@
       </div>
     </div>
 
+    <!-- Error -->
     <div v-else-if="error || !menu" class="flex min-h-screen items-center justify-center px-6">
       <div class="max-w-sm text-center">
-        <p class="text-sm font-bold uppercase tracking-[0.24em] text-orange-600">PopPlate</p>
-        <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950">Menuen blev ikke fundet</h1>
-        <p class="mt-3 text-sm leading-6 text-slate-600">Restaurantens menu er muligvis ikke publiceret endnu.</p>
+        <div class="eyebrow mb-4">popplate</div>
+        <h1 class="font-display font-normal text-[36px] tracking-[-0.025em] leading-[1]">Menu ikke fundet</h1>
+        <p class="mt-4 text-[15px] text-ink-mute leading-relaxed">Denne menu er muligvis ikke publiceret endnu.</p>
       </div>
     </div>
 
-    <main v-else class="mx-auto grid min-h-screen max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_440px] lg:px-8 lg:py-8 xl:grid-cols-[minmax(0,1fr)_500px]">
-      <section class="pb-8 lg:pb-16">
-        <header class="border-b border-slate-900/10 pb-6 pt-4">
-          <NuxtLink to="/" class="text-sm font-black tracking-tight text-slate-950">
-            PopPlate
-          </NuxtLink>
-          <div class="mt-10 max-w-3xl">
-            <p class="text-xs font-bold uppercase tracking-[0.28em] text-orange-700">3D-restaurantmenu</p>
-            <h1 class="mt-4 text-5xl font-black leading-none tracking-tight text-slate-950 sm:text-6xl">
-              {{ menu.restaurant.name }}
-            </h1>
-            <p class="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-              Se retterne, roter tallerkenen i 3D, og åbn den valgte ret på dit bord når din enhed understøtter AR.
-            </p>
+    <!-- Menu -->
+    <main v-else class="wrap">
+      <!-- Restaurant header -->
+      <header class="r-header">
+        <div class="r-eyebrow">3D restaurant menu</div>
+        <h1 class="r-name">{{ menu.restaurant.name }}</h1>
+        <div class="r-meta">
+          <div class="r-meta-item">
+            <span>Retter</span>
+            <strong>{{ menu.dishes.length }}</strong>
           </div>
-        </header>
-
-        <div v-if="menu.dishes.length === 0" class="mt-10 rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center">
-          <h2 class="text-xl font-bold text-slate-950">Ingen publicerede retter endnu</h2>
-          <p class="mt-2 text-sm text-slate-600">Publicerede retter vises automatisk her.</p>
+          <div class="r-meta-item">
+            <span>3D-modeller</span>
+            <strong>{{ menu.dishes.filter(d => d.hasModel).length }}</strong>
+          </div>
+          <div class="r-meta-item">
+            <span>Format</span>
+            <strong>AR-ready</strong>
+          </div>
+          <div class="r-meta-item">
+            <span>App</span>
+            <strong>Ikke påkrævet</strong>
+          </div>
         </div>
+      </header>
 
-        <div v-else class="mt-8 space-y-3">
-          <button
-            v-for="dish in menu.dishes"
-            :key="dish.publicDishId"
-            type="button"
-            class="group grid w-full gap-4 rounded-2xl border p-4 text-left transition sm:grid-cols-[112px_minmax(0,1fr)_auto]"
-            :class="dish.publicDishId === selectedPublicDishId ? 'border-slate-950 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.10)]' : 'border-slate-200 bg-white/60 hover:border-slate-400 hover:bg-white'"
-            @click="selectDish(dish.publicDishId)"
-          >
-            <div class="aspect-square overflow-hidden rounded-xl bg-stone-200">
-              <img
-                v-if="dish.hasPoster"
-                :src="posterUrl(dish)"
-                :alt="dish.name"
-                class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-              >
-              <div v-else class="flex h-full w-full items-center justify-center bg-gradient-to-br from-stone-200 to-orange-100 text-slate-400">
-                <svg class="h-9 w-9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 0v18M3 12h18" />
-                </svg>
-              </div>
+      <!-- Empty state -->
+      <div v-if="menu.dishes.length === 0" class="empty-state">
+        <h2 class="font-display font-normal text-[28px] tracking-[-0.015em]">Ingen publicerede retter endnu</h2>
+        <p class="text-ink-mute mt-3 text-[15px]">Publicerede retter vises her automatisk.</p>
+      </div>
+
+      <!-- Dish list -->
+      <div v-else class="r-menu-grid">
+        <div
+          v-for="(dish, i) in menu.dishes"
+          :key="dish.publicDishId"
+          class="r-dish"
+          :class="{ 'signature': i === 0, 'selected': dish.publicDishId === selectedPublicDishId }"
+          @click="selectDish(dish.publicDishId)"
+        >
+          <!-- Left: text -->
+          <div class="r-dish-text">
+            <div class="r-dish-num">
+              <span class="bar" />
+              {{ String(i + 1).padStart(2, '0') }}
             </div>
-
-            <div class="min-w-0 self-center">
-              <div class="flex flex-wrap items-start justify-between gap-3">
-                <h2 class="text-xl font-black leading-tight text-slate-950">{{ dish.name }}</h2>
-                <span v-if="dish.priceText" class="rounded-full bg-slate-950 px-3 py-1 text-sm font-bold text-white sm:hidden">
-                  {{ dish.priceText }}
-                </span>
-              </div>
-              <p v-if="dish.shortDescription" class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">
-                {{ dish.shortDescription }}
-              </p>
-              <div v-if="allergenList(dish).length" class="mt-3 flex flex-wrap gap-2">
-                <span
-                  v-for="allergen in allergenList(dish)"
-                  :key="allergen"
-                  class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-800"
-                >
-                  {{ allergen }}
-                </span>
-              </div>
+            <div class="r-dish-head">
+              <h3>{{ dish.name }}</h3>
+              <span v-if="dish.priceText" class="r-dish-price">{{ dish.priceText }}</span>
             </div>
-
-            <div class="hidden self-start text-right sm:block">
-              <p v-if="dish.priceText" class="text-lg font-black text-slate-950">{{ dish.priceText }}</p>
-              <p class="mt-2 text-xs font-bold uppercase tracking-[0.18em]" :class="dish.hasModel ? 'text-emerald-700' : 'text-slate-400'">
-                {{ dish.hasModel ? '3D klar' : 'Kun info' }}
-              </p>
-            </div>
-          </button>
-        </div>
-      </section>
-
-      <aside class="lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)]">
-        <div class="flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-900/10 bg-slate-950 text-white shadow-2xl shadow-slate-900/20">
-          <div class="border-b border-white/10 p-5">
-            <p class="text-xs font-bold uppercase tracking-[0.26em] text-orange-300">Valgt ret</p>
-            <div v-if="selectedDish" class="mt-3 flex items-start justify-between gap-3">
+            <p v-if="dish.shortDescription" class="r-dish-desc">{{ dish.shortDescription }}</p>
+            <div v-if="allergenList(dish).length" class="r-dish-meta-row">
               <div>
-                <h2 class="text-2xl font-black leading-tight">{{ selectedDish.name }}</h2>
-                <p v-if="selectedDish.priceText" class="mt-1 text-sm font-bold text-orange-200">{{ selectedDish.priceText }}</p>
+                <h5>Allergener</h5>
+                <p>{{ allergenList(dish).join(' · ') }}</p>
               </div>
-              <NuxtLink
-                :to="`/d/${selectedDish.publicDishId}`"
-                class="inline-flex shrink-0 items-center rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-orange-100"
-                @click="trackMenuArClick(selectedDish)"
-              >
-                AR-visning
-              </NuxtLink>
             </div>
-          </div>
-
-          <div class="min-h-[360px] flex-1 bg-[radial-gradient(circle_at_50%_20%,rgba(251,146,60,0.18),transparent_34%),linear-gradient(180deg,#1f2937_0%,#020617_100%)] p-4">
-            <ViewerDishViewer
-              v-if="selectedDish?.hasModel"
-              :key="selectedDish.publicDishId"
-              :glb-url="modelGlbUrl(selectedDish)"
-              :usdz-url="modelUsdzUrl(selectedDish)"
-              :poster-url="posterUrl(selectedDish)"
-              :alt="selectedDish.name"
-              :scale="viewerScale(selectedDish)"
-              height="100%"
-              rotation-per-second="14deg"
-              @viewer-loaded="trackSelectedViewerLoaded"
-              @ar-clicked="trackSelectedArClicked"
-            />
-            <div v-else class="flex h-full min-h-[360px] flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
-              <svg class="h-14 w-14 text-white/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-              </svg>
-              <h3 class="mt-4 text-xl font-black">3D-model på vej</h3>
-              <p class="mt-2 text-sm leading-6 text-white/60">Retten kan stadig vises, mens modellen bliver gjort klar.</p>
-            </div>
-          </div>
-
-          <div v-if="selectedDish" class="space-y-4 border-t border-white/10 p-5">
-            <p v-if="selectedDish.shortDescription" class="text-sm leading-6 text-white/72">
-              {{ selectedDish.shortDescription }}
-            </p>
             <NuxtLink
-              :to="`/d/${selectedDish.publicDishId}`"
-              class="flex w-full items-center justify-center rounded-2xl bg-orange-500 px-5 py-3 text-sm font-black text-white transition hover:bg-orange-600"
-              @click="trackMenuArClick(selectedDish)"
+              v-if="dish.hasModel"
+              :to="`/d/${dish.publicDishId}`"
+              class="r-dish-ar-btn"
+              @click.stop="trackMenuArClick(dish)"
             >
-              Se på dit bord
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+              </svg>
+              Se i AR
             </NuxtLink>
+            <span v-else class="r-dish-info-tag">Kun info</span>
+          </div>
+
+          <!-- Right: 3D preview -->
+          <div class="r-dish-3d">
+            <div class="r-dish-3d-chrome">
+              <div class="r-dish-3d-corner tl" />
+              <div class="r-dish-3d-corner tr" />
+              <div class="r-dish-3d-corner bl" />
+              <div class="r-dish-3d-corner br" />
+              <div class="r-dish-3d-label"><span class="dot" /> 3D Preview</div>
+            </div>
+            <div class="r-dish-shine" />
+
+            <div v-if="dish.hasModel && dish.publicDishId === selectedPublicDishId" class="r-dish-viewer-wrap">
+              <ViewerDishViewer
+                :key="dish.publicDishId"
+                :glb-url="modelGlbUrl(dish)"
+                :usdz-url="modelUsdzUrl(dish)"
+                :poster-url="posterUrl(dish)"
+                :alt="dish.name"
+                :scale="viewerScale(dish)"
+                height="100%"
+                rotation-per-second="14deg"
+                @viewer-loaded="trackSelectedViewerLoaded"
+                @ar-clicked="trackSelectedArClicked"
+              />
+            </div>
+            <div v-else-if="dish.hasPoster" class="r-dish-model">
+              <img :src="posterUrl(dish)" :alt="dish.name" />
+            </div>
+            <div v-else class="r-dish-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color: rgba(212, 168, 128, 0.4);">
+                <path d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+              </svg>
+            </div>
+
+            <div class="r-dish-3d-foot">
+              <span><span class="ctrl">↻</span> Drej</span>
+              <span><span class="ctrl">⇕</span> Zoom</span>
+            </div>
           </div>
         </div>
-      </aside>
+      </div>
     </main>
   </div>
 </template>
@@ -208,11 +191,11 @@ watch(
 )
 
 useHead({
-  title: computed(() => menu.value ? `${menu.value.restaurant.name} menu - PopPlate` : 'Restaurant menu - PopPlate'),
+  title: computed(() => menu.value ? `${menu.value.restaurant.name} · popplate` : 'Menu · popplate'),
   meta: [
     {
       name: 'description',
-      content: computed(() => menu.value ? `Browse ${menu.value.restaurant.name}'s 3D menu in PopPlate.` : 'Browse a 3D restaurant menu in PopPlate.'),
+      content: computed(() => menu.value ? `Se ${menu.value.restaurant.name}s 3D-menu på popplate.` : 'Se en 3D-menu på popplate.'),
     },
   ],
 })
@@ -273,3 +256,317 @@ function trackMenuArClick(dish: MenuDish) {
   trackEvent('menu_ar_launch_clicked', dish.publicDishId, menu.value.restaurant.id)
 }
 </script>
+
+<style scoped>
+.r-page { padding: 80px 0 120px; }
+@media (max-width: 720px) { .r-page { padding: 48px 0 100px; } }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 40px; }
+@media (max-width: 720px) { .wrap { padding: 0 20px; } }
+
+/* ── Eyebrow ── */
+.eyebrow {
+  @apply font-mono text-[11px] uppercase font-medium text-clay-deep inline-flex items-center gap-3;
+  letter-spacing: 0.22em;
+}
+.eyebrow::before {
+  content: "";
+  width: 16px;
+  height: 1px;
+  background: theme('colors.clay.deep');
+}
+
+/* ── Restaurant header ── */
+.r-header {
+  position: relative;
+  padding: 40px 0 60px;
+  border-bottom: 1px solid rgba(26, 20, 16, 0.10);
+}
+@media (max-width: 720px) { .r-header { padding: 24px 0 40px; } }
+.r-eyebrow {
+  @apply font-mono text-[11px] uppercase font-medium text-clay-deep flex items-center gap-3.5 mb-6;
+  letter-spacing: 0.22em;
+}
+.r-eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: theme('colors.clay.deep');
+}
+.r-name {
+  font-family: theme('fontFamily.display');
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(72px, 11vw, 180px);
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  color: theme('colors.ink.DEFAULT');
+  margin-bottom: 36px;
+}
+.r-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(26, 20, 16, 0.10);
+}
+@media (max-width: 800px) { .r-meta { grid-template-columns: 1fr 1fr; gap: 28px; } }
+.r-meta-item {
+  @apply font-mono text-[11px] uppercase font-medium text-ink-faint;
+  letter-spacing: 0.18em;
+}
+.r-meta-item strong {
+  display: block;
+  margin-top: 6px;
+  font-family: theme('fontFamily.display');
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 400;
+  color: theme('colors.ink.DEFAULT');
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 100px 24px;
+  border: 1px dashed rgba(26, 20, 16, 0.15);
+  border-radius: 4px;
+  margin-top: 60px;
+}
+
+/* ── Menu grid ── */
+.r-menu-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.r-dish {
+  cursor: pointer;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 60px;
+  padding: 40px 0;
+  border-bottom: 1px solid rgba(26, 20, 16, 0.10);
+  align-items: center;
+  transition: background 300ms;
+}
+.r-dish:first-child { border-top: 1px solid rgba(26, 20, 16, 0.10); }
+.r-dish:hover { background: rgba(184, 122, 78, 0.04); }
+.r-dish.selected { background: rgba(184, 122, 78, 0.06); }
+@media (max-width: 800px) {
+  .r-dish { grid-template-columns: 1fr; gap: 24px; padding: 32px 0; }
+}
+
+/* Dish text */
+.r-dish-text { padding: 0 8px 0 0; }
+.r-dish-num {
+  @apply font-mono text-[11px] uppercase font-medium text-clay-deep flex items-center gap-3 mb-3.5;
+  letter-spacing: 0.22em;
+}
+.r-dish-num .bar { width: 20px; height: 1px; background: theme('colors.clay.deep'); }
+.r-dish-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: baseline;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed rgba(26, 20, 16, 0.10);
+}
+.r-dish-head h3 {
+  font-family: theme('fontFamily.display');
+  font-weight: 400;
+  font-size: clamp(28px, 2.6vw, 38px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  flex: 1;
+}
+.r-dish-price {
+  font-family: theme('fontFamily.body');
+  font-size: 20px;
+  font-weight: 500;
+  color: theme('colors.ink.DEFAULT');
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.r-dish-desc {
+  font-size: 15px;
+  color: theme('colors.ink.mute');
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-width: 540px;
+}
+.r-dish-meta-row {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.r-dish-meta-row h5 {
+  @apply font-mono text-[10px] uppercase font-medium text-ink-faint mb-2;
+  letter-spacing: 0.18em;
+}
+.r-dish-meta-row p {
+  font-family: theme('fontFamily.display');
+  font-style: italic;
+  font-size: 16px;
+  color: theme('colors.ink.soft');
+  line-height: 1.35;
+}
+.r-dish-ar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 22px;
+  background: theme('colors.ink.DEFAULT');
+  color: theme('colors.ink.inv');
+  border-radius: 999px;
+  font-family: theme('fontFamily.body');
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 220ms, transform 220ms;
+  white-space: nowrap;
+}
+.r-dish-ar-btn:hover { background: theme('colors.clay.deep'); transform: translateY(-1px); }
+.r-dish-info-tag {
+  @apply font-mono text-[11px] uppercase font-medium text-ink-faint;
+  letter-spacing: 0.18em;
+}
+
+/* 3D preview panel */
+.r-dish-3d {
+  position: relative;
+  aspect-ratio: 1/1;
+  background: linear-gradient(180deg, #1a1410 0%, #2b1f15 100%);
+  overflow: hidden;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    0 30px 60px rgba(26, 20, 16, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.r-dish-3d::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 60%, rgba(184, 122, 78, 0.35), transparent 60%);
+  z-index: 1;
+}
+.r-dish-3d::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  z-index: 1;
+  pointer-events: none;
+}
+.r-dish-viewer-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+}
+.r-dish-model {
+  position: relative;
+  z-index: 2;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 30px 50px rgba(0, 0, 0, 0.5),
+    inset 0 4px 12px rgba(255, 255, 255, 0.1),
+    inset 0 -20px 30px rgba(0, 0, 0, 0.4);
+  animation: rotateModel 14s linear infinite;
+}
+.r-dish-model img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(1.05) contrast(1.05);
+}
+@keyframes rotateModel {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.r-dish-3d:hover .r-dish-model { animation-play-state: paused; }
+.r-dish-placeholder {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.r-dish-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.08) 45%, transparent 60%);
+  z-index: 3;
+  pointer-events: none;
+  animation: shineMove 6s ease-in-out infinite;
+}
+@keyframes shineMove {
+  0%, 100% { transform: translateX(-30%); }
+  50% { transform: translateX(30%); }
+}
+
+/* 3D chrome */
+.r-dish-3d-chrome { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.r-dish-3d-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(212, 168, 128, 0.55);
+}
+.r-dish-3d-corner.tl { top: 14px; left: 14px; border-right: none; border-bottom: none; }
+.r-dish-3d-corner.tr { top: 14px; right: 14px; border-left: none; border-bottom: none; }
+.r-dish-3d-corner.bl { bottom: 14px; left: 14px; border-right: none; border-top: none; }
+.r-dish-3d-corner.br { bottom: 14px; right: 14px; border-left: none; border-top: none; }
+.r-dish-3d-label {
+  position: absolute;
+  top: 14px;
+  right: 50%;
+  transform: translateX(50%);
+  @apply font-mono text-[10px] uppercase font-medium flex items-center gap-2;
+  letter-spacing: 0.22em;
+  color: theme('colors.clay.soft');
+}
+.r-dish-3d-label .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: theme('colors.clay.DEFAULT');
+  animation: dotPulse 1.6s ease-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.r-dish-3d-foot {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  @apply font-mono text-[10px] uppercase font-medium flex gap-3.5;
+  letter-spacing: 0.18em;
+  color: rgba(243, 237, 226, 0.45);
+  z-index: 4;
+}
+.r-dish-3d-foot span { display: flex; align-items: center; gap: 6px; }
+.r-dish-3d-foot .ctrl {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(243, 237, 226, 0.35);
+  display: grid;
+  place-items: center;
+  font-size: 8px;
+}
+</style>
