@@ -14,6 +14,7 @@ export interface GenerateResult {
 
 const POLL_INTERVAL_MS = 5000
 const MAX_POLL_ATTEMPTS = 360
+const STALE_TIMEOUT_MS = 30 * 60 * 1000
 
 export async function handleGenerate(
   jobId: string,
@@ -57,8 +58,15 @@ export async function handleGenerate(
 
   console.log(`[generate] Meshy task created: ${taskId}`)
 
+  const jobStartTime = Date.now()
+
   for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt++) {
     await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS))
+
+    const elapsed = Date.now() - jobStartTime
+    if (elapsed > STALE_TIMEOUT_MS) {
+      throw new Error(`Generation exceeded ${STALE_TIMEOUT_MS / 60000}-minute timeout (elapsed: ${Math.round(elapsed / 60000)}min)`)
+    }
 
     const status = await getTaskStatus(taskId, isMultiImage)
 
