@@ -74,7 +74,7 @@
           <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">QR Code</p>
           <div class="flex items-start gap-4">
             <img
-              :src="qrCode.imageUrl"
+              :src="qrImageUrl"
               alt="QR code"
               class="w-[200px] h-[200px] border border-gray-200 rounded-lg bg-white p-1"
             />
@@ -97,6 +97,8 @@
 </template>
 
 <script setup lang="ts">
+import QRCode from 'qrcode'
+
 interface DishForPublish {
   id: string
   publicDishId: string
@@ -124,14 +126,62 @@ const emit = defineEmits<{
   unpublished: []
 }>()
 
-// Use the QR code's stored publicUrl when available, otherwise construct from window.location
+const config = useRuntimeConfig()
+const generatedQrImageUrl = ref<string | null>(null)
+
 const publicUrl = computed(() => {
-  if (props.qrCode?.publicUrl) return props.qrCode.publicUrl
+  const clientUrl = getCanonicalClientUrl()
+  const storedUrl = normalizeDishUrl(props.qrCode?.publicUrl)
+
+  if (clientUrl) return clientUrl
+  if (storedUrl && !isLegacyHost(storedUrl)) return storedUrl.href
+  if (storedUrl) return `/d/${props.dish.publicDishId}`
+
+  return `/d/${props.dish.publicDishId}`
+})
+
+const qrImageUrl = computed(() => generatedQrImageUrl.value ?? props.qrCode?.imageUrl)
+
+watch(publicUrl, async (url) => {
+  generatedQrImageUrl.value = await QRCode.toDataURL(url, {
+    width: 512,
+    margin: 2,
+  })
+}, { immediate: true })
+
+function getCanonicalClientUrl(): string | null {
   if (typeof window !== 'undefined') {
     return `${window.location.origin}/d/${props.dish.publicDishId}`
   }
-  return `/d/${props.dish.publicDishId}`
-})
+
+  const appUrl = normalizeOrigin(config.public.appUrl)
+  if (!appUrl || isLegacyHost(appUrl)) return null
+  return `${appUrl.origin}/d/${props.dish.publicDishId}`
+}
+
+function normalizeDishUrl(url?: string): URL | null {
+  if (!url) return null
+  try {
+    return new URL(url)
+  } catch {
+    return null
+  }
+}
+
+function normalizeOrigin(url?: unknown): URL | null {
+  if (typeof url !== 'string' || !url) return null
+  try {
+    return new URL(url)
+  } catch {
+    return null
+  }
+}
+
+function isLegacyHost(url: URL): boolean {
+  return url.hostname === 'localhost'
+    || url.hostname === '127.0.0.1'
+    || url.hostname.endsWith('.sslip.io')
+}
 
 const canPublish = computed(() =>
   props.dish.status === 'ready' &&
@@ -184,9 +234,10 @@ async function copyUrl() {
 }
 
 function downloadQr() {
-  if (!props.qrCode) return
+  const href = qrImageUrl.value
+  if (!href) return
   const a = document.createElement('a')
-  a.href = props.qrCode.imageUrl
+  a.href = href
   a.download = `qr-${props.dish.publicDishId}.png`
   document.body.appendChild(a)
   a.click()

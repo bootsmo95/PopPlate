@@ -36,7 +36,7 @@ export interface MeshyTaskStatus {
 const MESHY_PARAMS = {
   ai_model: 'meshy-6',
   topology: 'triangle',
-  target_polycount: 30000,
+  target_polycount: 12000,
   target_formats: ['glb', 'usdz'],
   enable_pbr: true,
   should_remesh: true,
