@@ -1,186 +1,82 @@
+<script setup lang="ts">
+// Route: / (landing)
+definePageMeta({ layout: 'public' })
+useHead({ title: 'popplate · Menu i 3D' })
+</script>
+
 <template>
-  <div class="min-h-screen bg-stone-50 text-slate-950">
-    <header class="border-b border-slate-200/80 bg-stone-50/90 backdrop-blur">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-6 lg:px-8">
-        <NuxtLink to="/" class="text-lg font-black tracking-tight text-slate-950">
-          PopPlate
-        </NuxtLink>
+  <main data-screen-label="Landing">
+    <!-- HERO -->
+    <section class="relative pt-20 pb-15 overflow-hidden">
+      <!-- Texture / glow overlays -->
+      <div class="absolute inset-0 pointer-events-none z-0 opacity-50"
+           style="background: radial-gradient(ellipse 1200px 700px at 50% 20%, rgba(212, 168, 128, 0.35), transparent 65%), radial-gradient(ellipse 800px 600px at 20% 80%, rgba(139, 78, 44, 0.18), transparent 60%);" />
 
-        <div class="flex items-center gap-2 text-sm font-semibold">
-          <NuxtLink to="/pricing" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-white hover:text-slate-950">
-            Pricing
+      <div class="relative z-[2] grid place-items-center pt-5" style="height: min(78vh, 720px);">
+        <!-- Giant wordmark behind -->
+        <div
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display italic font-medium text-ink whitespace-nowrap z-[2] pointer-events-none select-none"
+          style="font-size: clamp(120px, 22vw, 360px); line-height: 1; letter-spacing: -0.04em;"
+        >popplate<span class="text-clay-deep">.</span></div>
+
+        <!-- Centerpiece "image" placeholder -->
+        <div
+          class="relative z-[3] overflow-hidden bg-deep"
+          style="
+            width: clamp(320px, 36vw, 500px);
+            aspect-ratio: 1 / 1.15;
+            box-shadow: 0 60px 120px rgba(26, 20, 16, 0.32), 0 20px 40px rgba(26, 20, 16, 0.18);
+            background:
+              radial-gradient(circle at 50% 35%, theme('colors.clay.soft') 0%, theme('colors.clay.DEFAULT') 30%, theme('colors.clay.deep') 75%, #1a1410 100%);
+          "
+        >
+          <div
+            class="absolute inset-0 z-[2]"
+            style="background: radial-gradient(ellipse 80% 60% at 25% 20%, rgba(255, 240, 220, 0.45), transparent 60%), radial-gradient(ellipse 60% 50% at 85% 90%, rgba(0, 0, 0, 0.4), transparent 70%);"
+          />
+        </div>
+
+        <!-- Editorial corner labels -->
+        <div class="absolute top-8 left-10 z-[4] mono-label flex items-center gap-3 max-[900px]:text-[9px]">
+          <span class="font-display italic text-[18px] text-clay-deep tracking-[-0.01em] normal-case">N° 01</span>
+          <span class="w-6 h-px bg-clay-deep" />
+          Studio Notes
+        </div>
+        <div class="absolute top-8 right-10 z-[4] mono-label flex items-center gap-3 max-[900px]:text-[9px]">
+          A/W 2026
+          <span class="font-display italic text-[18px] text-clay-deep tracking-[-0.01em] normal-case">— Folkér</span>
+        </div>
+      </div>
+
+      <!-- Caption -->
+      <div class="relative z-[5] text-center mx-auto mt-10" style="width: min(680px, 90vw);">
+        <h1 class="font-display font-normal text-ink-soft max-w-[540px] mx-auto" style="font-size: clamp(26px, 2.8vw, 40px); letter-spacing: -0.015em; line-height: 1.15;">
+          En menu der ikke <span class="italic text-clay-deep">står stille</span> — gæsten kan se hver ret i 3D, før den ankommer.
+        </h1>
+        <div class="flex justify-center gap-3.5 mt-8 flex-wrap">
+          <NuxtLink to="/platform/signup" class="btn-primary">
+            <span>Få demo til din restaurant</span>
+            <span class="w-7 h-7 rounded-full grid place-items-center" style="background: rgba(255,255,255,0.12);">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </span>
           </NuxtLink>
-          <NuxtLink to="/platform/login" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-white hover:text-slate-950">
-            Sign in
-          </NuxtLink>
-          <NuxtLink to="/platform/signup" class="rounded-lg bg-slate-950 px-4 py-2 text-white transition hover:bg-slate-800">
-            Start free
-          </NuxtLink>
+          <NuxtLink to="/r/folker" class="btn-ghost">Se eksempel-menu</NuxtLink>
         </div>
-      </nav>
-    </header>
-
-    <main>
-      <section class="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-20">
-        <div class="flex flex-col justify-center">
-          <p class="mb-5 inline-flex w-fit rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-700">
-            3D menu previews
-          </p>
-          <h1 class="max-w-3xl text-5xl font-black leading-[0.95] tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
-            Let guests see the dish before they order.
-          </h1>
-          <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            PopPlate turns menu photos into scan-ready 3D dish pages, so restaurants can show portions, plating, and texture directly from a QR code at the table.
-          </p>
-
-          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-            <NuxtLink to="/platform/signup" class="inline-flex items-center justify-center rounded-lg bg-slate-950 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-slate-800">
-              Create your first plate
-            </NuxtLink>
-            <NuxtLink to="/pricing" class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-900 transition hover:border-slate-400">
-              Compare plans
-            </NuxtLink>
-          </div>
-
-          <dl class="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-slate-200 pt-6">
-            <div>
-              <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Launch</dt>
-              <dd class="mt-1 text-2xl font-black text-slate-950">Minutes</dd>
-            </div>
-            <div>
-              <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Viewing</dt>
-              <dd class="mt-1 text-2xl font-black text-slate-950">3D + AR</dd>
-            </div>
-            <div>
-              <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Sharing</dt>
-              <dd class="mt-1 text-2xl font-black text-slate-950">QR</dd>
-            </div>
-          </dl>
-        </div>
-
-        <div class="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 p-4 shadow-2xl shadow-slate-900/20">
-          <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-orange-400/30 to-transparent" />
-          <div class="relative flex h-full flex-col justify-between rounded-[1.5rem] bg-stone-100 p-5">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Table 12</p>
-                <h2 class="mt-1 text-2xl font-black text-slate-950">Charred leek risotto</h2>
-              </div>
-              <span class="rounded-full bg-slate-950 px-3 py-1 text-sm font-bold text-white">146 kr</span>
-            </div>
-
-            <div class="my-8 flex flex-1 items-center justify-center">
-              <div class="relative aspect-square w-full max-w-sm rounded-full bg-gradient-to-br from-stone-200 via-white to-orange-100 shadow-inner">
-                <div class="absolute inset-8 rounded-full border border-stone-300 bg-white shadow-xl" />
-                <div class="absolute left-[22%] top-[28%] h-[32%] w-[56%] rotate-[-18deg] rounded-full bg-emerald-900 shadow-lg" />
-                <div class="absolute left-[28%] top-[33%] h-[30%] w-[48%] rotate-[-18deg] rounded-full bg-lime-600" />
-                <div class="absolute left-[24%] top-[44%] h-[24%] w-[48%] rotate-[10deg] rounded-full bg-amber-200" />
-                <div class="absolute left-[45%] top-[28%] h-16 w-16 rounded-full bg-orange-500 shadow-lg" />
-                <div class="absolute bottom-[22%] right-[28%] h-10 w-16 rotate-12 rounded-full bg-slate-800" />
-              </div>
-            </div>
-
-            <div class="grid gap-3 sm:grid-cols-2">
-              <div class="rounded-xl border border-slate-200 bg-white p-4">
-                <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Guest view</p>
-                <p class="mt-2 text-sm leading-6 text-slate-600">Open a dish from a QR code, inspect the 3D plate, then place it on the table in AR.</p>
-              </div>
-              <div class="rounded-xl border border-slate-200 bg-white p-4">
-                <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Kitchen ready</p>
-                <p class="mt-2 text-sm leading-6 text-slate-600">Keep dish names, descriptions, prices, allergens, and model assets in one platform flow.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="border-y border-slate-200 bg-white">
-        <div class="mx-auto grid max-w-6xl gap-8 px-5 py-14 sm:px-6 lg:grid-cols-3 lg:px-8">
-          <div>
-            <p class="text-sm font-bold uppercase tracking-[0.2em] text-orange-600">How it works</p>
-            <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950">A shorter path from upload to table.</h2>
-          </div>
-          <div class="space-y-3">
-            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-950 text-sm font-black text-white">1</span>
-            <h3 class="text-xl font-black text-slate-950">Add the dish details</h3>
-            <p class="leading-7 text-slate-600">Create each plate with guest-facing copy, pricing, allergens, and restaurant context.</p>
-          </div>
-          <div class="space-y-3">
-            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-950 text-sm font-black text-white">2</span>
-            <h3 class="text-xl font-black text-slate-950">Publish a QR landing page</h3>
-            <p class="leading-7 text-slate-600">Share one clean public URL per dish with a poster, 3D viewer, and mobile AR launch.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="mx-auto max-w-6xl px-5 py-16 sm:px-6 lg:px-8">
-        <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <div>
-            <p class="text-sm font-bold uppercase tracking-[0.2em] text-orange-600">Built for service</p>
-            <h2 class="mt-3 text-4xl font-black tracking-tight text-slate-950">The menu stays practical, not precious.</h2>
-            <p class="mt-5 leading-8 text-slate-600">
-              PopPlate is for restaurants that need a clearer way to sell signature dishes, tasting menus, specials, and premium add-ons without rebuilding their whole website.
-            </p>
-          </div>
-
-          <div class="grid gap-4 sm:grid-cols-2">
-            <article v-for="feature in features" :key="feature.title" class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p class="text-sm font-black text-slate-950">{{ feature.title }}</p>
-              <p class="mt-2 text-sm leading-6 text-slate-600">{{ feature.copy }}</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="bg-slate-950 px-5 py-16 text-white sm:px-6 lg:px-8">
-        <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
-          <div>
-            <p class="text-sm font-bold uppercase tracking-[0.2em] text-orange-300">Start simple</p>
-            <h2 class="mt-3 max-w-2xl text-4xl font-black tracking-tight">Use the Free plan to validate the experience, then upgrade when the menu grows.</h2>
-          </div>
-          <div class="flex flex-col gap-3 sm:flex-row">
-            <NuxtLink to="/platform/signup" class="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-stone-100">
-              Start free
-            </NuxtLink>
-            <NuxtLink to="/pricing" class="inline-flex items-center justify-center rounded-lg border border-white/20 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10">
-              View pricing
-            </NuxtLink>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
+      </div>
+    </section>
+  </main>
 </template>
 
-<script setup lang="ts">
-definePageMeta({ layout: 'public' })
-
-useHead({
-  title: 'PopPlate - 3D menu previews for restaurants',
-  meta: [
-    {
-      name: 'description',
-      content: 'Create scan-ready 3D dish pages with AR viewing for restaurant menus.',
-    },
-  ],
-})
-
-const features = [
-  {
-    title: 'QR-first dish pages',
-    copy: 'Give every featured plate a public page that works from the table, menu board, or printed insert.',
-  },
-  {
-    title: '3D and AR viewing',
-    copy: 'Let guests rotate dishes on screen and open mobile AR when the device supports it.',
-  },
-  {
-    title: 'Restaurant platform flow',
-    copy: 'Manage dishes, media, descriptions, prices, allergens, and publishing from one workspace.',
-  },
-  {
-    title: 'Lightweight rollout',
-    copy: 'Start with a few high-impact dishes without replacing the existing menu or ordering system.',
-  },
-]
-</script>
+<style scoped>
+.btn-primary {
+  @apply font-body font-medium text-[15px] px-7 py-4.5 rounded-full bg-ink text-ink-inv inline-flex items-center gap-3.5 transition whitespace-nowrap;
+}
+.btn-primary:hover {
+  @apply -translate-y-0.5 bg-clay-deep;
+  box-shadow: 0 18px 40px rgba(139, 78, 44, 0.3);
+}
+.btn-ghost {
+  @apply font-body font-medium text-[15px] px-7 py-4.5 rounded-full border border-line-strong text-ink inline-flex items-center gap-3 transition whitespace-nowrap;
+}
+.btn-ghost:hover { border-color: theme('colors.ink.DEFAULT'); background: rgba(26,20,16,0.04); }
+</style>

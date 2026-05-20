@@ -1,140 +1,10 @@
-<template>
-  <div class="p-6 md:p-8">
-    <div class="mb-6">
-      <NuxtLink to="/platform/settings" class="text-sm text-gray-500 hover:text-gray-700">
-        Back to restaurants
-      </NuxtLink>
-    </div>
-
-    <div v-if="pending" class="text-sm text-gray-500">Loading restaurant...</div>
-    <div v-else-if="error" class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-      Failed to load restaurant.
-    </div>
-
-    <template v-else-if="restaurant">
-      <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-200 bg-slate-950 px-5 py-6 text-white md:px-7">
-          <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Restaurant workspace</p>
-              <h1 class="mt-2 text-3xl font-bold tracking-tight md:text-4xl">{{ restaurant.name }}</h1>
-              <p class="mt-2 text-sm text-slate-300">/r/{{ restaurant.slug }}</p>
-            </div>
-
-            <div class="flex flex-col gap-2 sm:flex-row">
-              <NuxtLink
-                :to="publicMenuPath"
-                class="inline-flex items-center justify-center rounded-lg bg-orange-400 px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-orange-300"
-              >
-                Open public menu
-              </NuxtLink>
-              <NuxtLink
-                :to="'/platform/r/' + restaurant.slug + '/dishes'"
-                class="inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Manage dishes
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid gap-4 p-5 md:grid-cols-3 md:p-7">
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Total dishes</p>
-            <p class="mt-2 text-3xl font-bold text-slate-950">{{ restaurant.dishCount }}</p>
-          </div>
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Published</p>
-            <p class="mt-2 text-3xl font-bold text-slate-950">{{ restaurant.publishedDishCount }}</p>
-          </div>
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Status</p>
-            <p class="mt-3 inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-800">
-              {{ restaurant.status }}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Latest dishes</p>
-            <h2 class="mt-1 text-xl font-bold text-slate-950">Restaurant menu work</h2>
-          </div>
-          <NuxtLink
-            :to="{ path: '/platform/dishes/new', query: { restaurantId: restaurant.id } }"
-            class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
-            Add dish
-          </NuxtLink>
-        </div>
-
-        <div v-if="!restaurant.latestDishes.length" class="mt-5 rounded-xl border border-dashed border-slate-300 p-8 text-center">
-          <p class="font-medium text-slate-800">No dishes in this restaurant yet</p>
-          <p class="mt-1 text-sm text-slate-500">Create the first dish and it will appear here.</p>
-        </div>
-
-        <div v-else class="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <NuxtLink
-            v-for="dish in restaurant.latestDishes"
-            :key="dish.id"
-            :to="'/platform/dishes/' + dish.id"
-            class="rounded-xl border border-slate-200 p-4 transition hover:border-slate-300 hover:shadow-sm"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <h3 class="font-semibold text-slate-950">{{ dish.name }}</h3>
-                <p class="mt-1 text-sm text-slate-500">{{ dish.priceText || 'No price' }}</p>
-              </div>
-              <AdminStatusBadge :status="dish.status" />
-            </div>
-            <p class="mt-3 line-clamp-2 text-sm text-slate-600">
-              {{ dish.shortDescription || 'No description yet.' }}
-            </p>
-          </NuxtLink>
-        </div>
-
-        <div class="mt-5 flex flex-col gap-2 sm:flex-row">
-          <NuxtLink
-            :to="'/platform/r/' + restaurant.slug + '/dishes'"
-            class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
-            View all restaurant dishes
-          </NuxtLink>
-          <NuxtLink
-            :to="publicMenuPath"
-            class="inline-flex items-center justify-center rounded-lg border border-orange-200 px-4 py-2 text-sm font-semibold text-orange-700 transition hover:bg-orange-50"
-          >
-            View guest menu
-          </NuxtLink>
-        </div>
-     </section>
-
-      <section v-if="isAdmin" class="mt-6 rounded-2xl border border-red-200 bg-white p-5 shadow-sm md:p-7">
-        <p class="text-xs font-semibold uppercase tracking-wide text-red-500">Danger zone</p>
-        <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 class="text-lg font-bold text-slate-950">Delete restaurant</h2>
-            <p class="mt-1 text-sm text-slate-500">Permanently removes this restaurant and its dishes, QR codes, analytics, jobs, and source image records.</p>
-          </div>
-          <button
-            type="button"
-            :disabled="deleting"
-            class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-            @click="handleDeleteRestaurant"
-          >
-            {{ deleting ? 'Deleting...' : 'Delete restaurant' }}
-          </button>
-        </div>
-        <p v-if="deleteError" class="mt-3 text-sm text-red-600">{{ deleteError }}</p>
-      </section>
-    </template>
-  </div>
-</template>
-
 <script setup lang="ts">
-import type { DishStatus } from '~/types'
+import TopBar from '~/components/platform/TopBar.vue'
+import PageHead from '~/components/platform/PageHead.vue'
+import StatCard from '~/components/platform/StatCard.vue'
+import DishTable from '~/components/platform/DishTable.vue'
+import Icon from '~/components/shared/Icon.vue'
+import type { Dish as DesignDish, DishStatus } from '~/types/popplate'
 
 definePageMeta({ layout: 'platform' })
 
@@ -144,6 +14,8 @@ interface RestaurantDish {
   shortDescription: string | null
   priceText: string | null
   status: DishStatus
+  posterUrl?: string | null
+  publicDishId?: string
 }
 
 interface RestaurantDetail {
@@ -169,11 +41,43 @@ const { data: restaurant, pending, error } = await useFetch<RestaurantDetail>(
   { headers: ssrHeaders },
 )
 
+useHead({ title: computed(() => restaurant.value ? `${restaurant.value.name} · popplate` : 'Workspace · popplate') })
+
 const publicMenuPath = computed(() => restaurant.value ? '/r/' + restaurant.value.slug : '/platform/settings')
+
+/** Map API dish to the design Dish shape */
+function toDesignDish(d: RestaurantDish): DesignDish {
+  return {
+    id: d.id,
+    name: d.name,
+    restaurant: restaurant.value?.name ?? '',
+    status: d.status as DishStatus,
+    price: d.priceText ?? '',
+    views: 0,
+    scans: 0,
+    img: d.posterUrl ?? '',
+    updated: '',
+  }
+}
+
+const dishes = computed(() => (restaurant.value?.latestDishes ?? []).map(toDesignDish))
+const publishedCount = computed(() => restaurant.value?.publishedDishCount ?? 0)
+
+const INFO = computed<Array<[string, string]>>(() => {
+  if (!restaurant.value) return []
+  return [
+    ['Navn', restaurant.value.name],
+    ['Live URL', `popplate.dk/r/${restaurant.value.slug}`],
+    ['Slug', restaurant.value.slug],
+    ['Status', restaurant.value.status === 'active' ? 'Aktiv' : restaurant.value.status],
+    ['Retter', String(restaurant.value.dishCount)],
+    ['Publiceret', String(restaurant.value.publishedDishCount)],
+  ]
+})
 
 async function handleDeleteRestaurant() {
   if (!restaurant.value) return
-  if (!confirm('Permanently delete this restaurant? This also deletes its dishes, QR codes, analytics, jobs, and source image records.')) return
+  if (!confirm('Slet denne restaurant permanent? Dette sletter ogsa alle retter, QR-koder, analytics, jobs og billeddata.')) return
 
   deleting.value = true
   deleteError.value = ''
@@ -186,9 +90,134 @@ async function handleDeleteRestaurant() {
     await navigateTo('/platform/settings')
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    deleteError.value = e?.data?.message ?? e?.message ?? 'Failed to delete restaurant.'
+    deleteError.value = e?.data?.message ?? e?.message ?? 'Kunne ikke slette restaurant.'
   } finally {
     deleting.value = false
   }
 }
 </script>
+
+<template>
+  <div data-screen-label="Workspace">
+    <TopBar />
+
+    <!-- Loading -->
+    <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
+      Indlaeser restaurant...
+    </div>
+
+    <!-- Error -->
+    <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
+      Kunne ikke indlaese restaurant.
+    </div>
+
+    <template v-else-if="restaurant">
+      <PageHead :eyebrow="`${restaurant.status === 'active' ? 'Aktiv' : restaurant.status}`">
+        <template #title>
+          <h1 class="page-title"><span class="accent">{{ restaurant.name }}</span></h1>
+        </template>
+        <template #sub>
+          <p class="text-ink-mute mt-3 text-[15px] max-w-[480px]">
+            Restaurant-overblik. Alle retter scopet til denne adresse.
+          </p>
+        </template>
+        <template #actions>
+          <NuxtLink :to="publicMenuPath" target="_blank" rel="noopener" class="top-btn">
+            <Icon name="arrow-up-right" :size="14" />
+            <span>Live menu</span>
+          </NuxtLink>
+          <NuxtLink :to="{ path: '/platform/dishes/new', query: { restaurantId: restaurant.id } }" class="top-btn top-btn--primary">
+            <Icon name="plus" :size="14" /><span>Ny ret</span>
+          </NuxtLink>
+        </template>
+      </PageHead>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-4 gap-4 mb-8 max-[1100px]:grid-cols-2 max-[480px]:grid-cols-1">
+        <StatCard label="Retter" :value="restaurant.dishCount" caption="i alt" />
+        <StatCard label="Publiceret" :value="publishedCount" caption="live pa menu" />
+        <StatCard label="AR-visninger" value="--" sub="/30d" caption="kommer snart" />
+        <StatCard label="QR-scans" value="--" sub="/30d" caption="kommer snart" />
+      </div>
+
+      <!-- Info panel + top performers placeholder -->
+      <div class="two-col mb-6">
+        <div class="p-card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Seneste retter</h3>
+            <NuxtLink :to="`/platform/r/${restaurant.slug}/dishes`" class="font-mono text-[11px] uppercase font-medium text-clay-deep tracking-[0.15em]">
+              Se alle &rarr;
+            </NuxtLink>
+          </div>
+          <div v-if="!dishes.length" class="py-12 text-center text-ink-faint">
+            Ingen retter endnu. Opret den foerste for at komme i gang.
+          </div>
+          <div v-else class="flex flex-col">
+            <NuxtLink
+              v-for="(d, i) in dishes.slice(0, 5)" :key="d.id"
+              :to="`/platform/dishes/${d.id}`"
+              class="flex gap-3 py-3.5 items-center no-underline text-inherit"
+              :class="i < Math.min(dishes.length, 5) - 1 && 'border-b border-line'"
+            >
+              <span class="font-mono text-[11px] text-ink-faint">{{ String(i + 1).padStart(2, '0') }}</span>
+              <div
+                class="w-11 h-11 bg-card bg-cover bg-center rounded shrink-0"
+                :style="d.img ? { backgroundImage: `url(${d.img})` } : {}"
+              />
+              <div class="min-w-0 flex-1">
+                <div class="font-display text-[17px] font-normal tracking-[-0.01em] truncate">{{ d.name }}</div>
+              </div>
+              <span class="status-badge" :class="`status-badge--${d.status}`">{{ d.status }}</span>
+            </NuxtLink>
+          </div>
+        </div>
+
+        <aside class="p-card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Restaurant-info</h3>
+          </div>
+          <dl class="m-0">
+            <div v-for="[k, v] in INFO" :key="k" class="flex justify-between py-3 border-b border-line text-sm">
+              <dt class="mono-label">{{ k }}</dt>
+              <dd class="font-display italic text-base">{{ v }}</dd>
+            </div>
+          </dl>
+          <div class="flex gap-2.5 mt-4">
+            <NuxtLink to="/platform/settings" class="top-btn flex-1 !justify-center">Rediger info</NuxtLink>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Full dish table -->
+      <div class="p-card">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Alle retter pa {{ restaurant.name }}</h3>
+          <NuxtLink :to="`/platform/r/${restaurant.slug}/dishes`" class="font-mono text-[11px] uppercase font-medium text-clay-deep tracking-[0.15em]">
+            Aabn fuld liste &rarr;
+          </NuxtLink>
+        </div>
+        <DishTable :dishes="dishes" compact />
+      </div>
+
+      <!-- Admin danger zone -->
+      <div v-if="isAdmin" class="mt-6 p-card border-[#8a4838]/20">
+        <div class="mono-label !text-[#8a4838] mb-3">Farezone</div>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Slet restaurant</h3>
+            <p class="text-sm text-ink-mute mt-1">Sletter permanent denne restaurant og alle tilhoerende retter, QR-koder, analytics, jobs og billeder.</p>
+          </div>
+          <button
+            type="button"
+            :disabled="deleting"
+            class="top-btn !border-[#8a4838]/40 !text-[#8a4838] hover:!bg-[#8a4838]/5 shrink-0"
+            @click="handleDeleteRestaurant"
+          >
+            {{ deleting ? 'Sletter...' : 'Slet restaurant' }}
+          </button>
+        </div>
+        <p v-if="deleteError" class="mt-3 text-sm text-[#8a4838]">{{ deleteError }}</p>
+      </div>
+    </template>
+  </div>
+</template>

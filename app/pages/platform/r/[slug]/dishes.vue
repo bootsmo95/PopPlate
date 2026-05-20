@@ -1,102 +1,9 @@
-<template>
-  <div class="p-6 md:p-8">
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <NuxtLink :to="'/platform/r/' + slug" class="text-sm text-gray-500 hover:text-gray-700">
-        Back to restaurant
-      </NuxtLink>
-      <NuxtLink
-        v-if="data?.restaurant"
-        :to="{ path: '/platform/dishes/new', query: { restaurantId: data.restaurant.id } }"
-        class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-      >
-        Add dish
-      </NuxtLink>
-    </div>
-
-    <div v-if="pending" class="text-sm text-gray-500">Loading dishes...</div>
-    <div v-else-if="error" class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-      Failed to load restaurant dishes.
-    </div>
-
-    <template v-else-if="data">
-      <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Restaurant dishes</p>
-        <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 class="text-3xl font-bold text-slate-950">{{ data.restaurant.name }}</h1>
-            <p class="mt-1 text-sm text-slate-500">Edit the dishes that belong to /r/{{ data.restaurant.slug }}.</p>
-          </div>
-          <NuxtLink
-            :to="'/r/' + data.restaurant.slug"
-            class="inline-flex items-center justify-center rounded-lg border border-orange-200 px-4 py-2 text-sm font-semibold text-orange-700 transition hover:bg-orange-50"
-          >
-            Open menu
-          </NuxtLink>
-        </div>
-      </div>
-
-      <div v-if="!data.dishes.length" class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
-        <p class="text-lg font-semibold text-slate-900">No dishes here yet</p>
-        <p class="mt-2 text-sm text-slate-500">Create a dish from this restaurant workspace to attach it correctly.</p>
-      </div>
-
-      <div v-else class="grid gap-4 lg:grid-cols-2">
-        <article
-          v-for="dish in data.dishes"
-          :key="dish.id"
-          class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-        >
-          <div class="flex gap-4 p-4">
-            <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100">
-              <img
-                v-if="dish.posterUrl"
-                :src="dish.posterUrl"
-                :alt="dish.name"
-                class="h-full w-full object-cover"
-              >
-              <div v-else class="flex h-full w-full items-center justify-center text-xs font-semibold uppercase tracking-wide text-slate-400">
-                No image
-              </div>
-            </div>
-
-            <div class="min-w-0 flex-1">
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <h2 class="truncate text-lg font-semibold text-slate-950">{{ dish.name }}</h2>
-                  <p class="mt-1 text-sm text-slate-500">{{ dish.priceText || 'No price' }}</p>
-                </div>
-                <AdminStatusBadge :status="dish.status" />
-              </div>
-
-              <p class="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
-                {{ dish.shortDescription || 'No description yet.' }}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-2 border-t border-slate-100 bg-slate-50 p-4 sm:flex-row sm:justify-end">
-            <NuxtLink
-              v-if="dish.publicDishId"
-              :to="'/d/' + dish.publicDishId"
-              class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white"
-            >
-              Public dish
-            </NuxtLink>
-            <NuxtLink
-              :to="'/platform/dishes/' + dish.id"
-              class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              Edit dish
-            </NuxtLink>
-          </div>
-        </article>
-      </div>
-    </template>
-  </div>
-</template>
-
 <script setup lang="ts">
-import type { DishStatus } from '~/types'
+import TopBar from '~/components/platform/TopBar.vue'
+import PageHead from '~/components/platform/PageHead.vue'
+import DishTable from '~/components/platform/DishTable.vue'
+import Icon from '~/components/shared/Icon.vue'
+import type { Dish as DesignDish, DishStatus } from '~/types/popplate'
 
 definePageMeta({ layout: 'platform' })
 
@@ -130,4 +37,76 @@ const { data, pending, error } = await useFetch<RestaurantDishesResponse>(
   () => '/api/restaurants/' + slug.value + '/dishes',
   { headers: ssrHeaders },
 )
+
+useHead({ title: computed(() => data.value ? `Retter · ${data.value.restaurant.name} · popplate` : 'Retter · popplate') })
+
+/** Map API dish to the design Dish shape */
+function toDesignDish(d: DishItem): DesignDish {
+  return {
+    id: d.id,
+    name: d.name,
+    restaurant: data.value?.restaurant.name ?? '',
+    status: d.status as DishStatus,
+    price: d.priceText ?? '',
+    views: 0,
+    scans: 0,
+    img: d.posterUrl ?? '',
+    updated: '',
+  }
+}
+
+const dishes = computed(() => (data.value?.dishes ?? []).map(toDesignDish))
 </script>
+
+<template>
+  <div data-screen-label="RestaurantDishes">
+    <TopBar />
+
+    <!-- Loading -->
+    <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
+      Indlaeser retter...
+    </div>
+
+    <!-- Error -->
+    <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
+      Kunne ikke indlaese retter.
+    </div>
+
+    <template v-else-if="data">
+      <PageHead :back-href="`/platform/r/${data.restaurant.slug}`" :back-label="data.restaurant.name">
+        <template #title>
+          <h1 class="page-title">Retter pa <span class="accent">{{ data.restaurant.name }}</span></h1>
+        </template>
+        <template #sub>
+          <p class="text-ink-mute mt-3 text-[15px] max-w-[480px]">
+            Rediger retterne der hoerer til /r/{{ data.restaurant.slug }}.
+          </p>
+        </template>
+        <template #actions>
+          <NuxtLink
+            :to="'/r/' + data.restaurant.slug"
+            target="_blank"
+            rel="noopener"
+            class="top-btn"
+          >
+            <Icon name="arrow-up-right" :size="14" />
+            <span>Aabn menu</span>
+          </NuxtLink>
+          <NuxtLink
+            :to="{ path: '/platform/dishes/new', query: { restaurantId: data.restaurant.id } }"
+            class="top-btn top-btn--primary"
+          >
+            <Icon name="plus" :size="14" /><span>Ny ret</span>
+          </NuxtLink>
+        </template>
+      </PageHead>
+
+      <div v-if="!dishes.length" class="p-card py-16 text-center text-ink-faint">
+        <div class="font-display italic text-2xl text-ink mb-2">Ingen retter endnu</div>
+        <p>Opret en ret fra denne restaurant for at tilknytte den korrekt.</p>
+      </div>
+
+      <DishTable v-else :dishes="dishes" />
+    </template>
+  </div>
+</template>

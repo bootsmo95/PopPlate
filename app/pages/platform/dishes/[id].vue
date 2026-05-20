@@ -1,220 +1,239 @@
 <template>
-  <div class="p-6 max-w-2xl">
-    <div class="mb-6">
-      <NuxtLink to="/platform/dishes" class="text-sm text-gray-500 hover:text-gray-700">
-        ← Back to Dishes
-      </NuxtLink>
-    </div>
+  <div data-screen-label="Edit dish">
+    <TopBar :show-search="false" cta-label="Gem ændringer" cta-href="#save" />
 
     <!-- Loading -->
-    <div v-if="pending" class="text-gray-500 text-sm">Loading…</div>
+    <div v-if="pending" class="text-ink-mute text-sm py-12 text-center">Loading...</div>
 
     <!-- Error loading -->
-    <div v-else-if="fetchError" class="text-red-600 text-sm">Failed to load dish.</div>
+    <div v-else-if="fetchError" class="text-red-600 text-sm py-12 text-center">Failed to load dish.</div>
 
     <template v-else-if="dish">
-      <!-- Title + status -->
-      <div class="flex items-start gap-3 mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 leading-tight">{{ dish.name }}</h1>
-        <AdminStatusBadge :status="dish.status" class="mt-1 flex-shrink-0" />
-      </div>
-
-      <!-- Edit form -->
-      <form @submit.prevent="handleSave" class="space-y-5 mb-10">
-        <!-- Name -->
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
-            Name <span class="text-red-500">*</span>
-          </label>
-          <input
-            id="name"
-            v-model="form.name"
-            type="text"
-            required
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
-          />
-        </div>
-
-        <!-- Short Description -->
-        <div>
-          <label for="shortDescription" class="block text-sm font-medium text-gray-700 mb-1">
-            Short Description
-          </label>
-          <textarea
-            id="shortDescription"
-            v-model="form.shortDescription"
-            rows="2"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
-          />
-        </div>
-
-        <!-- Price -->
-        <div>
-          <label for="priceText" class="block text-sm font-medium text-gray-700 mb-1">
-            Price
-          </label>
-          <input
-            id="priceText"
-            v-model="form.priceText"
-            type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
-          />
-        </div>
-
-        <!-- Dish size -->
-        <div>
-          <label for="scaleCm" class="block text-sm font-medium text-gray-700 mb-1">
-            Dish size in AR (cm)
-          </label>
-          <input
-            id="scaleCm"
-            v-model.number="form.scaleCm"
-            type="number"
-            min="1"
-            max="200"
-            step="0.1"
-            placeholder="24"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
-          />
-          <p class="mt-1 text-xs text-gray-500">Use the real plate width/diameter, e.g. 24 cm.</p>
-        </div>
-
-        <!-- Allergens -->
-        <div>
-          <label for="allergens" class="block text-sm font-medium text-gray-700 mb-1">
-            Allergens
-          </label>
-          <input
-            id="allergens"
-            v-model="form.allergens"
-            type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
-          />
-        </div>
-
-        <!-- Ingredients -->
-        <div>
-          <label for="ingredients" class="block text-sm font-medium text-gray-700 mb-1">
-            Ingredients
-          </label>
-          <textarea
-            id="ingredients"
-            v-model="form.ingredients"
-            rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
-          />
-        </div>
-
-        <!-- Save feedback -->
-        <p v-if="saveError" class="text-red-600 text-sm">{{ saveError }}</p>
-        <p v-if="saveSuccess" class="text-green-600 text-sm">Changes saved.</p>
-
-        <button
-          type="submit"
-          :disabled="saving"
-          class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-400 text-white text-sm font-semibold rounded-lg transition-colors"
-        >
-          {{ saving ? 'Saving…' : 'Save Changes' }}
-        </button>
-      </form>
-
-      <!-- Source Images -->
-      <section class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">Source Images</h2>
-        <AdminImageGuide class="mb-3" />
-        <AdminImageUploader
-          :dish-id="dish.id"
-          :restaurant-id="dish.restaurantId"
-          :existing-images="sourceImages"
-          @uploaded="handleImageUploaded"
-          @deleted="handleImageDeleted"
-        />
-      </section>
-
-      <!-- Generation Status (Task 9) -->
-      <section class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Generation</h2>
-        <AdminGenerationStatus
-          :dish-id="dish.id"
-          :dish-status="dish.status"
-          :image-count="sourceImages.length"
-          :latest-job="latestJob"
-          @job-created="handleJobCreated"
-        />
-      </section>
-
-      <!-- 3D Preview (Task 12) -->
-      <section v-if="dish.previewModelGlbUrl" class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">3D Preview</h2>
-        <ViewerDishViewer
-          :glb-url="modelGlbUrl"
-          :usdz-url="modelUsdzUrl"
-          :poster-url="modelPosterUrl"
-          :alt="dish.name"
-          :scale="viewerScale"
-          height="400px"
-        />
-      </section>
-
-      <!-- Publish & QR Code (Task 10) -->
-      <section class="mb-10">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">Publish &amp; QR Code</h2>
-        <AdminPublishControls
-          :dish="dish"
-          :qr-code="qrCode"
-          @published="handlePublished"
-          @unpublished="handleUnpublished"
-        />
-      </section>
-
-      <!-- Analytics (Task 14) -->
-      <section v-if="analyticsData" class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">Analytics</h2>
-        <div class="grid grid-cols-3 gap-4">
-          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-            <p class="text-2xl font-bold text-gray-900">{{ analyticsData.page_open }}</p>
-            <p class="text-xs text-gray-500 mt-1">Page Opens</p>
+      <PageHead back-href="/platform/dishes" back-label="Tilbage til retter">
+        <template #title>
+          <div class="flex items-center gap-4 flex-wrap">
+            <h1 class="page-title !text-[44px]">{{ dish.name }}</h1>
+            <StatusBadge :status="dish.status" />
           </div>
-          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-            <p class="text-2xl font-bold text-gray-900">{{ analyticsData.viewer_loaded }}</p>
-            <p class="text-xs text-gray-500 mt-1">Viewer Loads</p>
-          </div>
-          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-            <p class="text-2xl font-bold text-gray-900">{{ analyticsData.ar_launch_clicked }}</p>
-            <p class="text-xs text-gray-500 mt-1">AR Launches</p>
-          </div>
-        </div>
-      </section>
+        </template>
+        <template #actions>
+          <NuxtLink v-if="dish.publicDishId" :to="`/d/${dish.publicDishId}`" target="_blank" rel="noopener" class="top-btn">
+            <Icon name="arrow-up-right" :size="14" />
+            <span>Forhåndsvis</span>
+          </NuxtLink>
+        </template>
+      </PageHead>
 
-      <!-- Archive -->
-      <div class="border-t border-gray-200 pt-6">
-        <h2 class="text-sm font-semibold text-gray-700 mb-2">Danger Zone</h2>
-        <div class="flex flex-col gap-2 sm:flex-row">
-          <button
-            v-if="dish.status !== 'archived'"
-            :disabled="archiving || deleting"
-            class="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
-            @click="handleArchive"
+      <div class="two-col">
+        <!-- LEFT -->
+        <div>
+          <form class="max-w-none" @submit.prevent="handleSave">
+            <!-- Detaljer -->
+            <div class="p-card">
+              <div class="mb-4">
+                <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Detaljer</h3>
+              </div>
+              <div class="mb-6">
+                <label class="field-label">Navn <span class="text-[#a85a48]">*</span></label>
+                <input v-model="form.name" type="text" required class="field-input">
+              </div>
+              <div class="mb-6">
+                <label class="field-label">Kort beskrivelse</label>
+                <textarea v-model="form.shortDescription" class="field-textarea" />
+              </div>
+              <div class="grid grid-cols-2 gap-4 max-[600px]:grid-cols-1">
+                <div class="mb-6">
+                  <label class="field-label">Pris</label>
+                  <input v-model="form.priceText" type="text" class="field-input">
+                </div>
+                <div class="mb-6">
+                  <label class="field-label">Tallerken-størrelse i AR (cm)</label>
+                  <input v-model.number="form.scaleCm" type="number" min="1" max="200" step="0.1" placeholder="24" class="field-input">
+                  <div class="field-hint">Brug tallerkenens faktiske diameter, fx 24 cm.</div>
+                </div>
+              </div>
+              <div class="mb-6">
+                <label class="field-label">Allergener</label>
+                <input v-model="form.allergens" type="text" class="field-input">
+                <div class="field-hint">Komma-separeret. Vises som chips på menuen.</div>
+              </div>
+              <div class="mb-6">
+                <label class="field-label">Ingredienser</label>
+                <textarea
+                  v-model="form.ingredients"
+                  class="field-textarea"
+                  style="min-height: 80px;"
+                />
+                <div class="field-hint">Komma-separeret. Bruges af AI til at forstå retten.</div>
+              </div>
+
+              <!-- Save feedback -->
+              <p v-if="saveError" class="text-red-600 text-sm mb-3">{{ saveError }}</p>
+              <p v-if="saveSuccess" class="text-green-600 text-sm mb-3">Changes saved.</p>
+
+              <button
+                type="submit"
+                :disabled="saving"
+                class="top-btn top-btn--primary !py-3.5 !px-6 !text-sm"
+              >
+                {{ saving ? 'Saving...' : 'Gem ændringer' }}
+              </button>
+            </div>
+
+            <!-- Kildebilleder -->
+            <div class="p-card mt-5">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Kildebilleder</h3>
+                <span class="font-mono text-[11px] uppercase text-ink-faint" style="letter-spacing: 0.15em;">
+                  {{ sourceImages.length }} BILLEDER
+                </span>
+              </div>
+              <TipsPanel />
+              <AdminImageGuide class="mb-3" />
+              <AdminImageUploader
+                :dish-id="dish.id"
+                :restaurant-id="dish.restaurantId"
+                :existing-images="sourceImages"
+                @uploaded="handleImageUploaded"
+                @deleted="handleImageDeleted"
+              />
+            </div>
+
+            <!-- 3D-generation -->
+            <div class="p-card mt-5">
+              <div class="mb-4">
+                <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">3D-generation</h3>
+              </div>
+              <AdminGenerationStatus
+                :dish-id="dish.id"
+                :dish-status="dish.status"
+                :image-count="sourceImages.length"
+                :latest-job="latestJob"
+                @job-created="handleJobCreated"
+              />
+            </div>
+          </form>
+        </div>
+
+        <!-- RIGHT -->
+        <aside class="sticky top-6">
+          <!-- 3D Preview -->
+          <div
+            v-if="dish.previewModelGlbUrl"
+            class="p-card relative overflow-hidden !p-0"
+            style="background: linear-gradient(180deg, #1a1410 0%, #2b1f15 100%); color: #f3ede2; border: none;"
           >
-            {{ archiving ? 'Archiving…' : 'Archive Dish' }}
-          </button>
-          <button
-            v-if="isAdmin"
-            :disabled="archiving || deleting"
-            class="px-4 py-2 text-sm font-semibold text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-            @click="handlePermanentDelete"
-          >
-            {{ deleting ? 'Deleting…' : 'Delete Dish' }}
-          </button>
-        </div>
-        <p v-if="dish.status === 'archived'" class="text-sm text-gray-500">This dish is archived.</p>
-        <p v-if="archiveError" class="text-red-600 text-sm mt-2">{{ archiveError }}</p>
+            <div class="absolute inset-0" style="background: radial-gradient(circle at 50% 30%, rgba(184, 122, 78, 0.28), transparent 65%);" />
+            <div class="relative flex justify-between items-center px-6 pt-5">
+              <div class="mono-label !text-clay-soft flex items-center gap-2.5 font-medium">
+                <span class="w-1.5 h-1.5 rounded-full" style="background: #6e8b5a;" />
+                3D-forhåndsvisning
+              </div>
+              <div class="font-mono text-[10px]" style="color: rgba(243, 237, 226, 0.5); letter-spacing: 0.12em;">DRAG TO ROTATE</div>
+            </div>
+            <div class="relative px-8 pb-8 pt-2.5" style="min-height: 400px;">
+              <ViewerDishViewer
+                :glb-url="modelGlbUrl"
+                :usdz-url="modelUsdzUrl"
+                :poster-url="modelPosterUrl"
+                :alt="dish.name"
+                :scale="viewerScale"
+                height="400px"
+              />
+            </div>
+          </div>
+
+          <!-- Publicering & QR -->
+          <div class="p-card" :class="dish.previewModelGlbUrl ? 'mt-4' : ''">
+            <div class="mb-4">
+              <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Publicering &amp; QR</h3>
+            </div>
+            <AdminPublishControls
+              :dish="dish"
+              :qr-code="qrCode"
+              @published="handlePublished"
+              @unpublished="handleUnpublished"
+            />
+          </div>
+
+          <!-- Statistik -->
+          <div v-if="analyticsData" class="p-card mt-4">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Statistik</h3>
+              <span class="font-mono text-[10px] text-ink-faint" style="letter-spacing: 0.18em;">TOTAL</span>
+            </div>
+            <div class="grid grid-cols-3 border border-line rounded-md overflow-hidden">
+              <div class="px-4 py-4.5 bg-card">
+                <div class="font-mono text-[9px] uppercase text-ink-faint font-medium mb-2.5" style="letter-spacing: 0.15em;">
+                  Side-visninger
+                </div>
+                <div class="font-body font-light text-[32px] leading-none tracking-[-0.03em] text-ink tabular-nums">
+                  {{ analyticsData.page_open }}
+                </div>
+              </div>
+              <div class="px-4 py-4.5 bg-card border-l border-line">
+                <div class="font-mono text-[9px] uppercase text-ink-faint font-medium mb-2.5" style="letter-spacing: 0.15em;">
+                  Viewer-loads
+                </div>
+                <div class="font-body font-light text-[32px] leading-none tracking-[-0.03em] text-ink tabular-nums">
+                  {{ analyticsData.viewer_loaded }}
+                </div>
+              </div>
+              <div class="px-4 py-4.5 bg-card border-l border-line">
+                <div class="font-mono text-[9px] uppercase text-ink-faint font-medium mb-2.5" style="letter-spacing: 0.15em;">
+                  AR-starter
+                </div>
+                <div class="font-body font-light text-[32px] leading-none tracking-[-0.03em] text-ink tabular-nums">
+                  {{ analyticsData.ar_launch_clicked }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danger zone -->
+          <div class="p-card mt-4" style="border-color: rgba(168, 90, 72, 0.25); background: rgba(168, 90, 72, 0.04);">
+            <div class="mb-4">
+              <h3 class="font-display font-normal text-xl tracking-[-0.015em]" style="color: #8a4838;">Fjern ret</h3>
+            </div>
+            <p class="text-[13px] text-ink-mute mb-3.5 leading-[1.5]">
+              Arkiver for at skjule retten uden at miste data -- eller slet permanent. Slettet ret kan ikke gendannes.
+            </p>
+            <p v-if="dish.status === 'archived'" class="text-sm text-ink-mute mb-3">This dish is archived.</p>
+            <p v-if="archiveError" class="text-red-600 text-sm mb-3">{{ archiveError }}</p>
+            <div class="flex gap-2">
+              <button
+                v-if="dish.status !== 'archived'"
+                type="button"
+                :disabled="archiving || deleting"
+                class="top-btn flex-1 !justify-center"
+                @click="handleArchive"
+              >
+                {{ archiving ? 'Archiving...' : 'Arkiver ret' }}
+              </button>
+              <button
+                v-if="isAdmin"
+                type="button"
+                :disabled="archiving || deleting"
+                class="top-btn flex-1 !justify-center"
+                style="background: #a85a48; color: #fff; border-color: #a85a48;"
+                @click="handlePermanentDelete"
+              >
+                {{ deleting ? 'Deleting...' : 'Slet ret' }}
+              </button>
+            </div>
+          </div>
+        </aside>
       </div>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import TopBar from '~/components/platform/TopBar.vue'
+import PageHead from '~/components/platform/PageHead.vue'
+import StatusBadge from '~/components/platform/StatusBadge.vue'
+import TipsPanel from '~/components/platform/TipsPanel.vue'
+import Icon from '~/components/shared/Icon.vue'
 import type { DishStatus } from '~/types'
 
 definePageMeta({ layout: 'platform' })

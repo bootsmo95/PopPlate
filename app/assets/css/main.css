@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────── Reset & base ─────────── */
+@layer base {
+  html, body {
+    background: theme('colors.bg');
+    color: theme('colors.ink.DEFAULT');
+    font-family: theme('fontFamily.body');
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    overflow-x: hidden;
+    background:
+      radial-gradient(ellipse 1400px 900px at 90% -10%, rgba(184, 122, 78, 0.18), transparent 60%),
+      radial-gradient(ellipse 1100px 700px at -10% 30%, rgba(139, 78, 44, 0.08), transparent 60%),
+      theme('colors.bg');
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  img, svg { display: block; max-width: 100%; }
+
+  /* Focus rings — visible only on keyboard nav */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid theme('colors.clay.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Reduce-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* ─────────── Reusable component classes ─────────── */
+@layer components {
+  /* Italic display accent */
+  .italic-display {
+    @apply italic font-display font-normal;
+    letter-spacing: -0.005em;
+  }
+
+  /* Eyebrow caption (mono-uppercase) */
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase font-medium text-clay-deep;
+    letter-spacing: 0.22em;
+  }
+
+  /* Page title H1 used on platform pages */
+  .page-title {
+    @apply font-display font-normal leading-[1.1];
+    font-size: clamp(32px, 5vw, 48px);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  .page-title .accent { @apply italic text-clay-deep; }
+
+  /* Card surfaces */
+  .p-card {
+    @apply bg-paper border border-line rounded-md p-6;
+  }
+  @media (max-width: 720px) {
+    .p-card { padding: 18px; }
+  }
+
+  /* Top-bar button (pill, ghost or primary) */
+  .top-btn {
+    @apply inline-flex items-center gap-2 px-[18px] py-[10px] rounded-full
+           border border-line-strong text-[13px] font-medium text-ink
+           transition-colors duration-200;
+  }
+  .top-btn:hover { background: rgba(26, 20, 16, 0.04); }
+  .top-btn--primary {
+    @apply bg-ink text-ink-inv border-ink;
+  }
+  .top-btn--primary:hover { @apply bg-clay-deep border-clay-deep; }
+  .top-btn--clay {
+    @apply bg-clay-soft text-deep border-clay-soft;
+  }
+
+  /* Filter pill */
+  .filter-pill {
+    @apply font-body text-[13px] px-[14px] py-2 border border-line
+           rounded-full bg-paper text-ink-soft font-medium transition-colors;
+  }
+  .filter-pill:hover { @apply border-line-strong; }
+  .filter-pill--active { @apply bg-ink text-ink-inv border-ink; }
+  .filter-pill .count { @apply ml-1.5 font-mono text-[11px] opacity-60; }
+
+  /* Status badge */
+  .status-badge {
+    @apply inline-flex items-center gap-[7px] px-[11px] py-1
+           rounded-full font-mono text-[10px] uppercase font-medium whitespace-nowrap;
+    letter-spacing: 0.15em;
+  }
+  .status-badge::before {
+    content: '';
+    @apply w-[6px] h-[6px] rounded-full;
+  }
+  .status-badge--draft { background: rgba(154, 135, 115, 0.15); color: #6f5d4d; }
+  .status-badge--draft::before { background: theme('colors.status.draft'); }
+  .status-badge--processing { background: rgba(200, 153, 104, 0.18); color: #8b6e4a; }
+  .status-badge--processing::before { background: theme('colors.status.processing'); animation: pulse-clay 1.6s ease-out infinite; }
+  .status-badge--ready { background: rgba(110, 139, 90, 0.18); color: #4a6240; }
+  .status-badge--ready::before { background: theme('colors.status.ready'); }
+  .status-badge--published { background: rgba(110, 125, 139, 0.18); color: #3d4a55; }
+  .status-badge--published::before { background: theme('colors.status.published'); }
+  .status-badge--failed { background: rgba(168, 90, 72, 0.18); color: #8a4838; }
+  .status-badge--failed::before { background: theme('colors.status.failed'); }
+
+  /* Mono label used in stats, dropzones, captions */
+  .mono-label {
+    @apply font-mono uppercase text-ink-faint font-medium;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+
+  /* Form field stack */
+  .field-label {
+    @apply mono-label block mb-2;
+  }
+  .field-input,
+  .field-textarea,
+  .field-select {
+    @apply w-full font-body text-[15px] px-4 py-3 border border-line-strong
+           rounded-md bg-paper text-ink outline-none transition;
+  }
+  .field-input:focus,
+  .field-textarea:focus,
+  .field-select:focus {
+    @apply border-clay;
+    box-shadow: 0 0 0 3px rgba(184, 122, 78, 0.15);
+  }
+  .field-textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+  .field-hint { @apply text-ink-faint text-xs mt-1.5; }
+
+  /* Drop zone (file upload) */
+  .dropzone {
+    @apply border border-dashed border-line-strong rounded-lg
+           px-6 py-12 text-center bg-paper cursor-pointer transition;
+  }
+  .dropzone:hover { @apply border-clay; background: rgba(184, 122, 78, 0.04); }
+
+  /* Image gallery */
+  .img-gallery {
+    @apply grid grid-cols-4 gap-3 mt-4;
+  }
+  @media (max-width: 720px) {
+    .img-gallery { @apply grid-cols-3 gap-2; }
+  }
+  .img-thumb {
+    aspect-ratio: 1;
+    @apply bg-card bg-cover bg-center relative rounded;
+  }
+
+  /* Progress */
+  .progress {
+    @apply bg-card rounded-full overflow-hidden my-3;
+    height: 8px;
+  }
+  .progress-bar {
+    @apply h-full rounded-full bg-acc-grad relative;
+    transition: width 600ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  .progress-bar::after {
+    content: '';
+    @apply absolute inset-0 animate-prog-shimmer;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  }
+
+  /* Two-col responsive layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; gap: 20px; }
+    .two-col > aside { position: static !important; }
+  }
+}
+
+/* ─────────── Print: strip admin chrome ─────────── */
+@media print {
+  .platform-sidebar,
+  .platform-topbar,
+  .platform-mobile-top,
+  .platform-scrim { display: none !important; }
+  .platform-main { padding: 0; max-width: none; }
+  .p-card { box-shadow: none; break-inside: avoid; }
+}

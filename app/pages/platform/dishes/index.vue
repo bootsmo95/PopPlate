@@ -1,93 +1,75 @@
-<template>
-  <div class="p-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">Dishes</h1>
-      <NuxtLink
-        to="/platform/dishes/new"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-lg transition-colors"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
-        Create New Dish
-      </NuxtLink>
-    </div>
-
-    <!-- Loading -->
-    <div v-if="pending" class="text-gray-500 text-sm">Loading dishes…</div>
-
-    <!-- Error -->
-    <div v-else-if="error" class="text-red-600 text-sm">Failed to load dishes.</div>
-
-    <!-- Empty state -->
-    <div v-else-if="!dishes?.length" class="text-center py-16 text-gray-500">
-      <p class="text-lg font-medium mb-2">No dishes yet</p>
-      <p class="text-sm">Create your first dish to get started.</p>
-    </div>
-
-   <!-- Dish grid -->
-   <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <article
-       v-for="dish in dishes"
-       :key="dish.id"
-        class="bg-white border border-gray-200 rounded-xl p-5 transition-all hover:border-gray-300 hover:shadow-md"
-     >
-        <NuxtLink :to="`/platform/dishes/${dish.id}`" class="block">
-          <div class="flex items-start justify-between gap-3 mb-3">
-            <h2 class="font-semibold text-gray-900 text-base leading-snug line-clamp-2">
-              {{ dish.name }}
-            </h2>
-            <AdminStatusBadge :status="dish.status" />
-          </div>
-          <p class="text-xs text-gray-400">
-            {{ formatDate(dish.createdAt) }}
-          </p>
-        </NuxtLink>
-        <button
-          v-if="isAdmin"
-          type="button"
-          :disabled="deletingId === dish.id"
-          class="mt-4 w-full rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-          @click="handleDeleteDish(dish)"
-        >
-          {{ deletingId === dish.id ? 'Deleting...' : 'Delete dish' }}
-        </button>
-      </article>
-   </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import type { DishStatus } from '~/types'
+import TopBar from '~/components/platform/TopBar.vue'
+import PageHead from '~/components/platform/PageHead.vue'
+import DishTable from '~/components/platform/DishTable.vue'
+import Icon from '~/components/shared/Icon.vue'
+import type { Dish as DesignDish, DishStatus } from '~/types/popplate'
 
 definePageMeta({ layout: 'platform' })
+useHead({ title: 'Retter · popplate' })
 
-interface DishItem {
+interface ApiDishItem {
   id: string
   name: string
   status: DishStatus
   createdAt: string
+  posterUrl?: string | null
+  updatedAt?: string
 }
 
 const ssrHeaders = useAuthHeaders()
 const { user } = useAuth()
 const isAdmin = computed(() => user.value?.role === 'admin')
 const deletingId = ref('')
-const { data: dishes, pending, error, refresh } = await useFetch<DishItem[]>('/api/dishes', { headers: ssrHeaders })
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
+const { data: apiDishes, pending, error, refresh } = await useFetch<ApiDishItem[]>('/api/dishes', { headers: ssrHeaders })
+
+/** Map API dish to the design Dish shape */
+function toDesignDish(d: ApiDishItem): DesignDish {
+  return {
+    id: d.id,
+    name: d.name,
+    restaurant: '',
+    status: d.status as DishStatus,
+    price: '',
+    views: 0,
+    scans: 0,
+    img: d.posterUrl ?? '',
+    updated: d.updatedAt
+      ? new Date(d.updatedAt).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' })
+      : new Date(d.createdAt).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' }),
+  }
 }
 
-async function handleDeleteDish(dish: DishItem) {
+const dishes = computed(() => (apiDishes.value ?? []).map(toDesignDish))
+
+const filter = ref<DishStatus | 'all'>('all')
+const search = ref('')
+
+const filtered = computed(() =>
+  dishes.value.filter((d) => {
+    if (filter.value !== 'all' && d.status !== filter.value) return false
+    if (search.value && !d.name.toLowerCase().includes(search.value.toLowerCase())) return false
+    return true
+  }),
+)
+
+const count = (s: DishStatus | 'all') =>
+  dishes.value.filter((d) => s === 'all' || d.status === s).length
+
+const FILTERS: Array<{ key: DishStatus | 'all'; label: string }> = [
+  { key: 'all',        label: 'Alle' },
+  { key: 'published',  label: 'Publiceret' },
+  { key: 'ready',      label: 'Klar' },
+  { key: 'processing', label: 'Genererer' },
+  { key: 'draft',      label: 'Kladder' },
+  { key: 'failed',     label: 'Fejlet' },
+]
+
+async function handleDeleteDish(dish: DesignDish) {
   if (!confirm('Permanently delete this dish? This removes its QR code, analytics, jobs, and source image records.')) return
 
-  deletingId.value = dish.id
+  deletingId.value = String(dish.id)
 
   try {
     await $fetch('/api/dishes/' + dish.id, {
@@ -100,3 +82,72 @@ async function handleDeleteDish(dish: DishItem) {
   }
 }
 </script>
+
+<template>
+  <div data-screen-label="Dishes">
+    <TopBar v-model:search="search" />
+
+    <PageHead :eyebrow="`${dishes.length} retter`">
+      <template #title>
+        <h1 class="page-title">Alle <span class="accent">retter</span>.</h1>
+      </template>
+      <template #sub>
+        <p class="text-ink-mute mt-3 text-[15px] max-w-[480px]">
+          Filtrer pa status, soeg, og rediger individuelle retter.
+        </p>
+      </template>
+      <template #actions>
+        <NuxtLink to="/platform/dishes/new" class="top-btn top-btn--primary">
+          <Icon name="plus" :size="14" /><span>Ny ret</span>
+        </NuxtLink>
+      </template>
+    </PageHead>
+
+    <!-- Loading -->
+    <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
+      Indlaeser retter...
+    </div>
+
+    <!-- Error -->
+    <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
+      Kunne ikke indlaese retter.
+    </div>
+
+    <template v-else>
+      <!-- Filter row -->
+      <div class="flex justify-between items-center gap-4 mb-5 flex-wrap">
+        <div class="filter-row flex gap-2 max-[600px]:overflow-x-auto max-[600px]:flex-nowrap">
+          <button
+            v-for="f in FILTERS" :key="f.key"
+            type="button"
+            class="filter-pill whitespace-nowrap shrink-0"
+            :class="filter === f.key && 'filter-pill--active'"
+            @click="filter = f.key"
+          >
+            {{ f.label }} <span class="count">{{ count(f.key) }}</span>
+          </button>
+        </div>
+        <div class="flex items-center gap-2.5 bg-paper border border-line rounded-full px-[18px] py-2.5 min-w-[280px] max-[600px]:w-full">
+          <Icon name="search" :size="14" />
+          <input
+            v-model="search" type="text" placeholder="Soeg..."
+            class="border-0 outline-none bg-transparent font-body text-sm text-ink flex-1 min-w-0"
+          >
+        </div>
+      </div>
+
+      <DishTable :dishes="filtered" />
+    </template>
+  </div>
+</template>
+
+<style scoped>
+@media (max-width: 600px) {
+  .filter-row {
+    scrollbar-width: none;
+    margin: 0 -18px;
+    padding: 0 18px 4px;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+}
+</style>
