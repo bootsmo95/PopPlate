@@ -17,10 +17,8 @@ defineProps<{
 </script>
 
 <template>
-  <component
-    :is="to ? resolveComponent('NuxtLink') : 'a'"
-    :to="to"
-    :href="href || (to ? undefined : '#')"
+  <NuxtLink
+    :to="to || href || '#'"
     class="p-card p-5 block transition no-underline"
     :class="dark ? 'dark-card text-ink-inv' : 'bg-card'"
   >
@@ -51,7 +49,7 @@ defineProps<{
         <Icon name="arrow" :size="13" />
       </span>
     </div>
-  </component>
+  </NuxtLink>
 </template>
 
 <style scoped>

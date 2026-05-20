@@ -1,6 +1,7 @@
 interface AuthUser {
   id: string
   email: string
+  displayName?: string
   role: string
   accountTier: string
 }

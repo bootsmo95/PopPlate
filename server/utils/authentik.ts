@@ -276,6 +276,7 @@ export async function syncUserFromAuthentikClaims(claims: OidcUserInfo): Promise
   return {
     id: user.id,
     email: user.email,
+    displayName: user.displayName,
     role: user.role,
     accountTier: user.accountTier,
   }
