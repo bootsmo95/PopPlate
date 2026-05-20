@@ -143,12 +143,13 @@ watch(drawerOpen, (open) => {
 </template>
 
 <style scoped>
-/* ── Mobile top bar ── */
+/* ── Mobile bottom bar ── */
 .dock-mobile {
-  @apply fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-5 py-3;
-  background: rgba(243, 237, 226, 0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  @apply fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] flex items-center justify-between gap-3 px-3 py-2 rounded-full border border-line max-w-[calc(100vw-32px)];
+  background: rgba(243, 237, 226, 0.72);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 4px 24px rgba(26, 20, 16, 0.1);
 }
 @media (min-width: 768px) {
   .dock-mobile { display: none; }
