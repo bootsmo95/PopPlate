@@ -107,6 +107,7 @@ interface GenerationJob {
 const props = defineProps<{
   dishId: string
   dishStatus: string
+  hasModel?: boolean
   imageCount: number
   latestJob: GenerationJob | null
 }>()
@@ -118,6 +119,7 @@ const emit = defineEmits<{
 const loading = ref(false)
 const error = ref('')
 const isReady = computed(() =>
+  props.hasModel ||
   props.latestJob?.status === 'ready' ||
   props.dishStatus === 'ready' ||
   props.dishStatus === 'published',

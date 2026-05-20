@@ -107,6 +107,7 @@
               <AdminGenerationStatus
                 :dish-id="dish.id"
                 :dish-status="dish.status"
+                :has-model="!!dish.previewModelGlbUrl"
                 :image-count="sourceImages.length"
                 :latest-job="latestJob"
                 @job-created="handleJobCreated"
