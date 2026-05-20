@@ -3,6 +3,9 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
 import { dedup, prune, flatten, join } from '@gltf-transform/functions'
 import sharp from 'sharp'
 
+const MAX_TEXTURE_SIZE = 512
+const WEBP_QUALITY = 62
+
 export async function compressGlb(inputBuffer: Buffer): Promise<Buffer> {
   const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
 
@@ -29,7 +32,13 @@ function compressTexturesToWebP() {
 
       try {
         const webpBuffer = await sharp(Buffer.from(image))
-          .webp({ quality: 80 })
+          .resize({
+            width: MAX_TEXTURE_SIZE,
+            height: MAX_TEXTURE_SIZE,
+            fit: 'inside',
+            withoutEnlargement: true,
+          })
+          .webp({ quality: WEBP_QUALITY })
           .toBuffer()
 
         texture.setImage(new Uint8Array(webpBuffer))

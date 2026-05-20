@@ -61,6 +61,17 @@ function toDesignDish(d: RestaurantDish): DesignDish {
 }
 
 const dishes = computed(() => (restaurant.value?.latestDishes ?? []).map(toDesignDish))
+const search = ref('')
+const filteredDishes = computed(() => {
+  const query = search.value.trim().toLowerCase()
+  if (!query) return dishes.value
+
+  return dishes.value.filter((dish) =>
+    [dish.name, dish.restaurant, dish.price, dish.status]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query)),
+  )
+})
 const publishedCount = computed(() => restaurant.value?.publishedDishCount ?? 0)
 
 const INFO = computed<Array<[string, string]>>(() => {
@@ -99,7 +110,7 @@ async function handleDeleteRestaurant() {
 
 <template>
   <div data-screen-label="Workspace">
-    <TopBar />
+    <TopBar v-model:search="search" search-placeholder="Søg i restaurantens retter..." />
 
     <!-- Loading -->
     <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
@@ -152,12 +163,12 @@ async function handleDeleteRestaurant() {
           <div v-if="!dishes.length" class="py-12 text-center text-ink-faint">
             Ingen retter endnu. Opret den foerste for at komme i gang.
           </div>
-          <div v-else class="flex flex-col">
+          <div v-else-if="filteredDishes.length" class="flex flex-col">
             <NuxtLink
-              v-for="(d, i) in dishes.slice(0, 5)" :key="d.id"
+              v-for="(d, i) in filteredDishes.slice(0, 5)" :key="d.id"
               :to="`/platform/dishes/${d.id}`"
               class="flex gap-3 py-3.5 items-center no-underline text-inherit"
-              :class="i < Math.min(dishes.length, 5) - 1 && 'border-b border-line'"
+              :class="i < Math.min(filteredDishes.length, 5) - 1 && 'border-b border-line'"
             >
               <span class="font-mono text-[11px] text-ink-faint">{{ String(i + 1).padStart(2, '0') }}</span>
               <div
@@ -169,6 +180,9 @@ async function handleDeleteRestaurant() {
               </div>
               <span class="status-badge" :class="`status-badge--${d.status}`">{{ d.status }}</span>
             </NuxtLink>
+          </div>
+          <div v-else class="py-12 text-center text-ink-faint">
+            Ingen retter matcher din søgning.
           </div>
         </div>
 
@@ -196,7 +210,7 @@ async function handleDeleteRestaurant() {
             Aabn fuld liste &rarr;
           </NuxtLink>
         </div>
-        <DishTable :dishes="dishes" compact />
+        <DishTable :dishes="filteredDishes" compact />
       </div>
 
       <!-- Admin danger zone -->

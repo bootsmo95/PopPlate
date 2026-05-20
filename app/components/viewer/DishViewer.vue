@@ -36,7 +36,7 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
-        Loading 3D viewer…
+        Indlæser 3D-visning...
       </div>
     </div>
 
@@ -48,7 +48,7 @@
       <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
       </svg>
-      <p class="text-sm">3D preview unavailable</p>
+      <p class="text-sm">3D-visning er ikke tilgængelig</p>
     </div>
   </div>
 </template>

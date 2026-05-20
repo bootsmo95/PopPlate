@@ -49,9 +49,11 @@ Recommendation:
 
 ## Domains
 Suggested:
-- `app.popplate.dk` or equivalent -> web app
-- `auth.popplate.dk` -> auth service if externalized
-- storage internal/private where possible
+- `popplate.dk` -> canonical web app
+- `api.popplate.dk` -> same Nuxt app, API alias for `/api/*`
+- `auth.popplate.dk` -> Authentik
+- `storage.popplate.dk` -> MinIO API/public object downloads
+- `worker.popplate.dk` -> worker health endpoint only
 
 ## Env vars (app)
 - `DATABASE_URL`

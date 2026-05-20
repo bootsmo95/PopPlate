@@ -107,6 +107,7 @@
               <AdminGenerationStatus
                 :dish-id="dish.id"
                 :dish-status="dish.status"
+                :has-model="!!dish.previewModelGlbUrl"
                 :image-count="sourceImages.length"
                 :latest-job="latestJob"
                 @job-created="handleJobCreated"
@@ -300,8 +301,7 @@ const {
 
 function resolveModelUrl(url: string | null, ext: string): string | undefined {
   if (!url) return undefined
-  if (url.startsWith('data:')) return url
-  return `/m/${id}.${ext}`
+  return `/api/dishes/${id}/model/${ext}`
 }
 const modelGlbUrl = computed(() => resolveModelUrl(dish.value?.previewModelGlbUrl ?? null, 'glb')!)
 const modelUsdzUrl = computed(() => resolveModelUrl(dish.value?.previewModelUsdzUrl ?? null, 'usdz'))

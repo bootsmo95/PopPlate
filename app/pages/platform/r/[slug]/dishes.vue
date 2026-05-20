@@ -56,11 +56,22 @@ function toDesignDish(d: DishItem): DesignDish {
 }
 
 const dishes = computed(() => (data.value?.dishes ?? []).map(toDesignDish))
+const search = ref('')
+const filteredDishes = computed(() => {
+  const query = search.value.trim().toLowerCase()
+  if (!query) return dishes.value
+
+  return dishes.value.filter((dish) =>
+    [dish.name, dish.restaurant, dish.price, dish.status]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query)),
+  )
+})
 </script>
 
 <template>
   <div data-screen-label="RestaurantDishes">
-    <TopBar />
+    <TopBar v-model:search="search" search-placeholder="Søg i restaurantens retter..." />
 
     <!-- Loading -->
     <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
@@ -105,8 +116,11 @@ const dishes = computed(() => (data.value?.dishes ?? []).map(toDesignDish))
         <div class="font-display italic text-2xl text-ink mb-2">Ingen retter endnu</div>
         <p>Opret en ret fra denne restaurant for at tilknytte den korrekt.</p>
       </div>
+      <div v-else-if="!filteredDishes.length" class="p-card py-16 text-center text-ink-faint">
+        Ingen retter matcher din søgning.
+      </div>
 
-      <DishTable v-else :dishes="dishes" />
+      <DishTable v-else :dishes="filteredDishes" />
     </template>
   </div>
 </template>

@@ -5,6 +5,7 @@ import { requireAuth } from '../../../utils/auth'
 import { requireOwnedDish } from '../../../utils/dish-ownership'
 import { getPublicUrl, uploadFile } from '../../../utils/storage'
 import { qrImageKey } from '../../../utils/storage-keys'
+import { buildPublicDishUrl } from '../../../utils/public-url'
 import QRCode from 'qrcode'
 
 export default defineEventHandler(async (event) => {
@@ -40,8 +41,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const appBaseUrl = process.env.NUXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  const publicUrl = `${appBaseUrl}/d/${dish.publicDishId}`
+  const publicUrl = buildPublicDishUrl(dish.publicDishId, event)
 
   // Generate QR code as PNG buffer
   const qrBuffer = await QRCode.toBuffer(publicUrl, {
