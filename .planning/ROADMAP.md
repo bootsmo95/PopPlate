@@ -27,7 +27,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A user on any tier can see their generation count for the current rolling 31-day window
   3. A user who has reached their tier limit cannot trigger a new generation — the action is blocked at the API level
   4. The user sees a clear, actionable message when their generation limit is reached (not a raw error)
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — Backend: tier limits, billing cycle utility, monthly enforcement in generate endpoint, usage API
+- [ ] 01-02-PLAN.md — Frontend: usage display on settings page, disable generate button with Danish warning at limit
 
 ### Phase 2: Analytics Dashboard
 **Goal**: Restaurant owners can see how their menus are performing and which dishes drive engagement
@@ -58,6 +61,6 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Generation Tracking & Enforcement | 0/TBD | Not started | - |
+| 1. Generation Tracking & Enforcement | 0/2 | Planning complete | - |
 | 2. Analytics Dashboard | 0/TBD | Not started | - |
 | 3. UI Polish | 0/TBD | Not started | - |
