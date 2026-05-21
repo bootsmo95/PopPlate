@@ -14,8 +14,10 @@
       camera-controls
       ar
       ar-modes="webxr scene-viewer quick-look"
-      shadow-intensity="1"
+      shadow-intensity="0.6"
+      exposure="0.85"
       environment-image="neutral"
+      tone-mapping="commerce"
       class="w-full rounded-xl overflow-hidden transition-opacity duration-300"
       :class="hasError ? 'opacity-0 pointer-events-none absolute inset-0' : modelLoaded ? 'opacity-100' : 'opacity-[0.02]'"
       :style="{ height: '100%', display: 'block' }"
