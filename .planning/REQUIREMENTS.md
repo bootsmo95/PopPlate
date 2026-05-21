@@ -73,25 +73,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| USAG-01 | -- | Pending |
-| USAG-02 | -- | Pending |
-| USAG-03 | -- | Pending |
-| USAG-04 | -- | Pending |
-| ANLT-01 | -- | Pending |
-| ANLT-02 | -- | Pending |
-| ANLT-03 | -- | Pending |
-| ANLT-04 | -- | Pending |
-| ANLT-05 | -- | Pending |
-| UIPOL-01 | -- | Pending |
-| UIPOL-02 | -- | Pending |
-| UIPOL-03 | -- | Pending |
-| UIPOL-04 | -- | Pending |
+| USAG-01 | Phase 1 | Pending |
+| USAG-02 | Phase 1 | Pending |
+| USAG-03 | Phase 1 | Pending |
+| USAG-04 | Phase 1 | Pending |
+| ANLT-01 | Phase 2 | Pending |
+| ANLT-02 | Phase 2 | Pending |
+| ANLT-03 | Phase 2 | Pending |
+| ANLT-04 | Phase 2 | Pending |
+| ANLT-05 | Phase 2 | Pending |
+| UIPOL-01 | Phase 3 | Pending |
+| UIPOL-02 | Phase 3 | Pending |
+| UIPOL-03 | Phase 3 | Pending |
+| UIPOL-04 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13
+- Mapped to phases: 13
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-21*
-*Last updated: 2026-05-21 after initial definition*
+*Last updated: 2026-05-21 after roadmap creation*
