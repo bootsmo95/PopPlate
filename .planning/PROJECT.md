@@ -25,6 +25,7 @@ Restaurants can show diners what their dishes actually look like in 3D before th
 - Model generation usage tracking with tier-based enforcement — validated in Phase 1
 - Analytics dashboard with menu views, dish popularity, QR scan tracking, and time-period controls — validated in Phase 2
 - UTM-based QR scan attribution (utm_source=qr on QR URLs) — validated in Phase 2
+- Polished UI: loading spinners, toast notifications, empty states, error boundary — validated in Phase 3
 
 ### Active
 
@@ -33,7 +34,6 @@ Restaurants can show diners what their dishes actually look like in 3D before th
 - [ ] Plan enforcement (generation limits, dish limits, restaurant limits per tier)
 - [ ] Restaurant team management (owner invites staff, staff manages dishes)
 - [ ] Landing page / marketing site
-- [ ] Polished UI (loading states, error handling, mobile responsiveness, empty states)
 
 ### Out of Scope
 
@@ -92,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-21 after Phase 2 completion*
+*Last updated: 2026-05-22 after Phase 3 completion*

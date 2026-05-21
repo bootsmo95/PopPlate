@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Generation Tracking & Enforcement** - Track model generations per user and enforce tier limits
 - [x] **Phase 2: Analytics Dashboard** - Give restaurant owners visibility into menu performance and QR engagement
-- [ ] **Phase 3: UI Polish** - Loading states, error handling, empty states, and mobile responsiveness across the platform
+- [x] **Phase 3: UI Polish** - Loading states, error handling, empty states, and mobile responsiveness across the platform
 
 ## Phase Details
 
@@ -61,7 +61,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Foundation: useToast composable, ToastContainer, ActionButton, error.vue, mount in platform layout
 - [x] 03-02-PLAN.md — Wiring: ActionButton + toast into dishes/[id], dishes/new, restaurants, settings pages
-- [ ] 03-03-PLAN.md — Empty states: upgrade r/[slug]/index and r/[slug]/dishes to structured p-card pattern
+- [x] 03-03-PLAN.md — Empty states: upgrade r/[slug]/index and r/[slug]/dishes to structured p-card pattern
 **UI hint**: yes
 
 ## Progress
@@ -70,4 +70,4 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Generation Tracking & Enforcement | 2/2 | Complete | 2026-05-21 |
 | 2. Analytics Dashboard | 2/2 | Complete | 2026-05-21 |
-| 3. UI Polish | 2/3 | In progress | - |
+| 3. UI Polish | 3/3 | Complete | 2026-05-22 |
