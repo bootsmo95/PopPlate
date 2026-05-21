@@ -110,9 +110,13 @@ const filteredDishes = computed(() => {
         </template>
       </PageHead>
 
-      <div v-if="!dishes.length" class="p-card py-16 text-center text-ink-faint">
-        <div class="font-display italic text-2xl text-ink mb-2">Ingen retter endnu</div>
-        <p>Opret en ret fra denne restaurant for at tilknytte den korrekt.</p>
+      <div v-if="!dishes.length" class="p-card py-16 text-center">
+        <Icon name="dish" :size="32" class="text-ink-faint mx-auto mb-3" />
+        <h3 class="font-display font-normal text-[18px] tracking-[-0.015em] mb-2">Ingen retter på denne menu</h3>
+        <p class="text-ink-mute text-[13px] mb-5">Retter vises her, når du tilknytter dem til restauranten.</p>
+        <NuxtLink to="/platform/dishes" class="top-btn !inline-flex">
+          <span>Se alle retter</span>
+        </NuxtLink>
       </div>
       <div v-else-if="!filteredDishes.length" class="p-card py-16 text-center text-ink-faint">
         Ingen retter matcher din søgning.
