@@ -1,6 +1,7 @@
 import { db } from '../../../database/index'
 import { dishes } from '../../../database/schema'
 import { eq } from 'drizzle-orm'
+import { isDurableStorageAssetUrl } from '../../../utils/storage'
 
 export default defineEventHandler(async (event) => {
   const publicDishId = getRouterParam(event, 'publicDishId')
@@ -28,7 +29,7 @@ export default defineEventHandler(async (event) => {
     priceText: dish.priceText,
     allergens: dish.allergens,
     hasModel: !!dish.previewModelGlbUrl,
-    hasUsdz: !!dish.previewModelUsdzUrl,
+    hasUsdz: isDurableStorageAssetUrl(dish.previewModelUsdzUrl),
     hasPoster: !!dish.posterUrl,
     restaurantId: dish.restaurantId,
     scaleCm: dish.scaleCm,

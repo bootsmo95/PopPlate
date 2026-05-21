@@ -1,6 +1,7 @@
 import { and, desc, eq } from 'drizzle-orm'
 import { db } from '../../../../database/index'
 import { dishes, restaurants } from '../../../../database/schema'
+import { isDurableStorageAssetUrl } from '../../../../utils/storage'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -54,7 +55,7 @@ export default defineEventHandler(async (event) => {
       allergens: dish.allergens,
       ingredients: dish.ingredients,
       hasModel: !!dish.hasModel,
-      hasUsdz: !!dish.hasUsdz,
+      hasUsdz: isDurableStorageAssetUrl(dish.hasUsdz),
       hasPoster: !!dish.hasPoster,
       scaleCm: dish.scaleCm,
       publishedAt: dish.publishedAt,
