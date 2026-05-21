@@ -366,15 +366,19 @@ let isPolling = false
 function startPolling() {
   if (pollInterval) return
   pollInterval = setInterval(async () => {
-    // Use $fetch directly to bypass useFetch cache and get fresh data
-    const [freshDish, freshJobs] = await Promise.all([
-      $fetch<DishDetail>(`/api/dishes/${id}`),
-      $fetch<GenerationJob[]>(`/api/dishes/${id}/jobs`),
-    ])
-    dish.value = freshDish
-    jobsData.value = freshJobs
-    const status = latestJob.value?.status
-    if (status !== 'queued' && status !== 'processing') {
+    try {
+      // Use $fetch directly to bypass useFetch cache and get fresh data
+      const [freshDish, freshJobs] = await Promise.all([
+        $fetch<DishDetail>(`/api/dishes/${id}`),
+        $fetch<GenerationJob[]>(`/api/dishes/${id}/jobs`),
+      ])
+      dish.value = freshDish
+      jobsData.value = freshJobs
+      const status = latestJob.value?.status
+      if (status !== 'queued' && status !== 'processing') {
+        stopPolling()
+      }
+    } catch {
       stopPolling()
     }
   }, 3000)
