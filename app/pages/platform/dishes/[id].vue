@@ -110,6 +110,7 @@
                 :has-model="!!dish.previewModelGlbUrl"
                 :image-count="sourceImages.length"
                 :latest-job="latestJob"
+                :monthly-limit-reached="monthlyLimitReached"
                 @job-created="handleJobCreated"
               />
             </div>
@@ -317,6 +318,21 @@ const { data: sourceImagesData, refresh: refreshImages } = useLazyFetch<SourceIm
   { headers: ssrHeaders },
 )
 const sourceImages = computed(() => sourceImagesData.value ?? [])
+
+// Generation usage
+interface UsageData {
+  used: number
+  limit: number | null
+  tierName: string
+  cycleStart: string
+  unlimited: boolean
+}
+const { data: usageData } = useLazyFetch<UsageData>('/api/user/usage', { headers: ssrHeaders })
+
+const monthlyLimitReached = computed(() => {
+  if (!usageData.value || usageData.value.unlimited) return false
+  return usageData.value.used >= (usageData.value.limit ?? Infinity)
+})
 
 // Latest generation job
 const jobsData = ref<GenerationJob[]>([])
