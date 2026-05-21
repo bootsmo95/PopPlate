@@ -123,6 +123,7 @@ export const analyticsEvents = pgTable('analytics_events', {
   sessionId: text('session_id'),
   userAgent: text('user_agent'),
   referrer: text('referrer'),
+  utmSource: text('utm_source'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 

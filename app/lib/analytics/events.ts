@@ -18,6 +18,7 @@ export function trackEvent(
   restaurantId: string,
 ): void {
   // Fire-and-forget — do not await, do not surface errors
+  const utmSource = new URLSearchParams(window.location.search).get('utm_source') ?? undefined
   const payload = {
     eventType,
     dishId,
@@ -25,6 +26,7 @@ export function trackEvent(
     sessionId: getSessionId(),
     userAgent: navigator.userAgent,
     referrer: document.referrer,
+    utmSource,
   }
 
   $fetch('/api/public/analytics', {

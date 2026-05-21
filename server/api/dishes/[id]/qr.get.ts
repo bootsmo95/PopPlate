@@ -23,8 +23,9 @@ export default defineEventHandler(async (event) => {
 
   if (!qrCode) return null
 
+  const baseUrl = canonicalizePublicDishUrl(qrCode.publicUrl, dish.publicDishId)
   return {
     ...qrCode,
-    publicUrl: canonicalizePublicDishUrl(qrCode.publicUrl, dish.publicDishId),
+    publicUrl: `${baseUrl}?utm_source=qr`,
   }
 })

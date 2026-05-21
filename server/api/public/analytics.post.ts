@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
 
-  const { eventType, dishId, sessionId, userAgent, referrer } = body ?? {}
+  const { eventType, dishId, sessionId, userAgent, referrer, utmSource } = body ?? {}
 
   if (!dishId || typeof dishId !== 'string') {
     throw createError({ statusCode: 400, message: 'dishId is required' })
@@ -71,6 +71,7 @@ export default defineEventHandler(async (event) => {
     sessionId: typeof sessionId === 'string' ? sessionId.slice(0, 255) : null,
     userAgent: typeof userAgent === 'string' ? userAgent.slice(0, 512) : null,
     referrer: typeof referrer === 'string' ? referrer.slice(0, 2048) : null,
+    utmSource: typeof utmSource === 'string' ? utmSource.slice(0, 50) : null,
   })
 
   return { ok: true }
