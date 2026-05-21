@@ -53,12 +53,12 @@ export default defineEventHandler(async (event) => {
   const currentCounts = await db
     .select({
       eventType: analyticsEvents.eventType,
-      isQr: sql<boolean>`(${analyticsEvents.utmSource} = 'qr')`,
+      isQr: sql<boolean>`coalesce(${analyticsEvents.utmSource} = 'qr', false)`,
       count: sql<number>`count(*)::int`,
     })
     .from(analyticsEvents)
     .where(baseWhere)
-    .groupBy(analyticsEvents.eventType, sql`(${analyticsEvents.utmSource} = 'qr')`)
+    .groupBy(analyticsEvents.eventType, sql`coalesce(${analyticsEvents.utmSource} = 'qr', false)`)
 
   // Process current counts
   let menuViews = 0
@@ -90,12 +90,12 @@ export default defineEventHandler(async (event) => {
     const prevCounts = await db
       .select({
         eventType: analyticsEvents.eventType,
-        isQr: sql<boolean>`(${analyticsEvents.utmSource} = 'qr')`,
+        isQr: sql<boolean>`coalesce(${analyticsEvents.utmSource} = 'qr', false)`,
         count: sql<number>`count(*)::int`,
       })
       .from(analyticsEvents)
       .where(prevWhere)
-      .groupBy(analyticsEvents.eventType, sql`(${analyticsEvents.utmSource} = 'qr')`)
+      .groupBy(analyticsEvents.eventType, sql`coalesce(${analyticsEvents.utmSource} = 'qr', false)`)
 
     for (const row of prevCounts) {
       if (row.eventType === 'page_open') {
