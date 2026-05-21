@@ -131,7 +131,7 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
 							label="Ny ret"
 							title="Opret en ret"
 							italic="ret"
-							body="Upload 3-8 fotos. Vi bygger 3D-modellen pa 92 sekunder."
+							body="Upload 1-4 fotos. Vi bygger 3D-modellen pa 2-5 minutter."
 							cta-label="Start"
 							to="/platform/dishes/new"
 							dark

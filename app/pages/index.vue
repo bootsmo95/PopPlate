@@ -213,7 +213,7 @@ onMounted(() => {
 								</div>
 							</div>
 						</div>
-						<h3 class="flow-h">3-8 fotos pr. ret <span class="italic">— det er alt.</span></h3>
+						<h3 class="flow-h">1-4 fotos pr. ret <span class="italic">— det er alt.</span></h3>
 						<p class="flow-p">
 							Tag billeder fra forskellige vinkler med jeres telefon, eller upload dem I allerede har. Vi
 							gør resten.
@@ -261,8 +261,7 @@ onMounted(() => {
 						</div>
 						<h3 class="flow-h">AI bygger en <span class="italic">model.</span></h3>
 						<p class="flow-p">
-							Mesh, materialer, lyssætning — alt klar til AR. Typisk 90 sekunder per ret. Vi sender besked
-							når den er klar.
+							Mesh, materialer, lyssætning — alt klar til AR. Typisk 2-5 minutter per ret.
 						</p>
 					</div>
 
