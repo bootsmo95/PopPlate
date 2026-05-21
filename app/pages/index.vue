@@ -131,6 +131,28 @@ onMounted(() => {
 				"
 			/>
 
+			<!-- Top corner CTAs -->
+			<div class="hero-top-ctas relative z-[6]">
+				<NuxtLink to="/r/folker" class="btn-ghost">Se eksempel-menu</NuxtLink>
+				<NuxtLink to="/platform/signup" class="btn-primary">
+					<span>Få demo til din restaurant</span>
+					<span
+						class="w-7 h-7 rounded-full grid place-items-center"
+						style="background: rgba(255, 255, 255, 0.12)"
+					>
+						<svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+							<path
+								d="M1 7h12m0 0L8 2m5 5l-5 5"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</span>
+				</NuxtLink>
+			</div>
+
 			<div class="relative z-[2] grid place-items-center pt-5 max-[720px]:pt-0 hero-area">
 				<!-- Giant wordmark IN FRONT with blend-mode -->
 				<div class="wordmark-wrap">
@@ -154,26 +176,6 @@ onMounted(() => {
 					En menu der ikke <span class="italic text-clay-deep">står stille</span> — gæsten kan se hver ret i
 					3D, før den ankommer.
 				</h1>
-				<div class="flex justify-center gap-3.5 mt-8 flex-wrap">
-					<NuxtLink to="/platform/signup" class="btn-primary">
-						<span>Få demo til din restaurant</span>
-						<span
-							class="w-7 h-7 rounded-full grid place-items-center"
-							style="background: rgba(255, 255, 255, 0.12)"
-						>
-							<svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-								<path
-									d="M1 7h12m0 0L8 2m5 5l-5 5"
-									stroke="currentColor"
-									stroke-width="1.5"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-								/>
-							</svg>
-						</span>
-					</NuxtLink>
-					<NuxtLink to="/r/folker" class="btn-ghost">Se eksempel-menu</NuxtLink>
-				</div>
 			</div>
 		</section>
 
@@ -620,6 +622,31 @@ onMounted(() => {
 }
 .wordmark-dot {
 	color: white;
+}
+
+/* ── Hero top CTAs ── */
+.hero-top-ctas {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	padding: 0 40px;
+	max-width: 1320px;
+	margin: 0 auto;
+}
+.hero-top-ctas .btn-primary,
+.hero-top-ctas .btn-ghost {
+	padding: 14px 22px;
+	font-size: 14px;
+}
+@media (max-width: 720px) {
+	.hero-top-ctas {
+		padding: 0 16px;
+	}
+	.hero-top-ctas .btn-primary,
+	.hero-top-ctas .btn-ghost {
+		padding: 12px 18px;
+		font-size: 13px;
+	}
 }
 
 /* ── Hero ── */
@@ -1641,7 +1668,7 @@ onMounted(() => {
 	letter-spacing: -0.04em;
 	line-height: 0.85;
 	color: transparent;
-	-webkit-text-stroke: 1px theme("colors.ink.light");
+	-webkit-text-stroke: 2px theme("colors.ink.light");
 	text-align: center;
 	margin: 60px 0 40px;
 	white-space: nowrap;
