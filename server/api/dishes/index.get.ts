@@ -3,9 +3,12 @@ import { db } from '../../database/index'
 import { dishes, restaurants } from '../../database/schema'
 import { requireAuth } from '../../utils/auth'
 import { hasUnlimitedAccess } from '../../utils/access'
+import { recoverStaleGenerationJobs, reconcileGeneratedDishes } from '../../utils/generation-timeout'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
+  await recoverStaleGenerationJobs()
+  await reconcileGeneratedDishes()
 
   if (hasUnlimitedAccess(user)) {
     return db.select().from(dishes).orderBy(desc(dishes.createdAt))

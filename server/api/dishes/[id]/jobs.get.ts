@@ -3,6 +3,7 @@ import { generationJobs } from '../../../database/schema'
 import { eq, desc } from 'drizzle-orm'
 import { requireAuth } from '../../../utils/auth'
 import { requireOwnedDish } from '../../../utils/dish-ownership'
+import { recoverStaleGenerationJobs, reconcileDishGenerationStatus } from '../../../utils/generation-timeout'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
@@ -12,6 +13,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'id is required' })
   }
   await requireOwnedDish(id, user)
+  await recoverStaleGenerationJobs({ dishId: id })
+  await reconcileDishGenerationStatus(id)
 
   const jobs = await db
     .select()

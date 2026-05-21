@@ -5,6 +5,7 @@ import { requireAuth } from '../../../utils/auth'
 import { hasUnlimitedAccess } from '../../../utils/access'
 import { getTierLimits } from '../../../utils/tiers'
 import { requireOwnedDish } from '../../../utils/dish-ownership'
+import { recoverStaleGenerationJobs, reconcileDishGenerationStatus } from '../../../utils/generation-timeout'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
@@ -15,6 +16,8 @@ export default defineEventHandler(async (event) => {
   }
 
   await requireOwnedDish(id, user)
+  await recoverStaleGenerationJobs({ dishId: id })
+  await reconcileDishGenerationStatus(id)
 
   // Validate dish has enough source images
   const [imageCount] = await db

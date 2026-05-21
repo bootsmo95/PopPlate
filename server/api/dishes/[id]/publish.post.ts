@@ -51,8 +51,20 @@ export default defineEventHandler(async (event) => {
   })
 
   const storageKey = qrImageKey(dish.restaurantId, id, `${dish.publicDishId}.png`)
-  await uploadFile(storageKey, qrBuffer, 'image/png')
-  const imageUrl = getPublicUrl(storageKey)
+  let imageUrl: string
+  try {
+    await uploadFile(storageKey, qrBuffer, 'image/png')
+    imageUrl = getPublicUrl(storageKey)
+  } catch (error) {
+    console.warn('QR upload failed; falling back to embedded QR image', {
+      dishId: id,
+      error: error instanceof Error ? error.message : String(error),
+    })
+    imageUrl = await QRCode.toDataURL(publicUrl, {
+      width: 512,
+      margin: 2,
+    })
+  }
 
   // Wrap DB mutations in a transaction to avoid half-state
   const result = await db.transaction(async (tx) => {
