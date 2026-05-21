@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full relative">
+  <div class="w-full relative" :style="{ height: viewerHeight }">
     <model-viewer
       ref="viewerRef"
       :src="glbUrl"
@@ -18,7 +18,7 @@
       environment-image="neutral"
       class="w-full rounded-xl overflow-hidden bg-gray-50 transition-opacity duration-300"
       :class="hasError ? 'opacity-0 pointer-events-none absolute inset-0' : modelLoaded ? 'opacity-100' : 'opacity-[0.02]'"
-      :style="{ height: viewerHeight, display: 'block' }"
+      :style="{ height: '100%', display: 'block' }"
       @error="handleError"
       @load="handleLoad"
     >
