@@ -57,8 +57,9 @@ async function saveProfile() {
 	} catch (err: unknown) {
 		const e = err as { data?: { message?: string }; message?: string };
 		toast.error(e?.data?.message ?? "Kunne ikke gemme profil");
+	} finally {
+		profileSaving.value = false;
 	}
-	profileSaving.value = false;
 }
 
 watch(
