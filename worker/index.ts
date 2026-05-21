@@ -3,6 +3,7 @@ import { db } from '../server/database/index.js'
 import { generationJobs, dishes } from '../server/database/schema.js'
 import { eq, asc, and, lt, sql } from 'drizzle-orm'
 import { handleGenerate } from './handlers/generate.js'
+import { recoverStaleGenerationJobs } from '../server/utils/generation-timeout.js'
 
 const POLL_INTERVAL_MS = 5000
 const WORKER_HEALTH_PORT = Number(process.env.WORKER_HEALTH_PORT ?? process.env.PORT ?? 3001)
@@ -19,34 +20,9 @@ async function ensureMeshySchema(): Promise<void> {
   await db.execute(sql`ALTER TABLE "generation_jobs" ADD COLUMN IF NOT EXISTS "progress" integer DEFAULT 0 NOT NULL`)
 }
 
-const STALE_TIMEOUT_MS = 30 * 60 * 1000
-
 async function recoverStaleJobs(): Promise<void> {
-  const cutoff = new Date(Date.now() - STALE_TIMEOUT_MS)
-
-  const staleJobs = await db
-    .update(generationJobs)
-    .set({
-      status: 'failed',
-      errorCode: 'STALE_TIMEOUT',
-      errorMessage: 'Job exceeded 30-minute timeout (worker may have crashed)',
-      completedAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .where(
-      and(
-        eq(generationJobs.status, 'processing'),
-        lt(generationJobs.startedAt, cutoff)
-      )
-    )
-    .returning({ id: generationJobs.id, dishId: generationJobs.dishId })
-
+  const staleJobs = await recoverStaleGenerationJobs()
   for (const job of staleJobs) {
-    await db
-      .update(dishes)
-      .set({ status: 'failed', updatedAt: new Date() })
-      .where(eq(dishes.id, job.dishId))
-
     console.log(`[worker] Recovered stale job ${job.id} (dish: ${job.dishId})`)
   }
 }
