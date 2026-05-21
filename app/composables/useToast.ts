@@ -8,8 +8,14 @@ interface Toast {
 
 export function useToast() {
   const toasts = useState<Toast[]>('toasts', () => [])
+  const timerMap = new Map<string, ReturnType<typeof setTimeout>>()
 
   function dismiss(id: string) {
+    const timer = timerMap.get(id)
+    if (timer !== undefined) {
+      clearTimeout(timer)
+      timerMap.delete(id)
+    }
     toasts.value = toasts.value.filter(t => t.id !== id)
   }
 
@@ -19,7 +25,8 @@ export function useToast() {
     // Prepend new toast, cap at 3 visible
     toasts.value = [entry, ...toasts.value].slice(0, 3)
     if (autoDismissMs) {
-      setTimeout(() => dismiss(id), autoDismissMs)
+      const timer = setTimeout(() => dismiss(id), autoDismissMs)
+      timerMap.set(id, timer)
     }
   }
 
