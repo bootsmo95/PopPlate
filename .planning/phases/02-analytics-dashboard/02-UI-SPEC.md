@@ -43,12 +43,20 @@ Standard 8-point scale already used project-wide. Tailwind default scale applies
 | 2xl | 48px (`py-12`) | Empty-state vertical padding |
 | 3xl | 64px | Page-level vertical rhythm |
 
-Exceptions (legacy — do not introduce new off-scale values):
-- Stat cards on mobile: `p-[18px]` (18px) — **legacy exception**. This is the existing `.p-card` mobile override already in main.css. Retain as-is; do not introduce this value as a new spacing token.
-- Table cells: `px-5 py-3.5` (20px / 14px) — **legacy exception**. This is the existing `.p-table` pattern from DishTable.vue. 14px (`py-3.5`) is not a new scale token; it exists solely in this inherited component rule.
-- Segmented tab controls: `px-4 py-2` (16px / 8px — standard filter-pill sizing, both are on-scale)
+All values in the scale above are multiples of 4. Do not introduce new off-scale values.
 
 **Source:** tailwind.config.ts extended spacing, main.css `.p-card` and `.p-table` styles
+
+---
+
+## Inherited Spacing (Existing Code — Read-Only, Do Not Apply)
+
+These values exist in legacy components already in the codebase. Retain them where they already appear. Do not apply them to new components or extend them as spacing tokens.
+
+| Component | Value | Note |
+|-----------|-------|------|
+| `.p-card` mobile override (main.css) | 18px | Legacy mobile padding override — retain as-is, do not introduce this value elsewhere |
+| `.p-table` `py` rule (DishTable.vue) | 14px (`py-3.5`) | Legacy table cell vertical padding — retain in this inherited component rule only |
 
 ---
 
