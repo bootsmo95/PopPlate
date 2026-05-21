@@ -4,12 +4,13 @@ export interface TierLimits {
   maxRestaurants: number
   maxDishesTotal: number
   maxRegenerationsPerDish: number
+  maxGenerationsPerMonth: number
 }
 
 const TIER_LIMITS: Record<AccountTier, TierLimits> = {
-  free: { maxRestaurants: 1, maxDishesTotal: 5, maxRegenerationsPerDish: 1 },
-  basic: { maxRestaurants: 2, maxDishesTotal: 35, maxRegenerationsPerDish: 3 },
-  pro: { maxRestaurants: 5, maxDishesTotal: 60, maxRegenerationsPerDish: 5 },
+  free: { maxRestaurants: 1, maxDishesTotal: 5, maxRegenerationsPerDish: 1, maxGenerationsPerMonth: 15 },
+  basic: { maxRestaurants: 2, maxDishesTotal: 35, maxRegenerationsPerDish: 3, maxGenerationsPerMonth: 50 },
+  pro: { maxRestaurants: 5, maxDishesTotal: 60, maxRegenerationsPerDish: 5, maxGenerationsPerMonth: 150 },
 }
 
 export function getTierLimits(tier: string): TierLimits {
