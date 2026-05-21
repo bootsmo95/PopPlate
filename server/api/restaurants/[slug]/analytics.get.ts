@@ -1,8 +1,8 @@
-import { db } from '../../../../database/index'
-import { analyticsEvents, dishes, restaurants } from '../../../../database/schema'
+import { db } from '../../../database/index'
+import { analyticsEvents, dishes, restaurants } from '../../../database/schema'
 import { and, eq, gte, lt, sql } from 'drizzle-orm'
-import { requireAuth } from '../../../../utils/auth'
-import { hasUnlimitedAccess } from '../../../../utils/access'
+import { requireAuth } from '../../../utils/auth'
+import { hasUnlimitedAccess } from '../../../utils/access'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
