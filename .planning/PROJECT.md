@@ -22,16 +22,16 @@ Restaurants can show diners what their dishes actually look like in 3D before th
 - Background worker for async generation job polling — existing
 - S3-compatible file storage for images and 3D models — existing
 - Basic analytics tracking (menu views, dish interactions) — existing
+- Model generation usage tracking with tier-based enforcement — validated in Phase 1
+- Analytics dashboard with menu views, dish popularity, QR scan tracking, and time-period controls — validated in Phase 2
+- UTM-based QR scan attribution (utm_source=qr on QR URLs) — validated in Phase 2
 
 ### Active
 
 - [ ] Smooth end-to-end onboarding flow (signup → create restaurant → add dishes → generate → share)
 - [ ] Stripe subscription billing (monthly plans tied to tiers)
 - [ ] Plan enforcement (generation limits, dish limits, restaurant limits per tier)
-- [ ] Model generation usage tracking (count generations per user over rolling 31 days)
 - [ ] Restaurant team management (owner invites staff, staff manages dishes)
-- [ ] Menu and dish analytics dashboard for restaurant owners
-- [ ] QR scan tracking and engagement metrics
 - [ ] Landing page / marketing site
 - [ ] Polished UI (loading states, error handling, mobile responsiveness, empty states)
 
@@ -52,7 +52,7 @@ Restaurants can show diners what their dishes actually look like in 3D before th
 - **Hosting:** Coolify on popplate.dk with separate services for app, auth (Authentik), and storage (MinIO)
 - **Billing:** Stripe already integrated as a dependency but subscription flow not fully wired
 - **Tiers:** free/pro/studio/unlimited defined in `server/utils/tiers.ts` with generation limits
-- **Analytics:** Partial implementation exists — events posted to `/api/public/analytics`
+- **Analytics:** Full analytics pipeline — events tracked client-side, aggregated server-side at `/api/restaurants/[slug]/analytics`, displayed on dedicated `/platform/analytics` page with trend charts (vue-chartjs) and dish popularity ranking
 - **No test suite:** No testing framework configured yet
 - **No CI/CD pipeline:** Manual deploys via Coolify
 
@@ -92,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-21 after initialization*
+*Last updated: 2026-05-21 after Phase 2 completion*
