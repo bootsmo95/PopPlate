@@ -9,9 +9,9 @@ Requirements for current milestone. Each maps to roadmap phases.
 
 ### Usage Tracking
 
-- [ ] **USAG-01**: System records each 3D model generation with user ID and timestamp
-- [ ] **USAG-02**: User can see their generation count for the current rolling 31-day window
-- [ ] **USAG-03**: System enforces tier-based generation limits (blocks generation when limit reached)
+- [x] **USAG-01**: System records each 3D model generation with user ID and timestamp
+- [x] **USAG-02**: User can see their generation count for the current rolling 31-day window
+- [x] **USAG-03**: System enforces tier-based generation limits (blocks generation when limit reached)
 - [ ] **USAG-04**: User sees clear feedback when they've hit their generation limit
 
 ### Analytics
@@ -73,9 +73,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| USAG-01 | Phase 1 | Pending |
-| USAG-02 | Phase 1 | Pending |
-| USAG-03 | Phase 1 | Pending |
+| USAG-01 | Phase 1 | Complete (01-01) |
+| USAG-02 | Phase 1 | Complete (01-01) |
+| USAG-03 | Phase 1 | Complete (01-01) |
 | USAG-04 | Phase 1 | Pending |
 | ANLT-01 | Phase 2 | Pending |
 | ANLT-02 | Phase 2 | Pending |

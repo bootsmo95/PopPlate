@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The user sees a clear, actionable message when their generation limit is reached (not a raw error)
 **Plans:** 2 plans
 Plans:
-- [ ] 01-01-PLAN.md — Backend: tier limits, billing cycle utility, monthly enforcement in generate endpoint, usage API
+- [x] 01-01-PLAN.md — Backend: tier limits, billing cycle utility, monthly enforcement in generate endpoint, usage API
 - [ ] 01-02-PLAN.md — Frontend: usage display on settings page, disable generate button with Danish warning at limit
 
 ### Phase 2: Analytics Dashboard
@@ -61,6 +61,6 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Generation Tracking & Enforcement | 0/2 | Planning complete | - |
+| 1. Generation Tracking & Enforcement | 1/2 | Executing | - |
 | 2. Analytics Dashboard | 0/TBD | Not started | - |
 | 3. UI Polish | 0/TBD | Not started | - |
