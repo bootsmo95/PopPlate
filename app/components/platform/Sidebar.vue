@@ -111,6 +111,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         <span v-if="dishCount" class="count">{{ dishCount }}</span>
       </NuxtLink>
       <NuxtLink
+        to="/platform/analytics" class="nav-item" :class="active === 'analytics' && 'active'"
+        :aria-current="active === 'analytics' ? 'page' : undefined" @click="close"
+      >
+        <Icon name="analytics" /> Analyse
+      </NuxtLink>
+      <NuxtLink
         :to="restaurantPath" class="nav-item" :class="active === 'workspace' && 'active'"
         :aria-current="active === 'workspace' ? 'page' : undefined" @click="close"
       >

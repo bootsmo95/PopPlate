@@ -42,6 +42,19 @@ const restaurantCount = computed(() => restaurants.value?.length ?? 0);
 const firstSlug = computed(() => restaurants.value?.[0]?.slug ?? "");
 const firstName = computed(() => restaurants.value?.[0]?.name ?? "");
 
+interface AnalyticsSummary {
+	menuViews: number
+	qrScans: number
+	interactions: number
+}
+
+const { data: summaryAnalytics, refresh: refreshAnalytics } = useLazyFetch<AnalyticsSummary>(
+	() => `/api/restaurants/${firstSlug.value}/analytics?period=30d`,
+	{ headers: ssrHeaders, immediate: false },
+)
+
+watch(firstSlug, (slug) => { if (slug) refreshAnalytics() }, { immediate: true })
+
 /** Map API dish to the design Dish shape for display */
 function toDesignDish(d: ApiDish): DesignDish {
 	return {
@@ -115,8 +128,18 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
 			<div class="grid grid-cols-4 gap-4 mb-8 max-[1100px]:grid-cols-2 max-[480px]:grid-cols-1">
 				<StatCard label="Retter i alt" :value="dishCount" caption="alle retter" />
 				<StatCard label="Restauranter" :value="restaurantCount" caption="oprettet" />
-				<StatCard label="AR-visninger" value="--" sub="/30d" caption="kommer snart" />
-				<StatCard label="QR-scans" value="--" sub="/30d" caption="kommer snart" />
+				<StatCard
+					label="AR-visninger"
+					:value="summaryAnalytics?.interactions?.toLocaleString('da-DK') ?? '--'"
+					sub="/30d"
+					caption="sidst 30 dage"
+				/>
+				<StatCard
+					label="QR-scans"
+					:value="summaryAnalytics?.qrScans?.toLocaleString('da-DK') ?? '--'"
+					sub="/30d"
+					caption="sidst 30 dage"
+				/>
 			</div>
 
 			<!-- Quick actions + Activity -->
