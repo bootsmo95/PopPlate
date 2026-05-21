@@ -7,6 +7,7 @@ function generateSessionId(): string {
 }
 
 export function getSessionId(): string {
+  if (!import.meta.client) return 'ssr'
   const existing = sessionStorage.getItem(SESSION_KEY)
   if (existing) return existing
   return generateSessionId()
@@ -17,6 +18,7 @@ export function trackEvent(
   dishId: string,
   restaurantId: string,
 ): void {
+  if (!import.meta.client) return
   // Fire-and-forget — do not await, do not surface errors
   const utmSource = new URLSearchParams(window.location.search).get('utm_source') ?? undefined
   const payload = {
