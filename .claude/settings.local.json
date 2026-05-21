@@ -26,7 +26,11 @@
       "Bash(git push *)",
       "Bash(git remote *)",
       "Bash(gh auth *)",
-      "Bash(git fetch *)"
+      "Bash(git fetch *)",
+      "Bash(find \"C:\\\\repos\\\\PopPlate\" -type f -name \"*.ts\" -o -name \"*.vue\" | xargs grep -l \"restaurant.*edit\\\\|edit.*restaurant\" 2>/dev/null | head -20)",
+      "Bash(find \"C:\\\\repos\\\\PopPlate\\\\server\\\\api\" -type f -name \"*.ts\" | xargs grep -l \"put\\\\|patch\" 2>/dev/null | head -10)",
+      "Bash(find \"C:\\\\repos\\\\PopPlate\\\\server\\\\api\" -type f -name \"*.ts\" | xargs grep -l \"restaurants\" 2>/dev/null)",
+      "Bash(grep -r \"restaurant.*edit\\\\|edit.*restaurant\\\\|Rediger info\" C:/repos/PopPlate/app --include=\"*.vue\" 2>/dev/null | head -10)"
     ]
   }
 }

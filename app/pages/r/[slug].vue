@@ -68,22 +68,23 @@
 			<header class="r-header">
 				<div class="r-eyebrow">3D restaurant menu</div>
 				<h1 class="r-name">{{ menu.restaurant.name }}</h1>
+				<p v-if="menu.restaurant.tagline" class="r-tagline">{{ menu.restaurant.tagline }}</p>
 				<div class="r-meta">
+					<div v-if="menu.restaurant.address" class="r-meta-item">
+						<span>Adresse</span>
+						<strong>{{ menu.restaurant.address }}</strong>
+					</div>
+					<div v-if="menu.restaurant.city" class="r-meta-item">
+						<span>By</span>
+						<strong>{{ menu.restaurant.city }}</strong>
+					</div>
+					<div v-if="menu.restaurant.openingHours" class="r-meta-item r-meta-item--hours">
+						<span>Abningstider</span>
+						<strong>{{ menu.restaurant.openingHours }}</strong>
+					</div>
 					<div class="r-meta-item">
 						<span>Retter</span>
 						<strong>{{ menu.dishes.length }}</strong>
-					</div>
-					<div class="r-meta-item">
-						<span>3D-modeller</span>
-						<strong>{{ menu.dishes.filter((d) => d.hasModel).length }}</strong>
-					</div>
-					<div class="r-meta-item">
-						<span>Format</span>
-						<strong>AR-ready</strong>
-					</div>
-					<div class="r-meta-item">
-						<span>App</span>
-						<strong>Ikke påkrævet</strong>
 					</div>
 				</div>
 			</header>
@@ -235,6 +236,10 @@ interface RestaurantMenu {
 		name: string;
 		slug: string;
 		status: string;
+		tagline: string | null;
+		address: string | null;
+		city: string | null;
+		openingHours: string | null;
 	};
 	dishes: MenuDish[];
 }
@@ -388,7 +393,17 @@ function trackMenuArClick(dish: MenuDish) {
 	letter-spacing: -0.04em;
 	line-height: 0.9;
 	color: theme("colors.ink.DEFAULT");
+	margin-bottom: 16px;
+}
+.r-tagline {
+	font-size: 17px;
+	color: theme("colors.ink.mute");
+	line-height: 1.5;
+	max-width: 540px;
 	margin-bottom: 36px;
+}
+.r-meta-item--hours strong {
+	white-space: pre-line;
 }
 .r-meta {
 	display: grid;

@@ -23,6 +23,10 @@ interface RestaurantDetail {
   name: string
   slug: string
   status: string
+  tagline: string | null
+  address: string | null
+  city: string | null
+  openingHours: string | null
   dishCount: number
   publishedDishCount: number
   latestDishes: RestaurantDish[]
@@ -76,14 +80,18 @@ const publishedCount = computed(() => restaurant.value?.publishedDishCount ?? 0)
 
 const INFO = computed<Array<[string, string]>>(() => {
   if (!restaurant.value) return []
-  return [
-    ['Navn', restaurant.value.name],
-    ['Live URL', `popplate.dk/r/${restaurant.value.slug}`],
-    ['Slug', restaurant.value.slug],
-    ['Status', restaurant.value.status === 'active' ? 'Aktiv' : restaurant.value.status],
-    ['Retter', String(restaurant.value.dishCount)],
-    ['Publiceret', String(restaurant.value.publishedDishCount)],
+  const r = restaurant.value
+  const items: Array<[string, string]> = [
+    ['Navn', r.name],
+    ['Live URL', `popplate.dk/r/${r.slug}`],
+    ['Status', r.status === 'active' ? 'Aktiv' : r.status],
+    ['Retter', String(r.dishCount)],
+    ['Publiceret', String(r.publishedDishCount)],
   ]
+  if (r.tagline) items.push(['Beskrivelse', r.tagline])
+  if (r.address) items.push(['Adresse', r.address])
+  if (r.city) items.push(['By', r.city])
+  return items
 })
 
 async function handleDeleteRestaurant() {
@@ -195,7 +203,7 @@ async function handleDeleteRestaurant() {
             </div>
           </dl>
           <div class="flex gap-2.5 mt-4">
-            <NuxtLink to="/platform/settings" class="top-btn flex-1 !justify-center">Rediger info</NuxtLink>
+            <NuxtLink :to="`/platform/r/${restaurant.slug}/edit`" class="top-btn flex-1 !justify-center">Rediger info</NuxtLink>
           </div>
         </aside>
       </div>

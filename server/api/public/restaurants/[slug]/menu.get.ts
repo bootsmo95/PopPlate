@@ -15,6 +15,10 @@ export default defineEventHandler(async (event) => {
       name: restaurants.name,
       slug: restaurants.slug,
       status: restaurants.status,
+      tagline: restaurants.tagline,
+      address: restaurants.address,
+      city: restaurants.city,
+      openingHours: restaurants.openingHours,
     })
     .from(restaurants)
     .where(and(eq(restaurants.slug, slug), eq(restaurants.status, 'active')))

@@ -14,9 +14,11 @@
       camera-controls
       ar
       ar-modes="webxr scene-viewer quick-look"
-      shadow-intensity="0.6"
-      exposure="0.85"
+      shadow-intensity="0.4"
+      shadow-softness="1"
+      exposure="0.7"
       environment-image="neutral"
+      environment-intensity="0.5"
       tone-mapping="commerce"
       class="w-full rounded-xl overflow-hidden transition-opacity duration-300"
       :class="hasError ? 'opacity-0 pointer-events-none absolute inset-0' : modelLoaded ? 'opacity-100' : 'opacity-[0.02]'"
@@ -87,11 +89,16 @@ const props = withDefaults(
 type ModelViewerElement = HTMLElement & {
   canActivateAR?: boolean
   activateAR?: () => Promise<void>
+  getDimensions?: () => { x: number; y: number; z: number }
 }
 
 const viewerRef = ref<ModelViewerElement | null>(null)
 const viewerHeight = computed(() => props.height)
-const scaleAttr = computed(() => `${props.scale} ${props.scale} ${props.scale}`)
+const measuredScale = ref<string | null>(null)
+const scaleAttr = computed(() => {
+  if (measuredScale.value) return measuredScale.value
+  return `${props.scale} ${props.scale} ${props.scale}`
+})
 const hasError = ref(false)
 const modelLoaded = ref(false)
 const pendingArActivation = ref(false)
@@ -110,10 +117,33 @@ watch(
     hasError.value = false
     modelLoaded.value = false
     pendingArActivation.value = false
+    measuredScale.value = null
   },
 )
 
 async function handleLoad() {
+  // Measure model's native bounding box and compute correct scale
+  // so AR size matches the desired scaleCm from the database
+  const viewer = viewerRef.value
+  if (viewer?.getDimensions && props.scale > 0) {
+    try {
+      const dims = viewer.getDimensions()
+      const maxDim = Math.max(dims.x, dims.y, dims.z)
+      if (maxDim > 0) {
+        // getDimensions returns size at current scale, so native = maxDim / currentScale
+        const currentScale = props.scale
+        const nativeMaxDim = maxDim / currentScale
+        // props.scale is desired size in meters (scaleCm / 100)
+        const s = props.scale / nativeMaxDim
+        measuredScale.value = `${s} ${s} ${s}`
+      }
+    }
+    catch {
+      // Fall back to static scale (already set via computed)
+    }
+  }
+
+  await nextTick()
   modelLoaded.value = true
   emit('viewer-loaded')
 

@@ -17,7 +17,7 @@ const apiDishCount = computed(() => apiDishes.value?.length ?? 0);
 
 type Tab = "tier" | "team" | "account" | "api";
 const validTabs: Tab[] = ["tier", "team", "account", "api"];
-const initialTab = validTabs.includes(route.query.tab as Tab) ? (route.query.tab as Tab) : "tier";
+const initialTab = validTabs.includes(route.query.tab as Tab) ? (route.query.tab as Tab) : "account";
 const tab = ref<Tab>(initialTab);
 
 // Account tab state
@@ -51,7 +51,7 @@ watch(
 	(t) => {
 		if (t === "account") loadProfile();
 	},
-	{ immediate: initialTab === "account" },
+	{ immediate: true },
 );
 
 const TABS = computed<Array<{ key: Tab; label: string; count?: number }>>(() => [
