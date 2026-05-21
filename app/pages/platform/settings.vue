@@ -174,9 +174,7 @@ async function handleDeleteRestaurant(restaurant: ApiRestaurant) {
     <!-- Restaurants tab -->
     <template v-if="tab === 'restaurants'">
       <!-- Loading -->
-      <div v-if="pending" class="p-card py-16 text-center text-ink-faint">
-        Indlaeser restauranter...
-      </div>
+      <PageSkeleton v-if="pending" variant="settings" :rows="3" />
 
       <!-- Error -->
       <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">

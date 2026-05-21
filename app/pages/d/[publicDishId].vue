@@ -1,12 +1,54 @@
 <template>
-  <!-- Loading -->
-  <div v-if="pending" class="min-h-screen flex items-center justify-center">
-    <div class="flex flex-col items-center gap-3 text-gray-400">
-      <svg class="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-      </svg>
-      <span class="text-sm">Loading...</span>
+  <!-- Loading skeleton -->
+  <div v-if="pending" class="min-h-screen animate-pulse">
+    <!-- Top bar skeleton -->
+    <div
+      class="flex justify-between items-center sticky top-0 z-50 border-b border-line px-10 py-7 max-[720px]:px-4.5 max-[720px]:py-4"
+      style="background: rgba(243, 237, 226, 0.92);"
+    >
+      <div class="h-4 w-20 rounded bg-ink-light/15" />
+      <div class="h-3 w-32 rounded bg-ink-light/10 hidden md:block" />
+      <div class="h-10 w-10 rounded-full border border-line" />
+    </div>
+
+    <!-- Split layout skeleton -->
+    <div class="d-main grid min-h-[calc(100vh-90px)]" style="grid-template-columns: 1.4fr 1fr;">
+      <!-- 3D viewer area -->
+      <div class="relative overflow-hidden grid place-items-center min-h-[70vh] max-[980px]:min-h-[50vh]" style="background: linear-gradient(180deg, #1a1410 0%, #2b1f15 50%, #1a1410 100%);">
+        <div class="absolute inset-0 z-[1]" style="background: radial-gradient(circle at 50% 55%, rgba(184, 122, 78, 0.25), transparent 55%);" />
+        <div class="relative z-[2] w-[55%] aspect-square rounded-full" style="background: rgba(184, 122, 78, 0.08); box-shadow: 0 30px 50px rgba(0,0,0,0.3);" />
+      </div>
+
+      <!-- Info panel skeleton -->
+      <div class="p-15 px-14 max-[980px]:px-8 max-[980px]:py-12">
+        <div class="h-14 w-[80%] rounded bg-ink-light/12 mb-8" />
+        <div class="flex justify-between items-baseline py-5 border-t border-b border-line mb-8">
+          <div class="h-2.5 w-10 rounded bg-ink-light/15" />
+          <div class="h-8 w-20 rounded bg-ink-light/10" />
+        </div>
+        <div class="space-y-3 mb-10">
+          <div class="h-4 w-full rounded bg-ink-light/8" />
+          <div class="h-4 w-5/6 rounded bg-ink-light/8" />
+          <div class="h-4 w-2/3 rounded bg-ink-light/8" />
+        </div>
+        <div class="mb-7">
+          <div class="h-2.5 w-24 rounded bg-ink-light/15 mb-3" />
+          <div class="flex flex-wrap gap-2">
+            <div v-for="i in 5" :key="i" class="h-8 rounded-full bg-ink-light/8" :style="{ width: [72,56,80,64,48][i-1]+'px' }" />
+          </div>
+        </div>
+        <div class="mb-7">
+          <div class="h-2.5 w-20 rounded bg-ink-light/15 mb-3" />
+          <div class="flex flex-wrap gap-2">
+            <div v-for="i in 3" :key="'a'+i" class="h-8 rounded-full bg-ink-light/8" :style="{ width: [60,72,52][i-1]+'px' }" />
+          </div>
+        </div>
+        <div class="mt-10 p-8 rounded" style="background: #2b1f15;">
+          <div class="h-7 w-[60%] rounded bg-white/8 mb-3" />
+          <div class="h-3.5 w-[80%] rounded bg-white/5 mb-6" />
+          <div class="h-14 w-36 rounded-full" style="background: rgba(212, 168, 128, 0.15);" />
+        </div>
+      </div>
     </div>
   </div>
 

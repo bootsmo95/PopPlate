@@ -1,15 +1,49 @@
 <template>
   <div class="r-page">
-    <!-- Loading -->
-    <div v-if="pending" class="flex min-h-screen items-center justify-center px-6">
-      <div class="flex items-center gap-3 text-sm font-medium text-ink-faint">
-        <svg class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-        </svg>
-        Indlæser menu...
+    <!-- Loading skeleton -->
+    <main v-if="pending" class="wrap animate-pulse">
+      <header class="r-header">
+        <div class="flex items-center gap-3.5 mb-6">
+          <div class="h-px w-7 bg-clay-deep/30" />
+          <div class="h-2.5 w-36 rounded bg-clay-deep/20" />
+        </div>
+        <div class="h-[clamp(72px,11vw,180px)] w-[70%] rounded bg-ink-light/8 mb-9" />
+        <div class="grid grid-cols-4 gap-6 pt-8 border-t border-ink/10 max-[800px]:grid-cols-2">
+          <div v-for="i in 4" :key="i" class="space-y-2">
+            <div class="h-2.5 w-16 rounded bg-ink-light/15" />
+            <div class="h-5 w-20 rounded bg-ink-light/10" />
+          </div>
+        </div>
+      </header>
+
+      <div class="r-menu-grid">
+        <div v-for="i in 3" :key="i" class="r-dish" style="cursor: default;">
+          <div class="r-dish-text">
+            <div class="flex items-center gap-3 mb-3.5">
+              <div class="h-px w-5 bg-clay-deep/30" />
+              <div class="h-2.5 w-6 rounded bg-clay-deep/20" />
+            </div>
+            <div class="flex justify-between gap-6 mb-5 pb-5 border-b border-dashed border-ink/10">
+              <div class="h-8 rounded bg-ink-light/12" :style="{ width: ['65%','50%','75%'][i-1] }" />
+              <div class="h-6 w-16 rounded bg-ink-light/10 shrink-0" />
+            </div>
+            <div class="space-y-2.5 mb-6">
+              <div class="h-3.5 w-full rounded bg-ink-light/8" />
+              <div class="h-3.5 w-3/4 rounded bg-ink-light/8" />
+            </div>
+            <div class="h-12 w-28 rounded-full bg-ink-light/10" />
+          </div>
+          <div class="r-dish-3d">
+            <div class="r-dish-3d-chrome">
+              <div class="r-dish-3d-corner tl" />
+              <div class="r-dish-3d-corner tr" />
+              <div class="r-dish-3d-corner bl" />
+              <div class="r-dish-3d-corner br" />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
 
     <!-- Error -->
     <div v-else-if="error || !menu" class="flex min-h-screen items-center justify-center px-6">

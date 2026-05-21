@@ -3,7 +3,7 @@
     <TopBar :show-search="false" cta-label="Gem ændringer" cta-href="#save" />
 
     <!-- Loading -->
-    <div v-if="pending" class="text-ink-mute text-sm py-12 text-center">Loading...</div>
+    <PageSkeleton v-if="pending" variant="detail" />
 
     <!-- Error loading -->
     <div v-else-if="fetchError" class="text-red-600 text-sm py-12 text-center">Failed to load dish.</div>
