@@ -2,9 +2,12 @@
 import TopBar from '~/components/platform/TopBar.vue'
 import PageHead from '~/components/platform/PageHead.vue'
 import Icon from '~/components/shared/Icon.vue'
+import ActionButton from '~/components/shared/ActionButton.vue'
 
 definePageMeta({ layout: 'platform' })
 useHead({ title: 'Restauranter · popplate' })
+
+const { toast } = useToast()
 
 interface ApiRestaurant {
   id: string
@@ -64,10 +67,11 @@ async function handleCreate() {
     })
     name.value = ''
     showCreate.value = false
+    toast.success('Restaurant oprettet')
     await refresh()
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    errorMessage.value = e?.data?.message ?? e?.message ?? 'Kunne ikke oprette restaurant.'
+    toast.error(e?.data?.message ?? 'Noget gik galt — prøv igen')
   } finally {
     submitting.value = false
   }
@@ -83,7 +87,10 @@ async function handleDelete(restaurant: ApiRestaurant) {
       method: 'DELETE',
       query: { hard: 'true' },
     })
+    toast.success('Restaurant slettet')
     await refresh()
+  } catch (err: unknown) {
+    toast.error('Noget gik galt — prøv igen')
   } finally {
     deletingSlug.value = ''
   }
@@ -145,14 +152,9 @@ async function handleDelete(restaurant: ApiRestaurant) {
             </div>
           </div>
           <div class="flex gap-2.5">
-            <button
-              type="submit"
-              :disabled="submitting"
-              class="top-btn top-btn--primary"
-            >
-              <span>{{ submitting ? 'Opretter...' : 'Opret restaurant' }}</span>
-              <Icon name="arrow" :size="13" />
-            </button>
+            <ActionButton variant="primary" type="submit" :loading="submitting">
+              Opret restaurant
+            </ActionButton>
             <button type="button" class="top-btn" @click="showCreate = false">
               Annuller
             </button>

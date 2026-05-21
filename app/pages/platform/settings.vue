@@ -2,9 +2,12 @@
 import TopBar from "~/components/platform/TopBar.vue";
 import PageHead from "~/components/platform/PageHead.vue";
 import Icon from "~/components/shared/Icon.vue";
+import ActionButton from "~/components/shared/ActionButton.vue";
 
 definePageMeta({ layout: "platform" });
 useHead({ title: "Indstillinger · popplate" });
+
+const { toast } = useToast();
 
 const route = useRoute();
 const ssrHeaders = useAuthHeaders();
@@ -33,8 +36,6 @@ const tab = ref<Tab>(initialTab);
 // Account tab state
 const profileDisplayName = ref("");
 const profileSaving = ref(false);
-const profileSaved = ref(false);
-const profileError = ref("");
 
 async function loadProfile() {
 	try {
@@ -47,18 +48,15 @@ async function loadProfile() {
 
 async function saveProfile() {
 	profileSaving.value = true;
-	profileSaved.value = false;
-	profileError.value = "";
 	try {
 		await $fetch("/api/user/profile", {
 			method: "PATCH",
 			body: { displayName: profileDisplayName.value },
 		});
-		profileSaved.value = true;
-		setTimeout(() => (profileSaved.value = false), 3000);
+		toast.success("Profil gemt");
 	} catch (err: unknown) {
 		const e = err as { data?: { message?: string }; message?: string };
-		profileError.value = e?.data?.message ?? e?.message ?? "Kunne ikke gemme profil.";
+		toast.error(e?.data?.message ?? "Kunne ikke gemme profil");
 	}
 	profileSaving.value = false;
 }
@@ -278,14 +276,10 @@ const INVOICES = [
 								</div>
 							</div>
 
-							<p v-if="profileError" class="text-red-600 text-sm mb-3">{{ profileError }}</p>
-
-							<div class="flex items-center gap-3">
-								<button type="submit" :disabled="profileSaving" class="top-btn top-btn--primary">
-									<span>{{ profileSaving ? "Gemmer..." : "Gem aendringer" }}</span>
-									<Icon name="check" :size="13" />
-								</button>
-								<span v-if="profileSaved" class="text-sm text-[#4a6240] font-medium">Gemt!</span>
+								<div class="flex items-center gap-3">
+								<ActionButton variant="primary" type="submit" :loading="profileSaving">
+									Gem ændringer
+								</ActionButton>
 							</div>
 						</form>
 					</div>
