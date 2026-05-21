@@ -8,14 +8,13 @@ type RecoverStaleOptions = {
   dishId?: string
 }
 
-function staleJobCutoff() {
-  return new Date(Date.now() - STALE_GENERATION_TIMEOUT_MS)
-}
-
 export async function recoverStaleGenerationJobs(options: RecoverStaleOptions = {}) {
   const conditions = [
     inArray(generationJobs.status, ['queued', 'processing']),
-    lt(sql<Date>`coalesce(${generationJobs.startedAt}, ${generationJobs.createdAt})`, staleJobCutoff()),
+    lt(
+      sql`coalesce(${generationJobs.startedAt}, ${generationJobs.createdAt})`,
+      sql`now() - interval '${sql.raw(String(STALE_GENERATION_TIMEOUT_MS / 60000))} minutes'`,
+    ),
   ]
 
   if (options.dishId) {
