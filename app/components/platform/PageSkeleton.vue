@@ -1,7 +1,7 @@
 <template>
   <div class="animate-pulse space-y-6 py-6">
-    <!-- Eyebrow + title -->
-    <div v-if="variant !== 'settings'" class="px-1">
+    <!-- Eyebrow + title (detail only — list/settings pages render their own PageHead) -->
+    <div v-if="variant === 'detail' || variant === 'dashboard'" class="px-1">
       <div class="skel skel-strong h-3 w-32 rounded mb-4" />
       <div class="skel h-9 w-64 rounded mb-2" />
       <div class="skel skel-subtle h-4 w-48 rounded" />
@@ -12,8 +12,8 @@
       <div v-for="i in 3" :key="i" class="h-28 rounded-md border border-line bg-paper" />
     </div>
 
-    <!-- Content cards -->
-    <div v-if="variant !== 'settings'" class="grid gap-4" :class="variant === 'detail' ? 'grid-cols-[1.4fr_1fr] max-[900px]:grid-cols-1' : ''">
+    <!-- Content cards (detail/dashboard only) -->
+    <div v-if="variant === 'detail' || variant === 'dashboard'" class="grid gap-4" :class="variant === 'detail' ? 'grid-cols-[1.4fr_1fr] max-[900px]:grid-cols-1' : ''">
       <div class="rounded-md border border-line bg-paper p-6 space-y-4">
         <div class="skel h-5 w-40 rounded" />
         <div class="skel skel-subtle h-4 w-full rounded" />

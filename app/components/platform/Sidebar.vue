@@ -23,7 +23,7 @@ const props = withDefaults(
     userEmail: '',
     accountTier: 'free',
     restaurantName: 'Restaurant',
-    restaurantPath: '/platform/settings#restaurants',
+    restaurantPath: '/platform/restaurants',
     dishCount: 0,
     publicMenuPath: '/platform/settings',
   },
@@ -117,8 +117,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         <Icon name="restaurant" /> {{ restaurantName }}
       </NuxtLink>
       <NuxtLink
-        to="/platform/settings#restaurants" class="nav-item"
-        @click="close"
+        to="/platform/restaurants" class="nav-item" :class="active === 'restaurants' && 'active'"
+        :aria-current="active === 'restaurants' ? 'page' : undefined" @click="close"
       >
         <Icon name="restaurant" /> Restauranter
       </NuxtLink>

@@ -6,50 +6,18 @@ import Icon from "~/components/shared/Icon.vue";
 definePageMeta({ layout: "platform" });
 useHead({ title: "Indstillinger · popplate" });
 
-interface ApiRestaurant {
-	id: string;
-	name: string;
-	slug: string;
-	status: string;
-}
-
 const route = useRoute();
 const ssrHeaders = useAuthHeaders();
 const { user, logout } = useAuth();
-const isAdmin = computed(() => user.value?.role === "admin");
 
-const {
-	data: restaurants,
-	pending,
-	error,
-	refresh,
-} = useLazyFetch<ApiRestaurant[]>("/api/restaurants", { headers: ssrHeaders });
-
-// Dish count for tier tab
+// Counts for tier tab
+const { data: restaurants } = useLazyFetch<Array<{ id: string }>>("/api/restaurants", { headers: ssrHeaders });
 const { data: apiDishes } = useLazyFetch<Array<{ id: string }>>("/api/dishes", { headers: ssrHeaders });
 const apiDishCount = computed(() => apiDishes.value?.length ?? 0);
 
-// Create restaurant form state
-const name = ref("");
-const submitting = ref(false);
-const errorMessage = ref("");
-const successMessage = ref("");
-const deletingSlug = ref("");
-
-const slugPreview = computed(() => {
-	const slug = name.value
-		.toLowerCase()
-		.normalize("NFKD")
-		.replace(/[̀-ͯ]/g, "")
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-+|-+$/g, "")
-		.replace(/-{2,}/g, "-");
-	return slug || "restaurant-name";
-});
-
-type Tab = "restaurants" | "tier" | "team" | "account" | "api";
-const validTabs: Tab[] = ["restaurants", "tier", "team", "account", "api"];
-const initialTab = validTabs.includes(route.query.tab as Tab) ? (route.query.tab as Tab) : "restaurants";
+type Tab = "tier" | "team" | "account" | "api";
+const validTabs: Tab[] = ["tier", "team", "account", "api"];
+const initialTab = validTabs.includes(route.query.tab as Tab) ? (route.query.tab as Tab) : "tier";
 const tab = ref<Tab>(initialTab);
 
 // Account tab state
@@ -87,7 +55,6 @@ watch(
 );
 
 const TABS = computed<Array<{ key: Tab; label: string; count?: number }>>(() => [
-	{ key: "restaurants", label: "Restauranter", count: restaurants.value?.length ?? 0 },
 	{ key: "tier", label: "Tier & fakturering" },
 	{ key: "team", label: "Team" },
 	{ key: "account", label: "Konto" },
@@ -101,64 +68,11 @@ const INVOICES = [
 	"20. februar 2026 · 499 kr",
 ];
 
-async function handleSubmit() {
-	errorMessage.value = "";
-	successMessage.value = "";
-
-	if (!name.value.trim()) {
-		errorMessage.value = "Indtast venligst et restaurantnavn.";
-		return;
-	}
-
-	submitting.value = true;
-
-	try {
-		const created = await $fetch<ApiRestaurant>("/api/restaurants", {
-			method: "POST",
-			body: { name: name.value },
-		});
-		successMessage.value = `${created.name} er oprettet.`;
-		name.value = "";
-		await refresh();
-	} catch (err: unknown) {
-		const e = err as { data?: { message?: string }; message?: string };
-		errorMessage.value = e?.data?.message ?? e?.message ?? "Kunne ikke oprette restaurant.";
-	} finally {
-		submitting.value = false;
-	}
-}
-
-async function handleDeleteRestaurant(restaurant: ApiRestaurant) {
-	if (
-		!confirm(
-			"Slet denne restaurant permanent? Dette sletter ogsa alle retter, QR-koder, analytics, jobs og billeddata.",
-		)
-	)
-		return;
-
-	deletingSlug.value = restaurant.slug;
-	errorMessage.value = "";
-	successMessage.value = "";
-
-	try {
-		await $fetch("/api/restaurants/" + restaurant.slug, {
-			method: "DELETE",
-			query: { hard: "true" },
-		});
-		successMessage.value = restaurant.name + " er slettet.";
-		await refresh();
-	} catch (err: unknown) {
-		const e = err as { data?: { message?: string }; message?: string };
-		errorMessage.value = e?.data?.message ?? e?.message ?? "Kunne ikke slette restaurant.";
-	} finally {
-		deletingSlug.value = "";
-	}
-}
 </script>
 
 <template>
 	<div data-screen-label="Settings">
-		<TopBar :show-search="false" cta-label="Ny restaurant" cta-href="#new-restaurant" />
+		<TopBar :show-search="false" cta-label="Indstillinger" cta-href="#" />
 
 		<PageHead :eyebrow="`Konto · ${user?.displayName ?? user?.email ?? ''}`">
 			<template #title>
@@ -183,125 +97,6 @@ async function handleDeleteRestaurant(restaurant: ApiRestaurant) {
 				<span v-if="t.count != null" class="count">{{ t.count }}</span>
 			</button>
 		</div>
-
-		<!-- Restaurants tab -->
-		<template v-if="tab === 'restaurants'">
-			<!-- Loading -->
-			<PageSkeleton v-if="pending" variant="settings" :rows="3" />
-
-			<!-- Error -->
-			<div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
-				Kunne ikke indlaese restauranter.
-			</div>
-
-			<template v-else>
-				<div class="p-table bg-paper border border-line rounded-md overflow-x-auto">
-					<table class="w-full border-collapse" style="min-width: 640px">
-						<thead>
-							<tr>
-								<th>Restaurant</th>
-								<th>Slug &middot; /r/</th>
-								<th>Status</th>
-								<th class="text-right">Handlinger</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="r in restaurants" :key="r.id">
-								<td>
-									<NuxtLink
-										:to="`/platform/r/${r.slug}`"
-										class="font-display text-[18px] font-normal tracking-[-0.01em]"
-										>{{ r.name }}</NuxtLink
-									>
-								</td>
-								<td>
-									<NuxtLink :to="`/platform/r/${r.slug}`" class="font-mono text-[13px] tabular-nums"
-										>popplate.dk/r/{{ r.slug }}</NuxtLink
-									>
-								</td>
-								<td>
-									<span
-										class="status-badge"
-										:class="
-											r.status === 'active' ? 'status-badge--published' : 'status-badge--draft'
-										"
-									>
-										{{ r.status === "active" ? "Aktiv" : r.status }}
-									</span>
-								</td>
-								<td>
-									<div class="flex gap-2 justify-end">
-										<NuxtLink :to="`/platform/r/${r.slug}`" class="icon-btn">
-											<Icon name="arrow-up-right" :size="14" />
-										</NuxtLink>
-										<button
-											v-if="isAdmin"
-											type="button"
-											class="icon-btn text-[#8a4838]"
-											:disabled="deletingSlug === r.slug"
-											@click="handleDeleteRestaurant(r)"
-										>
-											<Icon name="close" :size="14" />
-										</button>
-									</div>
-								</td>
-							</tr>
-							<tr v-if="!restaurants?.length">
-								<td colspan="4" class="text-center py-12 text-ink-faint">Ingen restauranter endnu.</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-
-				<!-- New restaurant form -->
-				<div id="new-restaurant" class="mt-6">
-					<div class="p-card">
-						<div class="mb-4">
-							<h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Ny restaurant</h3>
-						</div>
-
-						<div
-							v-if="errorMessage"
-							class="mb-4 rounded-md border border-[#8a4838]/20 bg-[#8a4838]/5 px-4 py-3 text-sm text-[#8a4838]"
-						>
-							{{ errorMessage }}
-						</div>
-						<div
-							v-if="successMessage"
-							class="mb-4 rounded-md border border-[#4a6240]/20 bg-[#4a6240]/5 px-4 py-3 text-sm text-[#4a6240]"
-						>
-							{{ successMessage }}
-						</div>
-
-						<form class="max-w-none" @submit.prevent="handleSubmit">
-							<div class="grid grid-cols-2 gap-4 max-[600px]:grid-cols-1">
-								<div class="mb-6">
-									<label class="field-label">Navn</label>
-									<input
-										v-model="name"
-										type="text"
-										placeholder="Fx Cafe Solsikken"
-										class="field-input"
-										:disabled="submitting"
-									/>
-								</div>
-								<div class="mb-6">
-									<label class="field-label">URL slug</label>
-									<input type="text" :value="slugPreview" disabled class="field-input" />
-									<div class="field-hint">
-										Bliver til popplate.dk/r/<strong>{{ slugPreview }}</strong>
-									</div>
-								</div>
-							</div>
-							<button type="submit" :disabled="submitting" class="top-btn top-btn--primary">
-								<span>{{ submitting ? "Opretter..." : "Opret restaurant" }}</span>
-								<Icon name="arrow" :size="13" />
-							</button>
-						</form>
-					</div>
-				</div>
-			</template>
-		</template>
 
 		<!-- Tier tab -->
 		<template v-if="tab === 'tier'">
@@ -540,24 +335,3 @@ async function handleDeleteRestaurant(restaurant: ApiRestaurant) {
 	</div>
 </template>
 
-<style scoped>
-.p-table :deep(th),
-.p-table :deep(td) {
-	@apply text-left px-5 py-3.5 text-sm text-ink border-b border-line;
-}
-.p-table :deep(th) {
-	@apply font-mono text-[10px] uppercase font-medium text-ink-faint bg-card;
-	letter-spacing: 0.18em;
-}
-.p-table :deep(tr:last-child td) {
-	border-bottom: none;
-}
-
-.icon-btn {
-	@apply w-[30px] h-[30px] grid place-items-center rounded-md text-ink-faint transition-colors;
-}
-.icon-btn:hover {
-	background: rgba(26, 20, 16, 0.06);
-	color: theme("colors.ink.DEFAULT");
-}
-</style>

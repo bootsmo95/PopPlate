@@ -21,7 +21,7 @@ const publicMenuPath = computed(() => {
 
 const restaurantPath = computed(() => {
   const firstRestaurant = navRestaurants.value?.[0]
-  return firstRestaurant ? `/platform/r/${firstRestaurant.slug}` : '/platform/settings#restaurants'
+  return firstRestaurant ? `/platform/r/${firstRestaurant.slug}` : '/platform/restaurants'
 })
 
 const restaurantName = computed(() => {
@@ -33,6 +33,7 @@ const route = useRoute()
 const active = computed<SidebarKey>(() => {
   const p = route.path
   if (p.startsWith('/platform/dishes')) return 'dishes'
+  if (p === '/platform/restaurants') return 'restaurants'
   if (p.startsWith('/platform/r')) return 'workspace'
   if (p.startsWith('/platform/settings')) return 'settings'
   if (p.startsWith('/platform/analytics')) return 'analytics'

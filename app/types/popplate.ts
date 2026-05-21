@@ -64,6 +64,7 @@ export interface User {
 export type SidebarKey =
   | 'home'
   | 'dishes'
+  | 'restaurants'
   | 'workspace'
   | 'analytics'
   | 'settings'
