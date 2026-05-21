@@ -1,11 +1,17 @@
 <template>
   <div>
+    <!-- Monthly limit warning -->
+    <div v-if="monthlyLimitReached" class="rounded-md border border-[#8b6914]/20 bg-[#8b6914]/5 px-4 py-3 mb-4">
+      <p class="text-sm font-medium text-[#6b4f10] mb-0.5">Maanedlig graense naaet</p>
+      <p class="text-sm text-[#8b6914]">Du har brugt alle dine 3D-generationer for denne maaned. Graensen nulstilles ved din naeste faktureringsdato.</p>
+    </div>
+
     <!-- No job yet -->
     <template v-if="!latestJob && !isReady">
       <div v-if="imageCount >= MIN_IMAGES" class="flex items-center gap-3">
         <p class="text-sm text-ink-mute flex-1">Klar til at generere en 3D-model fra dine billeder.</p>
         <button
-          :disabled="loading"
+          :disabled="loading || monthlyLimitReached"
           class="top-btn top-btn--primary !py-3 !px-5 !text-sm disabled:opacity-50"
           @click="startGeneration"
         >
@@ -41,7 +47,7 @@
           <p class="text-sm font-medium">3D-modellen er klar.</p>
         </div>
         <button
-          :disabled="loading"
+          :disabled="loading || monthlyLimitReached"
           class="top-btn !py-2.5 !px-4 !text-sm disabled:opacity-50"
           @click="startGeneration"
         >
@@ -82,7 +88,7 @@
           <p v-else class="text-sm text-[#a85a48]/80">Der opstod en ukendt fejl.</p>
         </div>
         <button
-          :disabled="loading"
+          :disabled="loading || monthlyLimitReached"
           class="top-btn top-btn--primary !py-3 !px-5 !text-sm disabled:opacity-50"
           @click="startGeneration"
         >
@@ -116,6 +122,7 @@ const props = defineProps<{
   hasModel?: boolean
   imageCount: number
   latestJob: GenerationJob | null
+  monthlyLimitReached?: boolean
 }>()
 
 const emit = defineEmits<{
