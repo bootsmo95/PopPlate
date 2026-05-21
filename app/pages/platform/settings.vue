@@ -279,18 +279,18 @@ const INVOICES = [
 								<span v-if="profileSaved" class="text-sm text-[#4a6240] font-medium">Gemt!</span>
 							</div>
 						</form>
+					</div>
 
-						<div v-if="usageData && !usageData.unlimited" class="p-card mt-5">
-							<div class="mb-4">
-								<h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Forbrug</h3>
-							</div>
-							<div class="mono-label !text-[rgba(107,96,86,0.6)] mb-2">Generationer brugt denne maaned</div>
-							<div class="font-body text-[32px] font-light text-ink">
-								{{ usageData.used }}<span class="text-sm ml-1 text-ink-faint">/{{ usageData.limit }}</span>
-							</div>
-							<div class="text-[13px] text-ink-mute mt-3">
-								{{ usageData.tierName }} plan
-							</div>
+					<div v-if="usageData && !usageData.unlimited" class="p-card mt-5">
+						<div class="mb-4">
+							<h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Forbrug</h3>
+						</div>
+						<div class="mono-label !text-[rgba(107,96,86,0.6)] mb-2">Generationer brugt denne maaned</div>
+						<div class="font-body text-[32px] font-light text-ink">
+							{{ usageData.used }}<span class="text-sm ml-1 text-ink-faint">/{{ usageData.limit }}</span>
+						</div>
+						<div class="text-[13px] text-ink-mute mt-3">
+							{{ usageData.tierName }} plan
 						</div>
 					</div>
 				</div>
