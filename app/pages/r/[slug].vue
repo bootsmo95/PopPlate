@@ -4,14 +4,14 @@
     <main v-if="pending" class="wrap animate-pulse">
       <header class="r-header">
         <div class="flex items-center gap-3.5 mb-6">
-          <div class="h-px w-7 bg-clay-deep/30" />
-          <div class="h-2.5 w-36 rounded bg-clay-deep/20" />
+          <div class="h-px w-7" style="background: rgba(139, 78, 44, 0.3);" />
+          <div class="h-2.5 w-36 rounded" style="background: rgba(139, 78, 44, 0.15);" />
         </div>
-        <div class="h-[clamp(72px,11vw,180px)] w-[70%] rounded bg-ink-light/8 mb-9" />
+        <div class="h-[clamp(72px,11vw,180px)] w-[70%] rounded mb-9" style="background: rgba(26, 20, 16, 0.06);" />
         <div class="grid grid-cols-4 gap-6 pt-8 border-t border-ink/10 max-[800px]:grid-cols-2">
           <div v-for="i in 4" :key="i" class="space-y-2">
-            <div class="h-2.5 w-16 rounded bg-ink-light/15" />
-            <div class="h-5 w-20 rounded bg-ink-light/10" />
+            <div class="h-2.5 w-16 rounded" style="background: rgba(26, 20, 16, 0.08);" />
+            <div class="h-5 w-20 rounded" style="background: rgba(26, 20, 16, 0.05);" />
           </div>
         </div>
       </header>
@@ -20,18 +20,18 @@
         <div v-for="i in 3" :key="i" class="r-dish" style="cursor: default;">
           <div class="r-dish-text">
             <div class="flex items-center gap-3 mb-3.5">
-              <div class="h-px w-5 bg-clay-deep/30" />
-              <div class="h-2.5 w-6 rounded bg-clay-deep/20" />
+              <div class="h-px w-5" style="background: rgba(139, 78, 44, 0.3);" />
+              <div class="h-2.5 w-6 rounded" style="background: rgba(139, 78, 44, 0.15);" />
             </div>
             <div class="flex justify-between gap-6 mb-5 pb-5 border-b border-dashed border-ink/10">
-              <div class="h-8 rounded bg-ink-light/12" :style="{ width: ['65%','50%','75%'][i-1] }" />
-              <div class="h-6 w-16 rounded bg-ink-light/10 shrink-0" />
+              <div class="h-8 rounded" :style="{ width: ['65%','50%','75%'][i-1], background: 'rgba(26, 20, 16, 0.07)' }" />
+              <div class="h-6 w-16 rounded shrink-0" style="background: rgba(26, 20, 16, 0.05);" />
             </div>
             <div class="space-y-2.5 mb-6">
-              <div class="h-3.5 w-full rounded bg-ink-light/8" />
-              <div class="h-3.5 w-3/4 rounded bg-ink-light/8" />
+              <div class="h-3.5 w-full rounded" style="background: rgba(26, 20, 16, 0.05);" />
+              <div class="h-3.5 w-3/4 rounded" style="background: rgba(26, 20, 16, 0.05);" />
             </div>
-            <div class="h-12 w-28 rounded-full bg-ink-light/10" />
+            <div class="h-12 w-28 rounded-full" style="background: rgba(26, 20, 16, 0.06);" />
           </div>
           <div class="r-dish-3d">
             <div class="r-dish-3d-chrome">

@@ -6,8 +6,8 @@
       class="flex justify-between items-center sticky top-0 z-50 border-b border-line px-10 py-7 max-[720px]:px-4.5 max-[720px]:py-4"
       style="background: rgba(243, 237, 226, 0.92);"
     >
-      <div class="h-4 w-20 rounded bg-ink-light/15" />
-      <div class="h-3 w-32 rounded bg-ink-light/10 hidden md:block" />
+      <div class="h-4 w-20 rounded" style="background: rgba(26, 20, 16, 0.08);" />
+      <div class="h-3 w-32 rounded hidden md:block" style="background: rgba(26, 20, 16, 0.06);" />
       <div class="h-10 w-10 rounded-full border border-line" />
     </div>
 
@@ -21,31 +21,31 @@
 
       <!-- Info panel skeleton -->
       <div class="p-15 px-14 max-[980px]:px-8 max-[980px]:py-12">
-        <div class="h-14 w-[80%] rounded bg-ink-light/12 mb-8" />
+        <div class="h-14 w-[80%] rounded mb-8" style="background: rgba(26, 20, 16, 0.07);" />
         <div class="flex justify-between items-baseline py-5 border-t border-b border-line mb-8">
-          <div class="h-2.5 w-10 rounded bg-ink-light/15" />
-          <div class="h-8 w-20 rounded bg-ink-light/10" />
+          <div class="h-2.5 w-10 rounded" style="background: rgba(26, 20, 16, 0.08);" />
+          <div class="h-8 w-20 rounded" style="background: rgba(26, 20, 16, 0.06);" />
         </div>
         <div class="space-y-3 mb-10">
-          <div class="h-4 w-full rounded bg-ink-light/8" />
-          <div class="h-4 w-5/6 rounded bg-ink-light/8" />
-          <div class="h-4 w-2/3 rounded bg-ink-light/8" />
+          <div class="h-4 w-full rounded" style="background: rgba(26, 20, 16, 0.05);" />
+          <div class="h-4 w-5/6 rounded" style="background: rgba(26, 20, 16, 0.05);" />
+          <div class="h-4 w-2/3 rounded" style="background: rgba(26, 20, 16, 0.05);" />
         </div>
         <div class="mb-7">
-          <div class="h-2.5 w-24 rounded bg-ink-light/15 mb-3" />
+          <div class="h-2.5 w-24 rounded mb-3" style="background: rgba(26, 20, 16, 0.08);" />
           <div class="flex flex-wrap gap-2">
-            <div v-for="i in 5" :key="i" class="h-8 rounded-full bg-ink-light/8" :style="{ width: [72,56,80,64,48][i-1]+'px' }" />
+            <div v-for="i in 5" :key="i" class="h-8 rounded-full" :style="{ width: [72,56,80,64,48][i-1]+'px', background: 'rgba(26, 20, 16, 0.05)' }" />
           </div>
         </div>
         <div class="mb-7">
-          <div class="h-2.5 w-20 rounded bg-ink-light/15 mb-3" />
+          <div class="h-2.5 w-20 rounded mb-3" style="background: rgba(26, 20, 16, 0.08);" />
           <div class="flex flex-wrap gap-2">
-            <div v-for="i in 3" :key="'a'+i" class="h-8 rounded-full bg-ink-light/8" :style="{ width: [60,72,52][i-1]+'px' }" />
+            <div v-for="i in 3" :key="'a'+i" class="h-8 rounded-full" :style="{ width: [60,72,52][i-1]+'px', background: 'rgba(26, 20, 16, 0.05)' }" />
           </div>
         </div>
         <div class="mt-10 p-8 rounded" style="background: #2b1f15;">
-          <div class="h-7 w-[60%] rounded bg-white/8 mb-3" />
-          <div class="h-3.5 w-[80%] rounded bg-white/5 mb-6" />
+          <div class="h-7 w-[60%] rounded mb-3" style="background: rgba(255, 255, 255, 0.08);" />
+          <div class="h-3.5 w-[80%] rounded mb-6" style="background: rgba(255, 255, 255, 0.05);" />
           <div class="h-14 w-36 rounded-full" style="background: rgba(212, 168, 128, 0.15);" />
         </div>
       </div>
