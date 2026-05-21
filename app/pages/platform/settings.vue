@@ -34,17 +34,21 @@ const tab = ref<Tab>(initialTab);
 const profileDisplayName = ref("");
 const profileSaving = ref(false);
 const profileSaved = ref(false);
+const profileError = ref("");
 
 async function loadProfile() {
 	try {
 		const profile = await $fetch<{ displayName: string }>("/api/user/profile");
 		profileDisplayName.value = profile.displayName ?? "";
-	} catch {}
+	} catch (err: unknown) {
+		console.error("[settings] failed to load profile", err);
+	}
 }
 
 async function saveProfile() {
 	profileSaving.value = true;
 	profileSaved.value = false;
+	profileError.value = "";
 	try {
 		await $fetch("/api/user/profile", {
 			method: "PATCH",
@@ -52,7 +56,10 @@ async function saveProfile() {
 		});
 		profileSaved.value = true;
 		setTimeout(() => (profileSaved.value = false), 3000);
-	} catch {}
+	} catch (err: unknown) {
+		const e = err as { data?: { message?: string }; message?: string };
+		profileError.value = e?.data?.message ?? e?.message ?? "Kunne ikke gemme profil.";
+	}
 	profileSaving.value = false;
 }
 
@@ -270,6 +277,8 @@ const INVOICES = [
 									</button>
 								</div>
 							</div>
+
+							<p v-if="profileError" class="text-red-600 text-sm mb-3">{{ profileError }}</p>
 
 							<div class="flex items-center gap-3">
 								<button type="submit" :disabled="profileSaving" class="top-btn top-btn--primary">
