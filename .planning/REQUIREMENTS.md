@@ -16,11 +16,11 @@ Requirements for current milestone. Each maps to roadmap phases.
 
 ### Analytics
 
-- [ ] **ANLT-01**: Restaurant owner can view total menu page views over time
-- [ ] **ANLT-02**: Restaurant owner can view per-dish view and interaction counts
-- [ ] **ANLT-03**: Restaurant owner can see dish popularity ranking
-- [ ] **ANLT-04**: Analytics dashboard shows trends over configurable time periods
-- [ ] **ANLT-05**: QR code scan events are tracked and displayed
+- [x] **ANLT-01**: Restaurant owner can view total menu page views over time
+- [x] **ANLT-02**: Restaurant owner can view per-dish view and interaction counts
+- [x] **ANLT-03**: Restaurant owner can see dish popularity ranking
+- [x] **ANLT-04**: Analytics dashboard shows trends over configurable time periods
+- [x] **ANLT-05**: QR code scan events are tracked and displayed
 
 ### UI Polish
 
@@ -77,11 +77,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | USAG-02 | Phase 1 | Complete (01-01) |
 | USAG-03 | Phase 1 | Complete (01-01) |
 | USAG-04 | Phase 1 | Complete (01-02) |
-| ANLT-01 | Phase 2 | Pending |
-| ANLT-02 | Phase 2 | Pending |
-| ANLT-03 | Phase 2 | Pending |
-| ANLT-04 | Phase 2 | Pending |
-| ANLT-05 | Phase 2 | Pending |
+| ANLT-01 | Phase 2 | Complete (02-02) |
+| ANLT-02 | Phase 2 | Complete (02-02) |
+| ANLT-03 | Phase 2 | Complete (02-02) |
+| ANLT-04 | Phase 2 | Complete (02-02) |
+| ANLT-05 | Phase 2 | Complete (02-01+02-02) |
 | UIPOL-01 | Phase 3 | Pending |
 | UIPOL-02 | Phase 3 | Pending |
 | UIPOL-03 | Phase 3 | Pending |

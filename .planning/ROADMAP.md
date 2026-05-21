@@ -13,7 +13,7 @@ Three phases completing PopPlate's v1 feature set on top of the existing codebas
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Generation Tracking & Enforcement** - Track model generations per user and enforce tier limits
-- [ ] **Phase 2: Analytics Dashboard** - Give restaurant owners visibility into menu performance and QR engagement
+- [x] **Phase 2: Analytics Dashboard** - Give restaurant owners visibility into menu performance and QR engagement
 - [ ] **Phase 3: UI Polish** - Loading states, error handling, empty states, and mobile responsiveness across the platform
 
 ## Phase Details
@@ -44,8 +44,8 @@ Plans:
   5. Dashboard allows switching between time windows (e.g., 7 days, 30 days, all time)
 **Plans:** 2 plans
 Plans:
-- [ ] 02-01-PLAN.md — Backend: UTM source schema migration, analytics event tracking wiring, restaurant analytics aggregation API
-- [ ] 02-02-PLAN.md — Frontend: analytics page with stat cards, trend chart, dish popularity table, sidebar entry, dashboard live stats
+- [x] 02-01-PLAN.md — Backend: UTM source schema migration, analytics event tracking wiring, restaurant analytics aggregation API
+- [x] 02-02-PLAN.md — Frontend: analytics page with stat cards, trend chart, dish popularity table, sidebar entry, dashboard live stats
 **UI hint**: yes
 
 ### Phase 3: UI Polish
@@ -65,5 +65,5 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Generation Tracking & Enforcement | 2/2 | Complete | 2026-05-21 |
-| 2. Analytics Dashboard | 0/2 | In progress | - |
+| 2. Analytics Dashboard | 2/2 | Complete | 2026-05-21 |
 | 3. UI Polish | 0/TBD | Not started | - |
