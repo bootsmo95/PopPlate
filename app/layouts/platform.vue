@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Sidebar from '~/components/platform/Sidebar.vue'
+import ToastContainer from '~/components/platform/ToastContainer.vue'
 import type { SidebarKey } from '~/types/popplate'
 
 const { logout, accountTier, user } = useAuth()
@@ -62,6 +63,7 @@ async function handleLogout() {
                  max-[1100px]:px-8 max-[720px]:p-[22px] max-[720px]:pb-16">
       <slot />
     </main>
+    <ToastContainer />
   </div>
 </template>
 
