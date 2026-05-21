@@ -61,7 +61,13 @@ export async function sendModelAsset(
 
     const raw = Buffer.from(url.slice(commaIdx + 1), 'base64')
     setResponseHeader(event, 'Content-Length', raw.length)
-    return headOnly ? null : send(event, raw)
+    if (headOnly) {
+      event.node.res.statusCode = 200
+      event.node.res.end()
+      return
+    }
+
+    return send(event, raw)
   }
 
   let parsedUrl: URL
