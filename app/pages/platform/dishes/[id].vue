@@ -67,17 +67,9 @@
                 <div class="field-hint">Komma-separeret. Bruges af AI til at forstå retten.</div>
               </div>
 
-              <!-- Save feedback -->
-              <p v-if="saveError" class="text-red-600 text-sm mb-3">{{ saveError }}</p>
-              <p v-if="saveSuccess" class="text-green-600 text-sm mb-3">Changes saved.</p>
-
-              <button
-                type="submit"
-                :disabled="saving"
-                class="top-btn top-btn--primary !py-3.5 !px-6 !text-sm"
-              >
-                {{ saving ? 'Saving...' : 'Gem ændringer' }}
-              </button>
+              <ActionButton variant="primary" type="submit" :loading="saving" class="!py-3.5 !px-6 !text-sm">
+                Gem ændringer
+              </ActionButton>
             </div>
 
             <!-- Kildebilleder -->
@@ -201,27 +193,27 @@
               Arkiver for at skjule retten uden at miste data -- eller slet permanent. Slettet ret kan ikke gendannes.
             </p>
             <p v-if="dish.status === 'archived'" class="text-sm text-ink-mute mb-3">This dish is archived.</p>
-            <p v-if="archiveError" class="text-red-600 text-sm mb-3">{{ archiveError }}</p>
             <div class="flex gap-2">
-              <button
+              <ActionButton
                 v-if="dish.status !== 'archived'"
-                type="button"
-                :disabled="archiving || deleting"
-                class="top-btn flex-1 !justify-center"
+                variant="ghost"
+                :loading="archiving"
+                :disabled="deleting"
+                class="flex-1 !justify-center"
                 @click="handleArchive"
               >
-                {{ archiving ? 'Archiving...' : 'Arkiver ret' }}
-              </button>
-              <button
+                Arkiver ret
+              </ActionButton>
+              <ActionButton
                 v-if="isAdmin"
-                type="button"
-                :disabled="archiving || deleting"
-                class="top-btn flex-1 !justify-center"
-                style="background: #a85a48; color: #fff; border-color: #a85a48;"
+                variant="danger"
+                :loading="deleting"
+                :disabled="archiving"
+                class="flex-1 !justify-center"
                 @click="handlePermanentDelete"
               >
-                {{ deleting ? 'Deleting...' : 'Slet ret' }}
-              </button>
+                Slet ret
+              </ActionButton>
             </div>
           </div>
         </aside>
@@ -236,10 +228,12 @@ import PageHead from '~/components/platform/PageHead.vue'
 import StatusBadge from '~/components/platform/StatusBadge.vue'
 import TipsPanel from '~/components/platform/TipsPanel.vue'
 import Icon from '~/components/shared/Icon.vue'
+import ActionButton from '~/components/shared/ActionButton.vue'
 import type { DishStatus } from '~/types'
 
 definePageMeta({ layout: 'platform' })
 
+const { toast } = useToast()
 const route = useRoute()
 const id = route.params.id as string
 const ssrHeaders = useAuthHeaders()
@@ -418,6 +412,7 @@ function handleImageDeleted(_imageId: string) {
 }
 
 async function handleJobCreated(_job: GenerationJob) {
+  toast.success('3D-model genereres nu')
   await Promise.all([refreshJobs(), refresh(), refreshUsage()])
 }
 
@@ -453,18 +448,9 @@ watch(
 )
 
 const saving = ref(false)
-const saveError = ref('')
-const saveSuccess = ref(false)
 
 async function handleSave() {
-  if (!form.name.trim()) {
-    saveError.value = 'Name is required.'
-    return
-  }
-
   saving.value = true
-  saveError.value = ''
-  saveSuccess.value = false
 
   try {
     const normalizedScaleCm = typeof form.scaleCm === 'number' && Number.isFinite(form.scaleCm)
@@ -483,11 +469,11 @@ async function handleSave() {
       },
     })
 
-    saveSuccess.value = true
+    toast.success('Ændringer gemt')
     await refresh()
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    saveError.value = e?.data?.message ?? e?.message ?? 'Failed to save changes.'
+    toast.error(e?.data?.message ?? 'Noget gik galt — prøv igen')
   } finally {
     saving.value = false
   }
@@ -495,20 +481,19 @@ async function handleSave() {
 
 const archiving = ref(false)
 const deleting = ref(false)
-const archiveError = ref('')
 
 async function handleArchive() {
   if (!confirm('Archive this dish? It will no longer be visible to guests.')) return
 
   archiving.value = true
-  archiveError.value = ''
 
   try {
     await $fetch(`/api/dishes/${id}`, { method: 'DELETE' })
+    toast.success('Ret arkiveret')
     await refresh()
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    archiveError.value = e?.data?.message ?? e?.message ?? 'Failed to archive dish.'
+    toast.error(e?.data?.message ?? 'Noget gik galt — prøv igen')
   } finally {
     archiving.value = false
   }
@@ -518,7 +503,6 @@ async function handlePermanentDelete() {
   if (!confirm('Permanently delete this dish? This removes its QR code, analytics, jobs, and source image records.')) return
 
   deleting.value = true
-  archiveError.value = ''
 
   try {
     await $fetch(`/api/dishes/${id}`, {
@@ -528,7 +512,7 @@ async function handlePermanentDelete() {
     await navigateTo('/platform/dishes')
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    archiveError.value = e?.data?.message ?? e?.message ?? 'Failed to delete dish.'
+    toast.error(e?.data?.message ?? 'Noget gik galt — prøv igen')
   } finally {
     deleting.value = false
   }

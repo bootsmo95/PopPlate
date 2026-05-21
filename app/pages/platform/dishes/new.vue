@@ -110,14 +110,10 @@
         <p v-if="errorMsg" class="text-red-600 text-sm mt-4">{{ errorMsg }}</p>
 
         <div class="flex gap-3 mt-6">
-          <button
-            type="submit"
-            :disabled="loading"
-            class="top-btn top-btn--primary flex-1 !justify-center !py-4 !text-[15px]"
-          >
-            <span>{{ loading ? 'Opretter...' : 'Opret ret' }}</span>
+          <ActionButton variant="primary" type="submit" :loading="loading" class="flex-1 !justify-center !py-4 !text-[15px]">
+            <span>Opret ret</span>
             <Icon name="arrow" :size="13" />
-          </button>
+          </ActionButton>
           <NuxtLink to="/platform/dishes" class="top-btn !py-4 !px-6">Annuller</NuxtLink>
         </div>
       </form>
@@ -152,8 +148,11 @@
 import TopBar from '~/components/platform/TopBar.vue'
 import PageHead from '~/components/platform/PageHead.vue'
 import Icon from '~/components/shared/Icon.vue'
+import ActionButton from '~/components/shared/ActionButton.vue'
 
 definePageMeta({ layout: 'platform' })
+
+const { toast } = useToast()
 
 interface Restaurant {
   id: string
@@ -218,7 +217,7 @@ async function handleSubmit() {
     await navigateTo(`/platform/dishes/${dish.id}`)
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    errorMsg.value = e?.data?.message ?? e?.message ?? 'Failed to create dish.'
+    toast.error(e?.data?.message ?? 'Noget gik galt — prøv igen')
   } finally {
     loading.value = false
   }
