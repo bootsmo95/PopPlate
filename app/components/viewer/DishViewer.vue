@@ -16,7 +16,7 @@
       ar-modes="webxr scene-viewer quick-look"
       shadow-intensity="1"
       environment-image="neutral"
-      class="w-full rounded-xl overflow-hidden bg-gray-50 transition-opacity duration-300"
+      class="w-full rounded-xl overflow-hidden transition-opacity duration-300"
       :class="hasError ? 'opacity-0 pointer-events-none absolute inset-0' : modelLoaded ? 'opacity-100' : 'opacity-[0.02]'"
       :style="{ height: '100%', display: 'block' }"
       @error="handleError"
@@ -27,10 +27,10 @@
 
     <div
       v-if="!hasError && !modelLoaded"
-      class="absolute inset-0 flex items-center justify-center rounded-xl bg-gray-50/92 backdrop-blur-[1px]"
+      class="absolute inset-0 flex items-center justify-center rounded-xl"
       :style="{ height: viewerHeight }"
     >
-      <div class="flex items-center gap-2 text-gray-400 text-sm">
+      <div class="flex items-center gap-2 text-sm" style="color: rgba(212, 168, 128, 0.55);">
         <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -41,8 +41,8 @@
 
     <div
       v-if="hasError"
-      class="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-xl text-gray-400 gap-2"
-      :style="{ height: viewerHeight }"
+      class="absolute inset-0 flex flex-col items-center justify-center rounded-xl gap-2"
+      :style="{ height: viewerHeight, color: 'rgba(212, 168, 128, 0.45)' }"
     >
       <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
@@ -153,3 +153,10 @@ defineExpose({
   isLoaded: modelLoaded,
 })
 </script>
+
+<style scoped>
+model-viewer {
+  --poster-color: transparent;
+  background: transparent;
+}
+</style>
