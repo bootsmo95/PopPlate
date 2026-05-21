@@ -1,11 +1,12 @@
 import { db } from '../../../database/index'
 import { dishes, dishSourceImages, generationJobs } from '../../../database/schema'
 import { eq, desc, count, inArray, and } from 'drizzle-orm'
-import { requireAuth } from '../../../utils/auth'
+import { requireAuth, getDbUser } from '../../../utils/auth'
 import { hasUnlimitedAccess } from '../../../utils/access'
 import { getTierLimits } from '../../../utils/tiers'
 import { requireOwnedDish } from '../../../utils/dish-ownership'
 import { recoverStaleGenerationJobs, reconcileDishGenerationStatus } from '../../../utils/generation-timeout'
+import { getBillingCycleStart, getMonthlyGenerationCount } from '../../../utils/generation-usage'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
@@ -44,6 +45,22 @@ export default defineEventHandler(async (event) => {
       statusCode: 409,
       message: 'A generation job is already in progress for this dish',
     })
+  }
+
+  // Check monthly generation limit
+  if (!hasUnlimitedAccess(user)) {
+    const limits = getTierLimits(user.accountTier)
+    const dbUser = await getDbUser(user.id)
+    const anchorDate = dbUser?.createdAt ?? new Date()
+    const cycleStart = getBillingCycleStart(anchorDate)
+    const monthlyCount = await getMonthlyGenerationCount(user.id, cycleStart)
+
+    if (monthlyCount >= limits.maxGenerationsPerMonth) {
+      throw createError({
+        statusCode: 403,
+        message: 'Du har naaet din maanedlige graense for 3D-generationer. Graensen nulstilles ved din naeste faktureringsdato.',
+      })
+    }
   }
 
   // Check regeneration tier limit
