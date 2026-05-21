@@ -57,7 +57,11 @@ Plans:
   2. API and network errors display a human-readable message instead of a raw error or silent failure
   3. Pages with no data yet show an empty state that tells the user what to do next
   4. All platform pages are usable on a mobile phone without horizontal scrolling or overlapping elements
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 03-01-PLAN.md — Foundation: useToast composable, ToastContainer, ActionButton, error.vue, mount in platform layout
+- [ ] 03-02-PLAN.md — Wiring: ActionButton + toast into dishes/[id], dishes/new, restaurants, settings pages
+- [ ] 03-03-PLAN.md — Empty states: upgrade r/[slug]/index and r/[slug]/dishes to structured p-card pattern
 **UI hint**: yes
 
 ## Progress
@@ -66,4 +70,4 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Generation Tracking & Enforcement | 2/2 | Complete | 2026-05-21 |
 | 2. Analytics Dashboard | 2/2 | Complete | 2026-05-21 |
-| 3. UI Polish | 0/TBD | Not started | - |
+| 3. UI Polish | 0/3 | Not started | - |
