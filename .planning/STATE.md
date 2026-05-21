@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 UI-SPEC approved
-last_updated: "2026-05-21T19:54:01.647Z"
-last_activity: 2026-05-21 -- Phase 2 planning complete
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-05-21T19:59:43.721Z"
+last_activity: 2026-05-21
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 4
-  completed_plans: 2
-  percent: 50
+  completed_plans: 3
+  percent: 75
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** Restaurants can show diners what their dishes actually look like in 3D before they order
-**Current focus:** Phase 1 - Generation Tracking & Enforcement
+**Current focus:** Phase 2 — Analytics Dashboard
 
 ## Current Position
 
-Phase: 1 of 3 (Generation Tracking & Enforcement) -- COMPLETE
-Plan: 2 of 2 in current phase
+Phase: 2 (Analytics Dashboard) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-05-21 -- Phase 2 planning complete
+Last activity: 2026-05-21
 
 Progress: [██████████] 100% (Phase 1)
 
@@ -66,6 +66,8 @@ Recent decisions affecting current work:
 - Usage card hidden for admin users via unlimited flag check
 - Amber color scheme (#8b6914) for limit warnings, distinct from error red (#a85a48)
 - All three generate/regenerate/retry buttons disabled at limit for complete coverage
+- [Phase ?]: QR scan counting uses menu_open events filtered by utmSource='qr' rather than a separate event type
+- [Phase ?]: prev counts default to 0 for 'all' period instead of running a second full-table scan
 
 ### Pending Todos
 
@@ -88,6 +90,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-21T19:43:17.805Z
-Stopped at: Phase 2 UI-SPEC approved
-Resume file: .planning/phases/02-analytics-dashboard/02-UI-SPEC.md
+Last session: 2026-05-21T19:59:43.710Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None
