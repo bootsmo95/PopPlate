@@ -166,8 +166,13 @@ async function handleDeleteRestaurant() {
               Se alle &rarr;
             </NuxtLink>
           </div>
-          <div v-if="!dishes.length" class="py-12 text-center text-ink-faint">
-            Ingen retter endnu. Opret den foerste for at komme i gang.
+          <div v-if="!dishes.length" class="p-card py-16 text-center">
+            <Icon name="dish" :size="32" class="text-ink-faint mx-auto mb-3" />
+            <h3 class="font-display font-normal text-[18px] tracking-[-0.015em] mb-2">Ingen retter endnu</h3>
+            <p class="text-ink-mute text-[13px] mb-5">Tilføj din første ret for at komme i gang.</p>
+            <NuxtLink to="/platform/dishes/new" class="top-btn top-btn--primary !inline-flex">
+              <Icon name="plus" :size="14" /><span>Tilføj ret</span>
+            </NuxtLink>
           </div>
           <div v-else-if="filteredDishes.length" class="flex flex-col">
             <NuxtLink
