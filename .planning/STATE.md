@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-05-21T20:28:30.001Z"
-last_activity: 2026-05-21
+status: in_progress
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-05-22T00:08:00Z"
+last_activity: 2026-05-22
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 7
+  completed_plans: 7
   percent: 100
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 3
-Plan: Not started
-Status: Phase 2 complete, ready for Phase 3
-Last activity: 2026-05-21
+Plan: 03-02 complete
+Status: Phase 3 in progress — 2 of 3 plans complete
+Last activity: 2026-05-22
 
-Progress: [████████████████████] 100% (Phases 1-2 complete)
+Progress: [████████████████████] 100% (Phases 1-2 complete, Phase 3 plan 02/03 done)
 
 ## Performance Metrics
 
@@ -46,11 +46,11 @@ Progress: [████████████████████] 100% (P
 |-------|-------|-------|----------|
 | 1 | 2/2 | 7min | 3.5min |
 | 2 | 2/2 | 7min | 3.5min |
-| 02 | 2 | - | - |
+| 3 | 2/3 | 8min | 4min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (4min), 01-02 (3min), 02-01 (4min), 02-02 (3min)
+- Last 5 plans: 01-01 (4min), 01-02 (3min), 02-01 (4min), 02-02 (3min), 03-02 (8min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -72,6 +72,9 @@ Recent decisions affecting current work:
 - [Phase 2-01]: prev counts default to 0 for 'all' period instead of running a second full-table scan
 - [Phase 2-02]: SSR-safe prefers-reduced-motion check via import.meta.client guard (window not available server-side)
 - [Phase 2-02]: useLazyFetch with immediate:false + watch(slug) pattern established for slug-dependent fetches
+- [Phase 3-02]: Restaurant delete uses toast.success not toast.undo — immediate server delete, no restore endpoint
+- [Phase 3-02]: Generate button feedback wired via handleJobCreated event handler, not inside AdminGenerationStatus component
+- [Phase 3-02]: Inline field validation (synchronous checks) preserved as errorMessage; only async catch errors use toast
 
 ### Pending Todos
 
@@ -94,6 +97,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-21T20:04:33Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-05-22T00:08:00Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None

@@ -24,8 +24,8 @@ Requirements for current milestone. Each maps to roadmap phases.
 
 ### UI Polish
 
-- [ ] **UIPOL-01**: All async operations show loading states
-- [ ] **UIPOL-02**: API errors display user-friendly messages
+- [x] **UIPOL-01**: All async operations show loading states
+- [x] **UIPOL-02**: API errors display user-friendly messages
 - [ ] **UIPOL-03**: Empty states guide users toward next action
 - [ ] **UIPOL-04**: Platform pages are mobile responsive
 
@@ -82,8 +82,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ANLT-03 | Phase 2 | Complete (02-02) |
 | ANLT-04 | Phase 2 | Complete (02-02) |
 | ANLT-05 | Phase 2 | Complete (02-01+02-02) |
-| UIPOL-01 | Phase 3 | Pending |
-| UIPOL-02 | Phase 3 | Pending |
+| UIPOL-01 | Phase 3 | Complete (03-01+03-02) |
+| UIPOL-02 | Phase 3 | Complete (03-01+03-02) |
 | UIPOL-03 | Phase 3 | Pending |
 | UIPOL-04 | Phase 3 | Pending |
 
