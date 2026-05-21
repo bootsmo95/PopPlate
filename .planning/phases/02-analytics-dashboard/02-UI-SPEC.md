@@ -43,10 +43,10 @@ Standard 8-point scale already used project-wide. Tailwind default scale applies
 | 2xl | 48px (`py-12`) | Empty-state vertical padding |
 | 3xl | 64px | Page-level vertical rhythm |
 
-Exceptions:
-- Stat cards on mobile: `p-[18px]` (18px — existing `.p-card` mobile override, source: main.css)
-- Table cells: `px-5 py-3.5` (20px / 14px — existing `.p-table` pattern, source: DishTable.vue)
-- Segmented tab controls: `px-4 py-2` (16px / 8px — standard filter-pill sizing)
+Exceptions (legacy — do not introduce new off-scale values):
+- Stat cards on mobile: `p-[18px]` (18px) — **legacy exception**. This is the existing `.p-card` mobile override already in main.css. Retain as-is; do not introduce this value as a new spacing token.
+- Table cells: `px-5 py-3.5` (20px / 14px) — **legacy exception**. This is the existing `.p-table` pattern from DishTable.vue. 14px (`py-3.5`) is not a new scale token; it exists solely in this inherited component rule.
+- Segmented tab controls: `px-4 py-2` (16px / 8px — standard filter-pill sizing, both are on-scale)
 
 **Source:** tailwind.config.ts extended spacing, main.css `.p-card` and `.p-table` styles
 
@@ -56,14 +56,18 @@ Exceptions:
 
 All sizes and weights match the existing platform convention extracted from main.css, StatCard.vue, and DishTable.vue.
 
+**Scale: 4 sizes, 2 weights.**
+
 | Role | Font | Size | Weight | Line Height | Letter Spacing |
 |------|------|------|--------|-------------|----------------|
 | Body | Manrope (`font-body`) | 15px | 400 (regular) | 1.5 | normal |
 | Label / Mono caption | JetBrains Mono (`font-mono`) | 11px | 500 (medium) | 1 | 0.18em (`.mono-label`) |
 | Heading (card titles) | Cormorant (`font-display`) | 22px | 400 (normal) | 1.2 | -0.015em |
-| Stat value (large number) | Manrope (`font-body`) | 48px (desktop) / 36px (mobile) | 300 (light) | 1 | -0.04em |
+| Stat value (large numeral) | Manrope (`font-body`) | 48px → 36px at <480px (responsive pair for one semantic role) | — see note | 1 | -0.04em |
 
-**Two weights only:** 400 (body/heading/display) and 500 (mono labels/buttons). Weight 300 is used exclusively on stat value numerals (existing StatCard pattern — do not apply elsewhere).
+**Weight scale: 400 (regular) and 500 (medium).** These are the only two weights in the scale.
+
+> **StatCard stat numeral only — not a scale weight:** The existing StatCard.vue renders large numerals at weight 300 (light). This is a component-level exception for visual hierarchy on oversized display numbers. Weight 300 does not exist in the typography scale and must not be applied outside of this single element.
 
 **Source:** StatCard.vue, main.css `.page-title` / `.mono-label`, DishTable.vue `.p-table th`
 
