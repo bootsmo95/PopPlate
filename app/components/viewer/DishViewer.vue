@@ -3,7 +3,7 @@
     <model-viewer
       ref="viewerRef"
       :src="glbUrl"
-      :ios-src="usdzUrl ?? undefined"
+      :ios-src="effectiveUsdzUrl ?? undefined"
       :poster="posterUrl ?? undefined"
       :alt="alt ?? 'Dish 3D model'"
       :scale="scaleAttr"
@@ -22,7 +22,6 @@
       @error="handleError"
       @load="handleLoad"
     >
-      <source v-if="usdzUrl" :src="usdzUrl" type="model/vnd.usdz+zip" />
       <ViewerArButton @ar-clicked="emit('ar-clicked')" />
     </model-viewer>
 
@@ -94,6 +93,14 @@ const scaleAttr = computed(() => `${props.scale} ${props.scale} ${props.scale}`)
 const hasError = ref(false)
 const modelLoaded = ref(false)
 const pendingArActivation = ref(false)
+const isIosQuickLook = ref(false)
+const effectiveUsdzUrl = computed(() => isIosQuickLook.value ? props.usdzUrl : null)
+
+onMounted(() => {
+  const ua = window.navigator.userAgent
+  const isIpadOs = window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1
+  isIosQuickLook.value = /iPad|iPhone|iPod/.test(ua) || isIpadOs
+})
 
 watch(
   () => props.glbUrl,

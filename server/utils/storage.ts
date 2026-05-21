@@ -111,3 +111,14 @@ export function getAllowedStorageHosts(): string[] {
       }
     })
 }
+
+export function isDurableStorageAssetUrl(url: string | null | undefined): boolean {
+  if (!url) return false
+  if (url.startsWith('data:')) return true
+
+  try {
+    return getAllowedStorageHosts().includes(new URL(url).hostname)
+  } catch {
+    return false
+  }
+}

@@ -86,7 +86,9 @@ export async function sendModelAsset(
   const upstream = await fetch(url)
 
   if (!upstream.ok) {
-    throw createError({ statusCode: 502, message: 'Failed to fetch from upstream' })
+    const statusCode = upstream.status === 403 || upstream.status === 404 ? 404 : 502
+    const message = statusCode === 404 ? `No ${ext} file available` : 'Failed to fetch from upstream'
+    throw createError({ statusCode, message })
   }
 
   const contentLength = upstream.headers.get('content-length')
@@ -133,7 +135,11 @@ async function applyUpstreamHeadHeaders(event: H3Event, url: string) {
   const upstream = await fetch(url, { method: 'HEAD' })
 
   if (!upstream.ok) {
-    throw createError({ statusCode: 502, message: 'Failed to fetch from upstream' })
+    const statusCode = upstream.status === 403 || upstream.status === 404 ? 404 : 502
+    throw createError({
+      statusCode,
+      message: statusCode === 404 ? 'File not found' : 'Failed to fetch from upstream',
+    })
   }
 
   const contentLength = upstream.headers.get('content-length')
