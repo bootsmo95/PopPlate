@@ -34,7 +34,7 @@ Standard Tailwind 4-pt scale is active. Declared values used in this phase:
 | Token | Value | Usage |
 |-------|-------|-------|
 | xs | 4px | Icon gaps, inline spinner margin |
-| sm | 8px | Gap between spinner and button text (not applicable — spinner replaces text) |
+| sm | 8px | Gap between spinner and button text (not applicable — spinner replaces text). Gap between empty state heading and body copy. |
 | md | 16px | Toast internal padding (px-4 py-4), button horizontal padding baseline |
 | lg | 24px | Toast stack gap |
 | xl | 32px | Toast container bottom offset from viewport edge |
@@ -104,7 +104,7 @@ Accent reserved for:
 - Shadow: `shadow-card` (0 14px 30px rgba(26,20,16,0.10))
 - Left stripe: 3px solid, `clay` for success, `status.failed` (#a85a48) for error/undo
 - Message: 14px/400, `text-ink` (#1a1410)
-- Dismiss button (×): `Icon name="close"` size 14, `text-ink-mute`, hover `text-ink`
+- Dismiss button (×): `Icon name="close"` size 14, `text-ink-mute`, hover `text-ink`, `aria-label="Luk besked"`
 - Undo link: 13px/500 medium, `text-clay-deep` (#8b4e2c), underline on hover
 
 **Toast types and auto-dismiss:**
@@ -214,7 +214,7 @@ Empty states use the established `p-card` pattern already in the codebase. New e
 [Icon — 32px, ink-faint]
 [gap 12px]
 [Heading — 15px/500]
-[gap 6px]
+[gap 8px]
 [Body — 13px/400, ink-mute]
 [gap 20px]
 [CTA link/button using top-btn ghost pattern]
