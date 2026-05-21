@@ -42,7 +42,10 @@ Plans:
   3. Owner can identify the most and least popular dishes by engagement
   4. Owner can see how many times their QR code has been scanned
   5. Dashboard allows switching between time windows (e.g., 7 days, 30 days, all time)
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 02-01-PLAN.md — Backend: UTM source schema migration, analytics event tracking wiring, restaurant analytics aggregation API
+- [ ] 02-02-PLAN.md — Frontend: analytics page with stat cards, trend chart, dish popularity table, sidebar entry, dashboard live stats
 **UI hint**: yes
 
 ### Phase 3: UI Polish
@@ -62,5 +65,5 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Generation Tracking & Enforcement | 2/2 | Complete | 2026-05-21 |
-| 2. Analytics Dashboard | 0/TBD | Not started | - |
+| 2. Analytics Dashboard | 0/2 | In progress | - |
 | 3. UI Polish | 0/TBD | Not started | - |
