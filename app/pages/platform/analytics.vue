@@ -61,14 +61,14 @@ const periodLabel = computed(() => {
 })
 
 function deltaLabel(current?: number, prev?: number): string {
-  if (!current || !prev || prev === 0) return 'ingen aendring'
+  if (current == null || prev == null || prev === 0) return 'ingen aendring'
   const pct = Math.round(((current - prev) / prev) * 100)
   if (pct === 0) return 'ingen aendring'
   return `${Math.abs(pct)}% vs. forrige periode`
 }
 
 function deltaDir(current?: number, prev?: number): 'up' | 'down' | 'neutral' {
-  if (!current || !prev || prev === 0) return 'neutral'
+  if (current == null || prev == null || prev === 0) return 'neutral'
   const diff = current - prev
   if (diff > 0) return 'up'
   if (diff < 0) return 'down'
