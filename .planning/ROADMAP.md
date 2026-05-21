@@ -12,7 +12,7 @@ Three phases completing PopPlate's v1 feature set on top of the existing codebas
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Generation Tracking & Enforcement** - Track model generations per user and enforce tier limits
+- [x] **Phase 1: Generation Tracking & Enforcement** - Track model generations per user and enforce tier limits
 - [ ] **Phase 2: Analytics Dashboard** - Give restaurant owners visibility into menu performance and QR engagement
 - [ ] **Phase 3: UI Polish** - Loading states, error handling, empty states, and mobile responsiveness across the platform
 
@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 2 plans
 Plans:
 - [x] 01-01-PLAN.md — Backend: tier limits, billing cycle utility, monthly enforcement in generate endpoint, usage API
-- [ ] 01-02-PLAN.md — Frontend: usage display on settings page, disable generate button with Danish warning at limit
+- [x] 01-02-PLAN.md — Frontend: usage display on settings page, disable generate button with Danish warning at limit
 
 ### Phase 2: Analytics Dashboard
 **Goal**: Restaurant owners can see how their menus are performing and which dishes drive engagement
@@ -61,6 +61,6 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Generation Tracking & Enforcement | 1/2 | Executing | - |
+| 1. Generation Tracking & Enforcement | 2/2 | Complete | 2026-05-21 |
 | 2. Analytics Dashboard | 0/TBD | Not started | - |
 | 3. UI Polish | 0/TBD | Not started | - |
