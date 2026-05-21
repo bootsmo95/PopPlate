@@ -298,7 +298,7 @@ function resolveModelUrl(url: string | null, ext: string): string | undefined {
   if (!url) return undefined
   return `/api/dishes/${id}/model/${ext}`
 }
-const modelGlbUrl = computed(() => resolveModelUrl(dish.value?.previewModelGlbUrl ?? null, 'glb')!)
+const modelGlbUrl = computed(() => resolveModelUrl(dish.value?.previewModelGlbUrl ?? null, 'glb'))
 const modelUsdzUrl = computed(() => resolveModelUrl(dish.value?.previewModelUsdzUrl ?? null, 'usdz'))
 const modelPosterUrl = computed(() => resolveModelUrl(dish.value?.posterUrl ?? null, 'png'))
 const viewerScale = computed(() => {
