@@ -1,12 +1,12 @@
 import { db } from '../../../database/index'
 import { dishes, dishSourceImages, generationJobs } from '../../../database/schema'
-import { eq, desc, count, inArray, and } from 'drizzle-orm'
+import { eq, desc, count, inArray, and, gte } from 'drizzle-orm'
 import { requireAuth, getDbUser } from '../../../utils/auth'
 import { hasUnlimitedAccess } from '../../../utils/access'
 import { getTierLimits } from '../../../utils/tiers'
 import { requireOwnedDish } from '../../../utils/dish-ownership'
 import { recoverStaleGenerationJobs, reconcileDishGenerationStatus } from '../../../utils/generation-timeout'
-import { getBillingCycleStart, getMonthlyGenerationCount } from '../../../utils/generation-usage'
+import { getBillingCycleStart } from '../../../utils/generation-usage'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
@@ -47,64 +47,76 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Check monthly generation limit
-  if (!hasUnlimitedAccess(user)) {
-    const limits = getTierLimits(user.accountTier)
-    const dbUser = await getDbUser(user.id)
-    const anchorDate = dbUser?.createdAt ?? new Date()
-    const cycleStart = getBillingCycleStart(anchorDate)
-    const monthlyCount = await getMonthlyGenerationCount(user.id, cycleStart)
+  // Wrap limit checks + job insert + dish update in a transaction to prevent
+  // TOCTOU race conditions on the monthly/per-dish generation limits.
+  const newJob = await db.transaction(async (tx) => {
+    // Check tier limits (monthly + per-dish regeneration) in a single guard
+    if (!hasUnlimitedAccess(user)) {
+      const limits = getTierLimits(user.accountTier)
 
-    if (monthlyCount >= limits.maxGenerationsPerMonth) {
-      throw createError({
-        statusCode: 403,
-        message: 'Du har naaet din maanedlige graense for 3D-generationer. Graensen nulstilles ved din naeste faktureringsdato.',
-      })
+      // Monthly generation limit
+      const dbUser = await getDbUser(user.id)
+      const anchorDate = dbUser?.createdAt ?? new Date()
+      const cycleStart = getBillingCycleStart(anchorDate)
+      const [countResult] = await tx
+        .select({ count: count() })
+        .from(generationJobs)
+        .where(and(
+          eq(generationJobs.requestedByUserId, user.id),
+          gte(generationJobs.createdAt, cycleStart),
+        ))
+      const monthlyCount = countResult?.count ?? 0
+
+      if (monthlyCount >= limits.maxGenerationsPerMonth) {
+        throw createError({
+          statusCode: 403,
+          message: 'Du har naaet din maanedlige graense for 3D-generationer. Graensen nulstilles ved din naeste faktureringsdato.',
+        })
+      }
+
+      // Per-dish regeneration limit
+      const [{ count: completedCount }] = await tx
+        .select({ count: count() })
+        .from(generationJobs)
+        .where(and(eq(generationJobs.dishId, id), eq(generationJobs.status, 'ready')))
+
+      if (completedCount >= limits.maxRegenerationsPerDish) {
+        throw createError({
+          statusCode: 403,
+          message: `Your ${user.accountTier} plan allows up to ${limits.maxRegenerationsPerDish} generation(s) per dish. Upgrade to regenerate more.`,
+        })
+      }
     }
-  }
 
-  // Check regeneration tier limit
-  if (!hasUnlimitedAccess(user)) {
-    const limits = getTierLimits(user.accountTier)
-    const [{ count: completedCount }] = await db
-      .select({ count: count() })
+    const [latestJob] = await tx
+      .select()
       .from(generationJobs)
-      .where(and(eq(generationJobs.dishId, id), eq(generationJobs.status, 'ready')))
+      .where(eq(generationJobs.dishId, id))
+      .orderBy(desc(generationJobs.createdAt))
+      .limit(1)
 
-    if (completedCount >= limits.maxRegenerationsPerDish) {
-      throw createError({
-        statusCode: 403,
-        message: `Your ${user.accountTier} plan allows up to ${limits.maxRegenerationsPerDish} generation(s) per dish. Upgrade to regenerate more.`,
+    const nextAttemptNumber = latestJob ? latestJob.attemptNumber + 1 : 1
+
+    const [insertedJob] = await tx
+      .insert(generationJobs)
+      .values({
+        dishId: id,
+        status: 'queued',
+        attemptNumber: nextAttemptNumber,
+        requestedByUserId: user.id,
       })
-    }
-  }
+      .returning()
 
-  const [latestJob] = await db
-    .select()
-    .from(generationJobs)
-    .where(eq(generationJobs.dishId, id))
-    .orderBy(desc(generationJobs.createdAt))
-    .limit(1)
+    await tx
+      .update(dishes)
+      .set({
+        status: 'processing',
+        updatedAt: new Date(),
+      })
+      .where(eq(dishes.id, id))
 
-  const nextAttemptNumber = latestJob ? latestJob.attemptNumber + 1 : 1
-
-  const [newJob] = await db
-    .insert(generationJobs)
-    .values({
-      dishId: id,
-      status: 'queued',
-      attemptNumber: nextAttemptNumber,
-      requestedByUserId: user.id,
-    })
-    .returning()
-
-  await db
-    .update(dishes)
-    .set({
-      status: 'processing',
-      updatedAt: new Date(),
-    })
-    .where(eq(dishes.id, id))
+    return insertedJob
+  })
 
   return newJob
 })
