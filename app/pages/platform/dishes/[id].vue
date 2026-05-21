@@ -327,7 +327,7 @@ interface UsageData {
   cycleStart: string
   unlimited: boolean
 }
-const { data: usageData } = useLazyFetch<UsageData>('/api/user/usage', { headers: ssrHeaders })
+const { data: usageData, refresh: refreshUsage } = useLazyFetch<UsageData>('/api/user/usage', { headers: ssrHeaders })
 
 const monthlyLimitReached = computed(() => {
   if (!usageData.value || usageData.value.unlimited) return false
@@ -418,7 +418,7 @@ function handleImageDeleted(_imageId: string) {
 }
 
 async function handleJobCreated(_job: GenerationJob) {
-  await Promise.all([refreshJobs(), refresh()])
+  await Promise.all([refreshJobs(), refresh(), refreshUsage()])
 }
 
 async function handlePublished() {
