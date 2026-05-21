@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: complete
+status: completed
 stopped_at: Phase 3 complete — all milestone phases done
-last_updated: "2026-05-22T01:00:00Z"
-last_activity: 2026-05-22
+last_updated: "2026-05-21T22:44:23.799Z"
+last_activity: 2026-05-21
 progress:
   total_phases: 3
   completed_phases: 3
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-05-22)
 Phase: 3 (complete)
 Plan: 03-03 complete
 Status: All phases complete — milestone ready for closure
-Last activity: 2026-05-22
+Last activity: 2026-05-21
 
 Progress: [████████████████████] 100% (All 3 phases, 7 plans complete)
 
@@ -94,6 +94,9 @@ Items acknowledged and carried forward from previous milestone close:
 | Teams | Restaurant team management (TEAM-01 to 03) | Deferred to v2 | 2026-05-21 |
 | Onboarding | Guided first-run flow (ONBR-01 to 02) | Deferred to v2 | 2026-05-21 |
 | Landing Page | Marketing site (LAND-01 to 02) | Deferred to v2 | 2026-05-21 |
+| Verification | Phase 01 VERIFICATION.md | human_needed | 2026-05-22 |
+| Verification | Phase 02 VERIFICATION.md | human_needed | 2026-05-22 |
+| Verification | Phase 03 VERIFICATION.md | human_needed | 2026-05-22 |
 
 ## Session Continuity
 
