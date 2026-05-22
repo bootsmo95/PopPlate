@@ -3,6 +3,7 @@ import TopBar from '~/components/platform/TopBar.vue'
 import PageHead from '~/components/platform/PageHead.vue'
 import StatCard from '~/components/platform/StatCard.vue'
 import AnalyticsTrendChart from '~/components/platform/AnalyticsTrendChart.vue'
+import PageSkeleton from '~/components/platform/PageSkeleton.vue'
 
 definePageMeta({ layout: 'platform' })
 useHead({ title: 'Analyse · popplate' })

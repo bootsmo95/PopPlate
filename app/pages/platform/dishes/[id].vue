@@ -228,6 +228,7 @@ import StatusBadge from '~/components/platform/StatusBadge.vue'
 import TipsPanel from '~/components/platform/TipsPanel.vue'
 import Icon from '~/components/shared/Icon.vue'
 import ActionButton from '~/components/shared/ActionButton.vue'
+import PageSkeleton from '~/components/platform/PageSkeleton.vue'
 import type { DishStatus } from '~/types'
 
 definePageMeta({ layout: 'platform' })

@@ -30,7 +30,23 @@
       "Bash(find \"C:\\\\repos\\\\PopPlate\" -type f -name \"*.ts\" -o -name \"*.vue\" | xargs grep -l \"restaurant.*edit\\\\|edit.*restaurant\" 2>/dev/null | head -20)",
       "Bash(find \"C:\\\\repos\\\\PopPlate\\\\server\\\\api\" -type f -name \"*.ts\" | xargs grep -l \"put\\\\|patch\" 2>/dev/null | head -10)",
       "Bash(find \"C:\\\\repos\\\\PopPlate\\\\server\\\\api\" -type f -name \"*.ts\" | xargs grep -l \"restaurants\" 2>/dev/null)",
-      "Bash(grep -r \"restaurant.*edit\\\\|edit.*restaurant\\\\|Rediger info\" C:/repos/PopPlate/app --include=\"*.vue\" 2>/dev/null | head -10)"
+      "Bash(grep -r \"restaurant.*edit\\\\|edit.*restaurant\\\\|Rediger info\" C:/repos/PopPlate/app --include=\"*.vue\" 2>/dev/null | head -10)",
+      "Bash(node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit \"docs: define v1 requirements\" .planning/REQUIREMENTS.md 2>&1)",
+      "Bash(node ~/.claude/get-shit-done/bin/gsd-tools.cjs resolve-model gsd-roadmapper --pick model 2>&1)",
+      "Bash(node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit \"docs: create roadmap \\(3 phases\\)\" .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md 2>&1)",
+      "Bash(cd \"C:\\\\repos\\\\PopPlate\" && node /c/Users/AndersBootsmann/.claude/get-shit-done/bin/gsd-tools.cjs state update stopped_at \"Wave 1 complete — executing Wave 2\" 2>&1)",
+      "Bash(grep -n \"useToast\\\\|ActionButton\\\\|toast\\\\.\\\\|saveSuccess\\\\|saveError\\\\|Saving\\\\.\\\\.\\\\.\\\\|loading ? 'Opretter\" /c/repos/PopPlate/app/pages/platform/dishes/[id].vue)",
+      "Bash(grep -n \"useToast\\\\|ActionButton\\\\|toast\\\\.\\\\|loading ? 'Opretter\\\\|Opretter\\\\.\\\\.\\\\.\" /c/repos/PopPlate/app/pages/platform/dishes/new.vue)",
+      "Bash(grep -n \"useToast\\\\|ActionButton\\\\|toast\\\\.\\\\|submitting ? 'Opretter\\\\|Opretter\\\\.\\\\.\\\\.\" /c/repos/PopPlate/app/pages/platform/restaurants.vue)",
+      "Bash(cd /c/repos/PopPlate && gsd-sdk query state.advance-plan 2>&1)",
+      "Read(//c/Users/AndersBootsmann/.claude/get-shit-done/**)",
+      "Read(//c/users/andersbootsmann/.claude/get-shit-done/**)",
+      "Bash(node /c/users/andersbootsmann/.claude/get-shit-done/bin/gsd-tools.cjs state.advance-plan 2>&1 | head -5)",
+      "Bash(node /c/users/andersbootsmann/.claude/get-shit-done/bin/gsd-tools.cjs --help 2>&1 | head -20)",
+      "Bash(node /c/users/andersbootsmann/.claude/get-shit-done/bin/gsd-tools.cjs 2>&1 | head -30)",
+      "Bash(node /c/users/andersbootsmann/.claude/get-shit-done/bin/gsd-tools.cjs state --cwd /c/repos/PopPlate 2>&1 | head -20)",
+      "Skill(gsd-code-review)",
+      "Bash(cd app/components/platform && ls *.vue | sed 's/\\\\.vue$//')"
     ]
   }
 }

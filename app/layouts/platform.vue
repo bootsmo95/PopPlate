@@ -60,7 +60,7 @@ async function handleLogout() {
       :public-menu-path="publicMenuPath"
       @logout="handleLogout"
     />
-    <main class="platform-main p-9 px-12 pb-20 max-w-platform w-full min-w-0
+    <main class="platform-main p-9 px-12 pb-20 max-w-platform w-full min-w-0 overflow-y-auto
                  max-[1100px]:px-8 max-[720px]:p-[22px] max-[720px]:pb-16">
       <slot />
     </main>

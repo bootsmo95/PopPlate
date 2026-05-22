@@ -4,6 +4,7 @@ import PageHead from "~/components/platform/PageHead.vue";
 import StatCard from "~/components/platform/StatCard.vue";
 import QuickActionCard from "~/components/platform/QuickActionCard.vue";
 import ActivityList from "~/components/platform/ActivityList.vue";
+import PageSkeleton from "~/components/platform/PageSkeleton.vue";
 import StatusBadge from "~/components/platform/StatusBadge.vue";
 import Icon from "~/components/shared/Icon.vue";
 import type { Dish as DesignDish, DishStatus } from "~/types/popplate";

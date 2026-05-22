@@ -3,6 +3,7 @@ import TopBar from '~/components/platform/TopBar.vue'
 import PageHead from '~/components/platform/PageHead.vue'
 import StatCard from '~/components/platform/StatCard.vue'
 import DishTable from '~/components/platform/DishTable.vue'
+import PageSkeleton from '~/components/platform/PageSkeleton.vue'
 import Icon from '~/components/shared/Icon.vue'
 import type { Dish as DesignDish, DishStatus } from '~/types/popplate'
 

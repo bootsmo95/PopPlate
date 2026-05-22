@@ -2,6 +2,7 @@
 import TopBar from '~/components/platform/TopBar.vue'
 import PageHead from '~/components/platform/PageHead.vue'
 import Icon from '~/components/shared/Icon.vue'
+import PageSkeleton from '~/components/platform/PageSkeleton.vue'
 
 definePageMeta({ layout: 'platform' })
 
