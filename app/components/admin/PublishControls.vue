@@ -106,6 +106,7 @@ interface DishForPublish {
   status: string
   posterUrl: string | null
   previewModelGlbUrl: string | null
+  scaleCm: number | null
 }
 
 interface QrCode {
@@ -199,6 +200,12 @@ const actionError = ref('')
 const copied = ref(false)
 
 async function handlePublish() {
+  const scale = props.dish.scaleCm
+  if (scale === null || scale === 24) {
+    const confirmed = confirm('Tallerken-størrelsen er sat til 24 cm — passer det til denne ret?')
+    if (!confirmed) return
+  }
+
   publishing.value = true
   actionError.value = ''
   try {
