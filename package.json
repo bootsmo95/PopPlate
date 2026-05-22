@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "normalize-existing-models": "node scripts/normalize-existing-models.mjs",
     "db:studio": "drizzle-kit studio",
     "worker:dev": "tsx watch worker/index.ts",
     "worker:start": "tsx worker/index.ts"
