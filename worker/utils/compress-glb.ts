@@ -1,4 +1,4 @@
-import { Document, NodeIO, Node, Mesh } from '@gltf-transform/core'
+import { Document, NodeIO, type Node, type Mesh } from '@gltf-transform/core'
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
 import { dedup, prune, flatten, join } from '@gltf-transform/functions'
 import sharp from 'sharp'
@@ -96,12 +96,12 @@ function normalizeToUnitWidth() {
             const posAccessor = primitive.getAttribute('POSITION')
             if (!posAccessor) continue
 
-            const count = posAccessor.getCount()
-            for (let i = 0; i < count; i++) {
-              const vert = posAccessor.getElement(i, [0, 0, 0])
-              // Transform vertex by world matrix (column-major)
-              const wx = worldMatrix[0] * vert[0] + worldMatrix[4] * vert[1] + worldMatrix[8] * vert[2] + worldMatrix[12]
-              const wz = worldMatrix[2] * vert[0] + worldMatrix[6] * vert[1] + worldMatrix[10] * vert[2] + worldMatrix[14]
+            const arr = posAccessor.getArray()
+            if (!arr) continue
+            for (let i = 0; i < arr.length; i += 3) {
+              const wx = worldMatrix[0] * arr[i] + worldMatrix[4] * arr[i + 1] + worldMatrix[8] * arr[i + 2] + worldMatrix[12]
+              const wz = worldMatrix[2] * arr[i] + worldMatrix[6] * arr[i + 1] + worldMatrix[10] * arr[i + 2] + worldMatrix[14]
+              // update min/max...
               if (wx < minX) minX = wx
               if (wx > maxX) maxX = wx
               if (wz < minZ) minZ = wz
@@ -131,7 +131,7 @@ function normalizeToUnitWidth() {
         ])
       }
 
-      console.log(`[compress-glb] Normalized model: maxHorizontalDim=${maxHorizontalDim.toFixed(4)}, scaleFactor=${scaleFactor.toFixed(4)}`)
+      console.log(`[compress-glb] Normalized model: ${maxHorizontalDim.toFixed(3)} -> 1.0m (scale factor: ${scaleFactor.toFixed(4)})`)
     } catch (err) {
       console.warn('[compress-glb] Normalization failed, skipping:', err)
     }
