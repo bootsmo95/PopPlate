@@ -41,7 +41,7 @@
 			<div class="giant-wordmark">popplate.</div>
 
 			<div class="footer-bottom">
-				<span>&copy; 2026 popplate ApS &middot; Odense, DK</span>
+				<span>&copy; 2026 popplate &middot; Odense, DK</span>
 				<span>Hostet i EU &middot; CO₂-neutral</span>
 				<span>info@popplate.dk</span>
 			</div>
