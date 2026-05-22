@@ -22,7 +22,7 @@
 					<h5>Produkt</h5>
 					<NuxtLink to="/funktioner">Funktioner</NuxtLink>
 					<NuxtLink to="/pricing">Priser</NuxtLink>
-					<NuxtLink to="/r/folker">Demo</NuxtLink>
+					<NuxtLink to="/r/boots-food">Demo</NuxtLink>
 					<NuxtLink to="/roadmap">Roadmap</NuxtLink>
 				</div>
 				<div class="footer-col">
