@@ -165,7 +165,7 @@
 								:key="dish.publicDishId"
 								:glb-url="modelGlbUrl(dish)"
 								:usdz-url="modelUsdzUrl(dish)"
-								:poster-url="posterUrl(dish)"
+								:poster-url="null"
 								:alt="dish.name"
 								:scale="viewerScale(dish)"
 								height="100%"
