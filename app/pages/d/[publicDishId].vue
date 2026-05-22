@@ -212,7 +212,7 @@
           </div>
         </div>
 
-        <!-- AR CTA (desktop) -->
+        <!-- AR CTA -->
         <div
           v-if="dish.hasModel"
           class="mt-10 p-8 rounded relative overflow-hidden text-ink-inv"
@@ -222,17 +222,31 @@
           <h4 class="relative font-display font-normal text-2xl tracking-[-0.015em] mb-2" style="color: #f3ede2;">
             Se den på <span class="italic text-clay-soft">jeres bord</span>.
           </h4>
-          <p class="relative text-sm leading-[1.5] mb-6 max-w-[380px]" style="color: rgba(243, 237, 226, 0.7);">
-            Scan QR-koden med kameraet -- modellen placerer sig direkte foran dig i AR.
-          </p>
-          <button
-            type="button"
-            class="relative inline-flex items-center gap-3.5 px-7 py-4.5 rounded-full font-medium text-[15px] transition hover:-translate-y-px"
-            style="background: #d4a880; color: #2b1f15;"
-            @click="onArClicked"
-          >
-            <span>View in AR</span>
-          </button>
+
+          <!-- Mobile: AR button -->
+          <template v-if="isMobile">
+            <p class="relative text-sm leading-[1.5] mb-6 max-w-[380px]" style="color: rgba(243, 237, 226, 0.7);">
+              Tryk for at åbne AR og se retten på dit bord.
+            </p>
+            <button
+              type="button"
+              class="relative inline-flex items-center gap-3.5 px-7 py-4.5 rounded-full font-medium text-[15px] transition hover:-translate-y-px"
+              style="background: #d4a880; color: #2b1f15;"
+              @click="onArClicked"
+            >
+              <span>View in AR</span>
+            </button>
+          </template>
+
+          <!-- Desktop: QR code -->
+          <template v-else>
+            <p class="relative text-sm leading-[1.5] mb-6 max-w-[380px]" style="color: rgba(243, 237, 226, 0.7);">
+              Scan med din telefon for at se retten på dit bord.
+            </p>
+            <div v-if="qrDataUrl" class="relative">
+              <img :src="qrDataUrl" alt="QR code" class="w-[160px] h-[160px] rounded-lg" />
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -241,6 +255,7 @@
 
 <script setup lang="ts">
 import { trackPageOpen, trackViewerLoaded, trackArLaunchClicked } from '~/lib/analytics/events'
+import QRCode from 'qrcode'
 
 definePageMeta({ layout: false })
 
@@ -280,6 +295,15 @@ const arLoaderText = computed(() => {
   if (!viewerLoaded.value) return 'Vi klargør AR-oplevelsen...'
   if (arLaunching.value) return 'Åbner kamera og placering på bordet...'
   return 'Næsten klar...'
+})
+
+const qrDataUrl = ref<string | null>(null)
+
+onMounted(async () => {
+  if (typeof window !== 'undefined') {
+    const dishUrl = `${window.location.origin}/d/${publicDishId}`
+    qrDataUrl.value = await QRCode.toDataURL(dishUrl, { width: 400, margin: 2 })
+  }
 })
 
 const {
