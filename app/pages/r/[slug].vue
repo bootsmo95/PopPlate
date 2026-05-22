@@ -302,7 +302,7 @@ function posterUrl(dish: MenuDish) {
 }
 
 function viewerScale(dish: MenuDish) {
-	return dish.scaleCm && dish.scaleCm > 0 ? dish.scaleCm / 100 : 0.05;
+	return dish.scaleCm && dish.scaleCm > 0 ? dish.scaleCm / 100 : 0.24;
 }
 
 function allergenList(dish: MenuDish) {
