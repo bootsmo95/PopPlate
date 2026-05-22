@@ -56,7 +56,7 @@ export const dishes = pgTable('dishes', {
   posterUrl: text('poster_url'),
   previewModelGlbUrl: text('preview_model_glb_url'),
   previewModelUsdzUrl: text('preview_model_usdz_url'),
-  scaleCm: real('scale_cm'),
+  scaleCm: real('scale_cm').default(24),
   createdByUserId: uuid('created_by_user_id').references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

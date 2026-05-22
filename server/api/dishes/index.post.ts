@@ -61,6 +61,7 @@ export default defineEventHandler(async (event) => {
       priceText: body.priceText ?? null,
       allergens: body.allergens ?? null,
       ingredients: body.ingredients ?? null,
+      scaleCm: 24,
       status: 'draft',
       createdByUserId: user.id,
     })
