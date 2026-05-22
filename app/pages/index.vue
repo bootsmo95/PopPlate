@@ -2,6 +2,7 @@
 // Route: / (landing)
 definePageMeta({ layout: "public" });
 useHead({ title: "popplate · Menu i 3D" });
+useScrollReveal();
 
 const UNSPLASH = "https://images.unsplash.com/";
 const IMG = {
@@ -29,42 +30,35 @@ const TIERS = [
 		price: "0",
 		sub: "kr / md",
 		desc: "Test platformen med jeres signaturretter.",
-		features: ["Op til 3 retter", "1 restaurant", "Standard 3D-kvalitet", "popplate watermark", "QR-koder"],
+		features: ["Op til 5 retter", "1 restaurant", "15 generationer / md", "QR-koder"],
 		cta: "Start gratis",
 		featured: false,
 		tag: null,
 	},
 	{
 		name: "Basic",
-		price: "499",
+		price: "399",
 		sub: "kr / md",
 		desc: "Til den daglige menu på den enkelte adresse.",
-		features: [
-			"Op til 30 retter",
-			"1 restaurant",
-			"Høj 3D-kvalitet",
-			"Eget brand",
-			"Analytics",
-			"Allergen-mærkning",
-		],
+		features: ["Op til 35 retter", "2 restauranter", "50 generationer / md", "Analytics", "3 re-genereringer pr. ret"],
 		cta: "Vælg Basic",
 		featured: true,
 		tag: "Populær",
 	},
 	{
 		name: "Pro",
-		price: "1.299",
+		price: "899",
 		sub: "kr / md",
 		desc: "Kæder, hoteller og restaurantgrupper.",
 		features: [
-			"Ubegrænsede retter",
-			"Op til 10 restauranter",
-			"Premium 3D + animation",
-			"API + integrationer",
+			"Op til 60 retter",
+			"5 restauranter",
+			"150 generationer / md",
+			"Analytics",
+			"5 re-genereringer pr. ret",
 			"Prioriteret support",
-			"Custom domain",
 		],
-		cta: "Kontakt salg",
+		cta: "Vælg Pro",
 		featured: false,
 		tag: null,
 	},
@@ -168,7 +162,11 @@ onMounted(() => {
 			</div>
 
 			<!-- Caption -->
-			<div class="relative z-[5] text-center mx-auto mt-10 max-[720px]:mt-6" style="width: min(680px, 90vw)">
+			<div
+				class="relative z-[5] text-center mx-auto mt-10 max-[720px]:mt-6"
+				data-reveal
+				style="width: min(680px, 90vw)"
+			>
 				<h1
 					class="font-display font-normal text-ink-soft max-w-[540px] mx-auto"
 					style="font-size: clamp(26px, 2.8vw, 40px); letter-spacing: -0.015em; line-height: 1.15"
@@ -182,7 +180,7 @@ onMounted(() => {
 		<!-- ═══ FLOW: Sådan virker det ═══ -->
 		<section class="section section-alt" id="hvordan">
 			<div class="wrap">
-				<div class="section-head">
+				<div class="section-head" data-reveal>
 					<div>
 						<div class="eyebrow mb-7">Sådan virker det</div>
 						<h2 class="section-title">
@@ -198,7 +196,7 @@ onMounted(() => {
 
 				<div class="flow">
 					<!-- 01 Upload -->
-					<div class="flow-card">
+					<div class="flow-card" data-reveal>
 						<div class="flow-num"><strong>01</strong> Upload</div>
 						<div class="flow-visual">
 							<div class="stack">
@@ -221,7 +219,7 @@ onMounted(() => {
 					</div>
 
 					<!-- 02 Generate -->
-					<div class="flow-card">
+					<div class="flow-card" data-reveal data-reveal-delay="1">
 						<div class="flow-num"><strong>02</strong> Generér</div>
 						<div class="flow-visual">
 							<div class="mesh-wrap">
@@ -266,7 +264,7 @@ onMounted(() => {
 					</div>
 
 					<!-- 03 Serve -->
-					<div class="flow-card">
+					<div class="flow-card" data-reveal data-reveal-delay="2">
 						<div class="flow-num"><strong>03</strong> Servér</div>
 						<div class="flow-visual">
 							<div class="ar-phone">
@@ -291,7 +289,7 @@ onMounted(() => {
 		<!-- ═══ STATS ═══ -->
 		<section ref="statsRef" class="section">
 			<div class="wrap">
-				<div class="stats">
+				<div class="stats" data-reveal>
 					<div class="stat">
 						<div class="stat-num">
 							+<span class="ital">{{ stat1.display.value }}</span
@@ -324,7 +322,7 @@ onMounted(() => {
 		<!-- ═══ DISHES: Live på menuen ═══ -->
 		<section class="dishes-section" id="menu">
 			<div class="wrap">
-				<div class="section-head">
+				<div class="section-head" data-reveal>
 					<div>
 						<div class="eyebrow mb-7">Live på menuen</div>
 						<h2 class="section-title">
@@ -339,7 +337,7 @@ onMounted(() => {
 				</div>
 
 				<!-- Feature dish -->
-				<div class="dish-feature">
+				<div class="dish-feature" data-reveal>
 					<div class="dish-img-large">
 						<img :src="IMG.feature" alt="Brændt porre, brunet smør & rugkrydder" loading="lazy" />
 					</div>
@@ -370,7 +368,7 @@ onMounted(() => {
 				</div>
 
 				<!-- Dish grid -->
-				<div class="dish-row">
+				<div class="dish-row" data-reveal>
 					<div v-for="(d, i) in DISHES" :key="i" class="dish-card">
 						<div class="dish-img">
 							<img :src="d.img" :alt="d.name" loading="lazy" />
@@ -390,7 +388,7 @@ onMounted(() => {
 		<!-- ═══ MOODBOARD ═══ -->
 		<section class="moodboard-section">
 			<div class="wrap">
-				<div class="section-head">
+				<div class="section-head" data-reveal>
 					<div>
 						<div class="eyebrow mb-7">Stemning · Inspiration</div>
 						<h2 class="section-title">
@@ -404,7 +402,7 @@ onMounted(() => {
 					</p>
 				</div>
 
-				<div class="moodboard-grid">
+				<div class="moodboard-grid" data-reveal>
 					<div class="mood-img m1">
 						<img :src="IMG.feature" alt="Plating" loading="lazy" /><span class="mood-caption"
 							>01 — Plating</span
@@ -440,7 +438,7 @@ onMounted(() => {
 		<!-- ═══ PRICING ═══ -->
 		<section class="section section-alt" id="priser">
 			<div class="wrap">
-				<div class="section-head">
+				<div class="section-head" data-reveal>
 					<div>
 						<div class="eyebrow mb-7">Priser</div>
 						<h2 class="section-title">Klar pris. <span class="italic">Klar ret.</span></h2>
@@ -451,7 +449,7 @@ onMounted(() => {
 					</p>
 				</div>
 
-				<div class="pricing-grid">
+				<div class="pricing-grid" data-reveal>
 					<div v-for="t in TIERS" :key="t.name" class="tier" :class="{ featured: t.featured }">
 						<div class="tier-head">
 							<div class="tier-name">{{ t.name }}</div>
@@ -496,7 +494,7 @@ onMounted(() => {
 		<!-- ═══ CTA STRIP ═══ -->
 		<section class="cta-strip" id="start">
 			<div class="wrap">
-				<div class="cta-card">
+				<div class="cta-card" data-reveal>
 					<div class="cta-bg" />
 					<div class="cta-content">
 						<div class="eyebrow mb-6" style="color: var(--clay-soft, #d4a880)">Klar når I er</div>
@@ -542,7 +540,7 @@ onMounted(() => {
 		<!-- ═══ FOOTER ═══ -->
 		<footer class="landing-footer" id="kontakt">
 			<div class="wrap">
-				<div class="footer-top">
+				<div class="footer-top" data-reveal>
 					<div class="footer-col">
 						<NuxtLink to="/" class="footer-logo">
 							<span class="inline-block w-6 h-6">

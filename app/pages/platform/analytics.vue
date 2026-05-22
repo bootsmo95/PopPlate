@@ -8,6 +8,9 @@ import PageSkeleton from '~/components/platform/PageSkeleton.vue'
 definePageMeta({ layout: 'platform' })
 useHead({ title: 'Analyse · popplate' })
 
+const { accountTier } = useAuth()
+const isFreeTier = computed(() => accountTier.value === 'free')
+
 interface ApiRestaurant {
   id: string
   name: string
@@ -56,7 +59,7 @@ const {
   { headers: ssrHeaders, immediate: false },
 )
 
-watch([firstSlug, period], ([slug]) => { if (slug) refresh() }, { immediate: true })
+watch([firstSlug, period], ([slug]) => { if (slug && !isFreeTier.value) refresh() }, { immediate: true })
 
 const loading = computed(() => restaurantsPending.value || analyticsStatus.value === 'pending')
 const hasRestaurants = computed(() => (restaurants.value?.length ?? 0) > 0)
@@ -87,7 +90,40 @@ function deltaDir(current?: number, prev?: number): 'up' | 'down' | 'neutral' {
   <div data-screen-label="Analyse">
     <TopBar />
 
-    <PageSkeleton v-if="loading" variant="dashboard" />
+    <!-- Free tier upgrade prompt -->
+    <div v-if="isFreeTier">
+      <PageHead eyebrow="Analyse">
+        <template #title>
+          <h1 class="page-title">Indsigter</h1>
+        </template>
+      </PageHead>
+
+      <div class="p-card relative overflow-hidden p-16 text-center" style="background: #2b1f15; border: none">
+        <div
+          class="absolute inset-0 pointer-events-none"
+          style="background: radial-gradient(circle at 50% 40%, rgba(184, 122, 78, 0.3), transparent 60%)"
+        />
+        <div class="relative">
+          <div class="font-mono text-[11px] uppercase font-medium tracking-[0.18em] mb-4" style="color: #d4a880">
+            Basic eller Pro
+          </div>
+          <h2
+            class="font-display font-normal italic text-[28px] tracking-[-0.015em] mb-3"
+            style="color: #f3ede2"
+          >
+            Analyse kræver en opgradering
+          </h2>
+          <p class="text-[15px] max-w-[420px] mx-auto mb-8" style="color: rgba(243, 237, 226, 0.6)">
+            Se menuvisninger, QR-scans, interaktioner og retpopularitet. Opgrader til Basic eller Pro for at få adgang.
+          </p>
+          <NuxtLink to="/platform/settings?tab=tier" class="top-btn top-btn--clay">
+            Se planer
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+
+    <PageSkeleton v-else-if="loading" variant="dashboard" />
 
     <div v-else>
       <PageHead :eyebrow="`Analyse · ${periodLabel}`">

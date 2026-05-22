@@ -123,11 +123,12 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 			<NuxtLink
 				to="/platform/analytics"
 				class="nav-item"
-				:class="active === 'analytics' && 'active'"
+				:class="[active === 'analytics' && 'active', accountTier === 'free' && 'nav-item--gated']"
 				:aria-current="active === 'analytics' ? 'page' : undefined"
 				@click="close"
 			>
 				<Icon name="analytics" /> Analyse
+				<span v-if="accountTier === 'free'" class="nav-upgrade-badge">Pro</span>
 			</NuxtLink>
 			<NuxtLink
 				:to="restaurantPath"
@@ -248,5 +249,16 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 .nav-item.active .count {
 	background: rgba(255, 255, 255, 0.15);
 	color: theme("colors.ink.inv");
+}
+.nav-item--gated {
+	opacity: 0.5;
+}
+.nav-item--gated:hover {
+	opacity: 0.75;
+}
+.nav-upgrade-badge {
+	@apply ml-auto font-mono text-[9px] uppercase font-semibold px-1.5 py-0.5 rounded-full tracking-wider;
+	background: linear-gradient(115deg, #b87a4e, #d4a880);
+	color: #fff;
 }
 </style>

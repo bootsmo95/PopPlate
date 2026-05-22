@@ -7,6 +7,11 @@ import { hasUnlimitedAccess } from '../../../utils/access'
 export default defineEventHandler(async (event) => {
   const { user } = await requireAuth(event)
 
+  // Analytics requires basic tier or above
+  if (!hasUnlimitedAccess(user) && user.accountTier === 'free') {
+    throw createError({ statusCode: 403, message: 'Analytics kræver Basic eller Pro. Opgrader din plan.' })
+  }
+
   const slug = getRouterParam(event, 'slug')
   if (!slug) {
     throw createError({ statusCode: 400, message: 'slug is required' })
