@@ -46,7 +46,8 @@
       "Bash(node /c/users/andersbootsmann/.claude/get-shit-done/bin/gsd-tools.cjs 2>&1 | head -30)",
       "Bash(node /c/users/andersbootsmann/.claude/get-shit-done/bin/gsd-tools.cjs state --cwd /c/repos/PopPlate 2>&1 | head -20)",
       "Skill(gsd-code-review)",
-      "Bash(cd app/components/platform && ls *.vue | sed 's/\\\\.vue$//')"
+      "Bash(cd app/components/platform && ls *.vue | sed 's/\\\\.vue$//')",
+      "Bash(find C:/repos/PopPlate/app -name '*.ts' -not -path '*/.claude/*' -not -path '*/node_modules/*' 2>/dev/null | head -30)"
     ]
   }
 }

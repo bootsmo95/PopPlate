@@ -69,12 +69,12 @@ function normalizeClaimValues(values: string[]): string[] {
   return values.map(value => value.trim().toLowerCase())
 }
 
-function resolveDisplayName(claims: OidcUserInfo): string {
+function resolveDisplayName(claims: OidcUserInfo, existingName?: string): string {
   return claims.name?.trim()
     || claims.preferred_username?.trim()
     || claims.nickname?.trim()
-    || claims.email?.trim()
-    || 'PopPlate User'
+    || existingName?.trim()
+    || ''
 }
 
 function resolveRole(claims: OidcUserInfo, existingRole?: string): string {
@@ -250,7 +250,7 @@ export async function syncUserFromAuthentikClaims(claims: OidcUserInfo): Promise
   const accountTier = role === 'admin'
     ? 'pro'
     : resolveAccountTier(claims, existingUser?.accountTier)
-  const displayName = resolveDisplayName(claims)
+  const displayName = resolveDisplayName(claims, existingUser?.displayName)
 
   const [user] = await db
     .insert(users)

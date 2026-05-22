@@ -111,7 +111,7 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
 			<PageHead :eyebrow="eyebrow">
 				<template #title>
 					<h1 class="page-title">
-						Velkommen tilbage, <span class="accent">{{ user?.displayName ?? user?.email ?? "der" }}</span
+						Velkommen tilbage, <span class="accent">{{ user?.displayName || user?.email || "der" }}</span
 						>.
 					</h1>
 				</template>

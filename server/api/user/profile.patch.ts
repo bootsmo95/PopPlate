@@ -34,5 +34,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'User not found' })
   }
 
+  // Update the session so the client sees the new displayName immediately
+  await setUserSession(event, {
+    user: {
+      id: updated.id,
+      email: updated.email,
+      displayName: updated.displayName,
+      role: updated.role,
+      accountTier: updated.accountTier,
+    },
+  })
+
   return updated
 })

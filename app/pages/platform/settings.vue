@@ -11,7 +11,7 @@ const { toast } = useToast();
 
 const route = useRoute();
 const ssrHeaders = useAuthHeaders();
-const { user, logout } = useAuth();
+const { user, logout, fetchUser } = useAuth();
 
 // Counts for tier tab
 const { data: restaurants } = useLazyFetch<Array<{ id: string }>>("/api/restaurants", { headers: ssrHeaders });
@@ -53,6 +53,7 @@ async function saveProfile() {
 			method: "PATCH",
 			body: { displayName: profileDisplayName.value },
 		});
+		await fetchUser();
 		toast.success("Profil gemt");
 	} catch (err: unknown) {
 		const e = err as { data?: { message?: string }; message?: string };
