@@ -12,6 +12,7 @@
       :auto-rotate="autoRotate ? true : undefined"
       :auto-rotate-delay="autoRotate ? 0 : undefined"
       :rotation-per-second="autoRotate ? rotationPerSecond : undefined"
+      :loading="loading"
       camera-controls
       ar
       ar-modes="webxr scene-viewer quick-look"
@@ -74,6 +75,7 @@ const props = withDefaults(
     autoAr?: boolean
     autoRotate?: boolean
     rotationPerSecond?: string
+    loading?: 'auto' | 'lazy' | 'eager'
   }>(),
   {
     usdzUrl: null,
@@ -84,6 +86,7 @@ const props = withDefaults(
     autoAr: false,
     autoRotate: true,
     rotationPerSecond: '18deg',
+    loading: 'auto',
   },
 )
 

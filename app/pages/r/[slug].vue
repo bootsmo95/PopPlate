@@ -158,8 +158,9 @@
 						<div class="r-dish-shine" />
 
 						<div
-							v-if="dish.hasModel && dish.publicDishId === selectedPublicDishId"
+							v-if="dish.hasModel"
 							class="r-dish-viewer-wrap"
+							@click.stop
 						>
 							<ViewerDishViewer
 								:key="dish.publicDishId"
@@ -169,9 +170,10 @@
 								:alt="dish.name"
 								:scale="viewerScale(dish)"
 								height="100%"
+								loading="lazy"
 								rotation-per-second="14deg"
-								@viewer-loaded="trackSelectedViewerLoaded"
-								@ar-clicked="trackSelectedArClicked"
+								@viewer-loaded="trackMenuViewerLoaded(dish)"
+								@ar-clicked="trackMenuArClicked(dish)"
 							/>
 						</div>
 						<div v-else-if="dish.hasPoster" class="r-dish-model">
@@ -207,7 +209,7 @@
 </template>
 
 <script setup lang="ts">
-import { trackArLaunchClicked, trackEvent, trackViewerLoaded } from "~/lib/analytics/events";
+import { trackEvent, trackViewerLoaded } from "~/lib/analytics/events";
 
 definePageMeta({ layout: "public" });
 
@@ -248,11 +250,6 @@ const { data: menu, pending, error } = await useFetch<RestaurantMenu>(`/api/publ
 const selectedPublicDishId = ref<string | null>(null);
 const trackedViewerLoads = new Set<string>();
 
-const selectedDish = computed(() => {
-	if (!menu.value?.dishes.length) return null;
-	return menu.value.dishes.find((dish) => dish.publicDishId === selectedPublicDishId.value) ?? menu.value.dishes[0]!;
-});
-
 watch(
 	() => menu.value?.dishes,
 	(dishes) => {
@@ -276,8 +273,9 @@ useHead({
 });
 
 onMounted(() => {
-	if (selectedDish.value && menu.value) {
-		trackEvent("menu_open", selectedDish.value.publicDishId, menu.value.restaurant.id);
+	const firstDish = menu.value?.dishes[0];
+	if (firstDish && menu.value) {
+		trackEvent("menu_open", firstDish.publicDishId, menu.value.restaurant.id);
 	}
 });
 
@@ -313,17 +311,11 @@ function allergenList(dish: MenuDish) {
 		.filter(Boolean);
 }
 
-function trackSelectedViewerLoaded() {
-	if (!selectedDish.value || !menu.value) return;
-	if (trackedViewerLoads.has(selectedDish.value.publicDishId)) return;
+function trackMenuViewerLoaded(dish: MenuDish) {
+	if (!menu.value || trackedViewerLoads.has(dish.publicDishId)) return;
 
-	trackedViewerLoads.add(selectedDish.value.publicDishId);
-	trackViewerLoaded(selectedDish.value.publicDishId, menu.value.restaurant.id);
-}
-
-function trackSelectedArClicked() {
-	if (!selectedDish.value || !menu.value) return;
-	trackArLaunchClicked(selectedDish.value.publicDishId, menu.value.restaurant.id);
+	trackedViewerLoads.add(dish.publicDishId);
+	trackViewerLoaded(dish.publicDishId, menu.value.restaurant.id);
 }
 
 function trackMenuArClick(dish: MenuDish) {
