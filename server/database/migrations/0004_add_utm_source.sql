@@ -1,1 +1,1 @@
-ALTER TABLE "analytics_events" ADD COLUMN "utm_source" text;
+ALTER TABLE "analytics_events" ADD COLUMN IF NOT EXISTS "utm_source" text;
