@@ -91,6 +91,7 @@ watch(drawerOpen, (open) => {
 
 			<nav class="dock-drawer-nav">
 				<NuxtLink to="/" :class="{ active: activeKey === 'home' }" @click="closeDrawer">Hjem</NuxtLink>
+				<NuxtLink to="/funktioner" @click="closeDrawer">Funktioner</NuxtLink>
 				<NuxtLink to="/pricing" :class="{ active: activeKey === 'pricing' }" @click="closeDrawer"
 					>Pris</NuxtLink
 				>
@@ -126,6 +127,7 @@ watch(drawerOpen, (open) => {
 
 		<div class="flex items-center gap-1">
 			<NuxtLink to="/" class="nav-link" :class="{ 'nav-link--active': activeKey === 'home' }">Hjem</NuxtLink>
+			<NuxtLink to="/funktioner" class="nav-link">Funktioner</NuxtLink>
 			<NuxtLink to="/pricing" class="nav-link" :class="{ 'nav-link--active': activeKey === 'pricing' }"
 				>Pris</NuxtLink
 			>

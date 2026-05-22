@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DockNav from '~/components/shared/DockNav.vue'
+import SiteFooter from '~/components/shared/SiteFooter.vue'
 
 // Active key based on current route — used to highlight the right nav-link.
 const route = useRoute()
@@ -16,5 +17,8 @@ const activeKey = computed<'home' | 'menu' | 'pricing' | 'about' | null>(() => {
   <div>
     <DockNav :active-key="activeKey" />
     <slot />
+    <SiteFooter />
+    <!-- Spacer for dock nav -->
+    <div class="h-24 max-[768px]:h-4" />
   </div>
 </template>
