@@ -4,6 +4,10 @@
  * Usage: npx tsx scripts/normalize-existing-models.ts
  *
  * Safe to re-run: normalizing an already-normalized model is a no-op.
+ *
+ * NOTE: This only normalizes GLB files. USDZ files are sourced directly from
+ * Meshy and cannot be regenerated locally. Existing iOS Quick Look AR will show
+ * the original (non-normalized) size until dishes are re-generated from scratch.
  */
 
 import { db } from '../server/database/index.js'

@@ -299,13 +299,6 @@ const arLoaderText = computed(() => {
 
 const qrDataUrl = ref<string | null>(null)
 
-onMounted(async () => {
-  if (typeof window !== 'undefined') {
-    const dishUrl = `${window.location.origin}/d/${publicDishId}`
-    qrDataUrl.value = await QRCode.toDataURL(dishUrl, { width: 400, margin: 2 })
-  }
-})
-
 const {
   data: dish,
   pending,
@@ -363,12 +356,17 @@ useHead({
   }),
 })
 
-onMounted(() => {
+onMounted(async () => {
   isMobile.value = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
   arLandingActive.value = isMobile.value && !!dish.value?.hasModel
 
   if (dish.value) {
     trackPageOpen(publicDishId, dish.value.restaurantId)
+  }
+
+  if (!isMobile.value) {
+    const dishUrl = `${window.location.origin}/d/${publicDishId}`
+    qrDataUrl.value = await QRCode.toDataURL(dishUrl, { width: 400, margin: 2 })
   }
 })
 

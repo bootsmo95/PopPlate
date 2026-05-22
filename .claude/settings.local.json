@@ -47,18 +47,7 @@
       "Bash(node /c/users/andersbootsmann/.claude/get-shit-done/bin/gsd-tools.cjs state --cwd /c/repos/PopPlate 2>&1 | head -20)",
       "Skill(gsd-code-review)",
       "Bash(cd app/components/platform && ls *.vue | sed 's/\\\\.vue$//')",
-      "Bash(find C:/repos/PopPlate/app -name '*.ts' -not -path '*/.claude/*' -not -path '*/node_modules/*' 2>/dev/null | head -30)",
-      "Bash(find /c/repos/PopPlate -name \"package.json\" -type f | head -1 | xargs cat | grep -A 20 \"dependencies\")",
-      "Bash(cd C:/repos/PopPlate && npx tsc --noEmit 2>&1 | head -50)",
-      "Bash(cd C:/repos/PopPlate && ls tsconfig*.json package.json 2>&1)",
-      "Bash(cd C:/repos/PopPlate && grep -r \"typescript\" package.json 2>&1 && ls node_modules/.bin/tsc* 2>&1)",
-      "Bash(cd C:/repos/PopPlate && npm ls typescript 2>&1 | head -10)",
-      "Bash(cd C:/repos/PopPlate && npx tsc --noEmit --strict --esModuleInterop --moduleResolution node --target ES2020 --module ES2020 worker/utils/compress-glb.ts 2>&1)",
-      "Bash(cd C:/repos/PopPlate && npx tsc --noEmit 2>&1 | grep \"compress-glb\" | head -20)",
-      "Bash(cd C:/repos/PopPlate && npx tsc --noEmit 2>&1 | tail -5)",
-      "Bash(node -e \"\n// Check trsToMatrix: implementation uses xx=x*x, xy=x*y, xz=x*z, xw=x*w form\n// vs plan's x2=qx+qx, y2=qy+qy double form. Both should be equivalent.\n// Verify with a 90-degree Y rotation quaternion: \\(0, sin\\(45\\), 0, cos\\(45\\)\\)\nconst s45 = Math.sin\\(Math.PI/4\\);\nconst c45 = Math.cos\\(Math.PI/4\\);\nconst r = [0, s45, 0, c45]; // 90 deg Y rotation\nconst t = [0, 0, 0];\nconst sc = [1, 1, 1];\n\n// Implementation's formula\nconst [x, y, z, w] = r;\nconst [sx, sy, sz] = sc;\nconst xx = x*x, xy = x*y, xz = x*z, xw = x*w;\nconst yy = y*y, yz = y*z, yw = y*w;\nconst zz = z*z, zw = z*w;\nconst m = [\n  \\(1 - 2*\\(yy+zz\\)\\)*sx, \\(2*\\(xy+zw\\)\\)*sx,     \\(2*\\(xz-yw\\)\\)*sx,     0,\n  \\(2*\\(xy-zw\\)\\)*sy,     \\(1 - 2*\\(xx+zz\\)\\)*sy,  \\(2*\\(yz+xw\\)\\)*sy,     0,\n  \\(2*\\(xz+yw\\)\\)*sz,     \\(2*\\(yz-xw\\)\\)*sz,      \\(1 - 2*\\(xx+yy\\)\\)*sz, 0,\n  0,                   0,                   0,                   1,\n];\n// col-major: m[col*4+row]\n// Row 0: m[0], m[4], m[8],  m[12]\n// Row 1: m[1], m[5], m[9],  m[13]\n// Row 2: m[2], m[6], m[10], m[14]\nconsole.log\\('90 deg Y rotation matrix \\(col-major\\):'\\);\nconsole.log\\('Row 0:', m[0].toFixed\\(4\\), m[4].toFixed\\(4\\), m[8].toFixed\\(4\\), m[12].toFixed\\(4\\)\\);\nconsole.log\\('Row 1:', m[1].toFixed\\(4\\), m[5].toFixed\\(4\\), m[9].toFixed\\(4\\), m[13].toFixed\\(4\\)\\);\nconsole.log\\('Row 2:', m[2].toFixed\\(4\\), m[6].toFixed\\(4\\), m[10].toFixed\\(4\\), m[14].toFixed\\(4\\)\\);\n// Expected for 90 deg Y: [[0,0,1,0],[0,1,0,0],[-1,0,0,0],[0,0,0,1]]\n// i.e. X->Z, Z->-X\nconst vx=1, vy=0, vz=0;\nconst wx = m[0]*vx + m[4]*vy + m[8]*vz + m[12];\nconst wz = m[2]*vx + m[6]*vy + m[10]*vz + m[14];\nconsole.log\\('Rotate \\(1,0,0\\) by 90 deg Y: wx \\(expect ~0\\):', wx.toFixed\\(4\\), 'wz \\(expect ~-1\\):', wz.toFixed\\(4\\)\\);\n\")",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(find C:/repos/PopPlate/app -name '*.ts' -not -path '*/.claude/*' -not -path '*/node_modules/*' 2>/dev/null | head -30)"
     ]
   }
 }
