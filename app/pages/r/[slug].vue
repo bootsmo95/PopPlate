@@ -613,7 +613,6 @@ function trackMenuArClick(dish: MenuDish) {
 		0 30px 50px rgba(0, 0, 0, 0.5),
 		inset 0 4px 12px rgba(255, 255, 255, 0.1),
 		inset 0 -20px 30px rgba(0, 0, 0, 0.4);
-	animation: rotateModel 14s linear infinite;
 }
 .r-dish-model img {
 	width: 100%;
@@ -621,17 +620,6 @@ function trackMenuArClick(dish: MenuDish) {
 	object-fit: cover;
 	display: block;
 	filter: brightness(1.05) contrast(1.05);
-}
-@keyframes rotateModel {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
-}
-.r-dish-3d:hover .r-dish-model {
-	animation-play-state: paused;
 }
 .r-dish-placeholder {
 	position: relative;

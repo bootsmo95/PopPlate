@@ -12,9 +12,9 @@
 
 import { db } from '../server/database/index.js'
 import { dishes } from '../server/database/schema.js'
-import { isNotNull } from 'drizzle-orm'
+import { eq, isNotNull } from 'drizzle-orm'
 import { compressGlb } from '../worker/utils/compress-glb.js'
-import { uploadFile } from '../server/utils/storage.js'
+import { getPublicUrl, uploadFile } from '../server/utils/storage.js'
 import { generatedAssetKey } from '../server/utils/storage-keys.js'
 
 async function main() {
@@ -55,7 +55,14 @@ async function main() {
 
       const glbKey = generatedAssetKey(dish.restaurantId, dish.id, `${dish.publicDishId}.glb`)
       await uploadFile(glbKey, normalized, 'model/gltf-binary')
-      console.log(`${label}: Uploaded`)
+      const publicUrl = getPublicUrl(glbKey)
+
+      await db
+        .update(dishes)
+        .set({ previewModelGlbUrl: publicUrl, updatedAt: new Date() })
+        .where(eq(dishes.id, dish.id))
+
+      console.log(`${label}: Uploaded and updated database URL`)
 
       success++
     } catch (err) {
