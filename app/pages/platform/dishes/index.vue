@@ -15,6 +15,7 @@ interface ApiDishItem {
   createdAt: string
   posterUrl?: string | null
   updatedAt?: string
+  publicDishId?: string | null
 }
 
 const ssrHeaders = useAuthHeaders()
@@ -39,6 +40,7 @@ function toDesignDish(d: ApiDishItem): DesignDish {
     updated: d.updatedAt
       ? new Date(d.updatedAt).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' })
       : new Date(d.createdAt).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' }),
+    publicDishId: d.publicDishId ?? null,
   }
 }
 

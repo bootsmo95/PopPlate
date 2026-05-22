@@ -19,7 +19,7 @@
         <template #actions>
           <NuxtLink v-if="dish.publicDishId" :to="`/d/${dish.publicDishId}`" target="_blank" rel="noopener" class="top-btn">
             <Icon name="arrow-up-right" :size="14" />
-            <span>Forhåndsvis</span>
+            <span>Vis live menu</span>
           </NuxtLink>
         </template>
       </PageHead>
@@ -81,7 +81,6 @@
                 </span>
               </div>
               <TipsPanel />
-              <AdminImageGuide class="mb-3" />
               <AdminImageUploader
                 :dish-id="dish.id"
                 :restaurant-id="dish.restaurantId"

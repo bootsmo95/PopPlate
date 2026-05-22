@@ -23,6 +23,7 @@ export interface Dish {
   scans: number
   img: string
   updated: string
+  publicDishId?: string | null
   /** Human message when status === 'failed' */
   error?: string
   category?: 'forret' | 'hovedret' | 'dessert' | 'snack'

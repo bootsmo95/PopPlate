@@ -68,6 +68,17 @@ function splitItalic(d: Dish): [string, string, string] {
               <NuxtLink :to="`/platform/dishes/${d.id}`" class="icon-btn" title="Redigér">
                 <Icon name="edit" :size="14" />
               </NuxtLink>
+              <NuxtLink
+                v-if="d.publicDishId"
+                :to="`/d/${d.publicDishId}`"
+                target="_blank"
+                rel="noopener"
+                class="live-btn"
+                title="Vis live menu"
+              >
+                <Icon name="arrow-up-right" :size="14" />
+                <span>Vis live</span>
+              </NuxtLink>
               <button class="icon-btn" title="Hent QR" type="button"><Icon name="qr" :size="14" /></button>
               <button class="icon-btn" title="Mere" type="button"><Icon name="more" :size="14" /></button>
             </div>
@@ -101,6 +112,14 @@ function splitItalic(d: Dish): [string, string, string] {
   @apply w-[30px] h-[30px] grid place-items-center rounded-md text-ink-faint transition-colors;
 }
 .icon-btn:hover {
+  background: rgba(26, 20, 16, 0.06);
+  color: theme('colors.ink.DEFAULT');
+}
+
+.live-btn {
+  @apply inline-flex h-[30px] items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-ink-faint transition-colors whitespace-nowrap;
+}
+.live-btn:hover {
   background: rgba(26, 20, 16, 0.06);
   color: theme('colors.ink.DEFAULT');
 }

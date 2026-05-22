@@ -11,8 +11,9 @@ interface RestaurantNavItem {
   name?: string
 }
 
-const { data: navRestaurants } = await useFetch<RestaurantNavItem[]>('/api/restaurants', {
+const { data: navRestaurants } = useFetch<RestaurantNavItem[]>('/api/restaurants', {
   headers: ssrHeaders,
+  default: () => [],
 })
 
 const publicMenuPath = computed(() => {

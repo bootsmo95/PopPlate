@@ -52,17 +52,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   <!-- Mobile top bar -->
   <div
     class="platform-mobile-top sticky top-0 z-40 hidden items-center justify-between
-           border-b border-line px-5 py-3"
+           border-b border-line px-4 py-2.5"
     style="background: rgba(248, 243, 233, 0.92); backdrop-filter: blur(14px) saturate(160%);
            -webkit-backdrop-filter: blur(14px) saturate(160%);"
   >
-    <NuxtLink to="/" class="inline-flex items-center gap-3 font-display italic font-medium text-[19px] tracking-tight text-ink">
-      <LogoMark :size="24" />
+    <NuxtLink to="/" class="inline-flex items-center gap-2.5 font-display italic font-medium text-[18px] tracking-tight text-ink">
+      <LogoMark :size="22" />
       <span>popplate</span>
     </NuxtLink>
     <button
       type="button"
-      class="grid place-items-center w-10 h-10 rounded-md border border-line bg-paper text-ink transition hover:bg-card"
+      class="grid place-items-center w-9 h-9 rounded-md border border-line bg-paper text-ink transition hover:bg-card"
       :aria-expanded="open"
       aria-label="Open menu"
       @click="open = true"

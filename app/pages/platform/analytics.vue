@@ -32,8 +32,13 @@ interface AnalyticsData {
 
 const ssrHeaders = useAuthHeaders()
 
-const { data: restaurants } = useLazyFetch<ApiRestaurant[]>('/api/restaurants', {
+const {
+  data: restaurants,
+  pending: restaurantsPending,
+  error: restaurantsError,
+} = await useFetch<ApiRestaurant[]>('/api/restaurants', {
   headers: ssrHeaders,
+  default: () => [],
 })
 
 const firstSlug = computed(() => restaurants.value?.[0]?.slug ?? '')
@@ -43,16 +48,17 @@ const period = ref<'7d' | '30d' | 'all'>('30d')
 const {
   data: analytics,
   status: analyticsStatus,
+  error: analyticsError,
   refresh,
 } = useLazyFetch<AnalyticsData>(
   () => `/api/restaurants/${firstSlug.value}/analytics?period=${period.value}`,
   { headers: ssrHeaders, immediate: false },
 )
 
-watch(firstSlug, (slug) => { if (slug) refresh() }, { immediate: true })
-watch(period, () => { if (firstSlug.value) refresh() })
+watch([firstSlug, period], ([slug]) => { if (slug) refresh() }, { immediate: true })
 
-const loading = computed(() => analyticsStatus.value === 'pending')
+const loading = computed(() => restaurantsPending.value || analyticsStatus.value === 'pending')
+const hasRestaurants = computed(() => (restaurants.value?.length ?? 0) > 0)
 
 const periodLabel = computed(() => {
   if (period.value === '7d') return '7 dage'
@@ -95,8 +101,16 @@ function deltaDir(current?: number, prev?: number): 'up' | 'down' | 'neutral' {
       </PageHead>
 
       <!-- Error state -->
-      <div v-if="analyticsStatus === 'error'" class="py-12 text-center text-ink-faint">
-        Kunne ikke hente analystal. Proev at genindlaese siden.
+      <div v-if="restaurantsError || analyticsError || analyticsStatus === 'error'" class="p-card py-12 text-center text-[#8a4838]">
+        Kunne ikke hente analystal. Prøv at genindlæse siden.
+      </div>
+
+      <div v-else-if="!hasRestaurants" class="p-card py-12 text-center">
+        <h3 class="font-display text-[22px] mb-2 text-ink">Ingen restaurant endnu</h3>
+        <p class="text-ink-faint text-[15px] mb-5">Opret en restaurant, før analyse kan vises.</p>
+        <NuxtLink to="/platform/restaurants" class="top-btn top-btn--primary">
+          Opret restaurant
+        </NuxtLink>
       </div>
 
       <template v-else>
