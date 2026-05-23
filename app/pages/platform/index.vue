@@ -86,9 +86,9 @@ function splitItalic(d: DesignDish): [string, string, string] {
 const activity: Array<{ status: DishStatus; title: string; detail: string; time: string }> = [
 	{ status: "processing", title: "Kammuslinger", detail: "3D-generation 62%", time: "3 min" },
 	{ status: "failed", title: "Lille ostebord", detail: "generation fejlet", time: "1 t" },
-	{ status: "published", title: "Braendt porre", detail: "publiceret pa live menu", time: "2 t" },
+	{ status: "published", title: "Brændt porre", detail: "publiceret på live menu", time: "2 t" },
 	{ status: "ready", title: "Torsk med jordskokker", detail: "3D klar til review", time: "1 d" },
-	{ status: "published", title: "Hindbaer & havtorn", detail: "56 nye AR-visninger", time: "4 t" },
+	{ status: "published", title: "Hindbær & havtorn", detail: "56 nye AR-visninger", time: "4 t" },
 	{ status: "draft", title: "Lammeryg fra Mors", detail: "oprettet som kladde", time: "2 d" },
 ];
 
@@ -118,7 +118,7 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
 				<template #sub>
 					<p class="text-ink-mute mt-3 text-[15px] max-w-[480px]">
 						<template v-if="firstName">
-							Her er status pa {{ firstName }}. Hold oje med generationer der venter pa review.
+							Her er status på {{ firstName }}. Hold øje med generationer der venter på gennemgang.
 						</template>
 						<template v-else> Opret en restaurant under indstillinger for at komme i gang. </template>
 					</p>
@@ -155,7 +155,7 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
 							label="Ny ret"
 							title="Opret en ret"
 							italic="ret"
-							body="Upload 1-4 fotos. Vi bygger 3D-modellen pa 2-5 minutter."
+							body="Upload 1-4 fotos. Vi bygger 3D-modellen på 2-5 minutter."
 							cta-label="Start"
 							to="/platform/dishes/new"
 							dark
@@ -166,18 +166,18 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
 							title="Alle retter"
 							italic="retter"
 							body="Filtrer, søg, publicer/fjern publicering, og hent QR-koder."
-							cta-label="Aabn liste"
+							cta-label="Åbn liste"
 							to="/platform/dishes"
 						/>
 						<!-- <QuickActionCard
-            number="03" label="Forhaandsvis" title="Live menu" italic="menu"
+            number="03" label="Forhåndsvis" title="Live menu" italic="menu"
             :body="`Se ${firstName || 'restaurantens'} offentlige menuside.`"
-            cta-label="Aabn"
+            cta-label="Åbn"
             :to="firstSlug ? `/r/${firstSlug}` : '/platform/settings'"
           />
           <QuickActionCard
             number="04" label="Print" title="QR-pakke til print" italic="til print"
-            body="Download alle QR-koder som PDF."
+            body="Hent alle QR-koder som PDF."
             cta-label="Hent" href="#qr"
           /> -->
 					</div>
@@ -210,7 +210,7 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
 				</div>
 
 				<div v-if="!recent.length" class="py-12 text-center text-ink-faint">
-					Ingen retter endnu. Opret din foerste ret for at komme i gang.
+					Ingen retter endnu. Opret din første ret for at komme i gang.
 				</div>
 
 				<div v-else class="grid gap-3.5" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))">

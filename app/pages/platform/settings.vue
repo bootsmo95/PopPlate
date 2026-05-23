@@ -134,12 +134,12 @@ const INVOICES = [
 							"
 						/>
 						<div class="relative">
-							<div class="mono-label !text-clay-soft mb-3">Nuvaerende tier</div>
+							<div class="mono-label !text-clay-soft mb-3">Nuværende tier</div>
 							<h3 class="font-display font-normal text-[48px] tracking-[-0.025em]" style="color: #f3ede2">
 								<span class="italic text-clay-soft">Basic</span> &mdash; 499 kr/md
 							</h3>
 							<p class="mt-3" style="color: rgba(243, 237, 226, 0.7)">
-								Op til 30 retter &middot; Eget brand &middot; Analytics &middot; Allergen-maerkning
+								Op til 30 retter &middot; Eget brand &middot; Analytics &middot; Allergen-mærkning
 							</p>
 							<div
 								class="mt-6 pt-5 grid grid-cols-3 gap-6 max-[600px]:grid-cols-1"
@@ -160,7 +160,7 @@ const INVOICES = [
 									</div>
 								</div>
 								<div>
-									<div class="mono-label !text-[rgba(243,237,226,0.5)] mb-2">Naeste betaling</div>
+									<div class="mono-label !text-[rgba(243,237,226,0.5)] mb-2">Næste betaling</div>
 									<div class="font-body text-[18px] font-medium mt-2" style="color: #f3ede2">--</div>
 								</div>
 							</div>
@@ -206,13 +206,13 @@ const INVOICES = [
 					<div class="py-4 border-b border-line flex justify-between items-center">
 						<div>
 							<div class="font-mono text-[13px]">VISA &middot; &bull;&bull;&bull;&bull; 4242</div>
-							<div class="text-xs text-ink-faint mt-1">Udloeber 09/27</div>
+							<div class="text-xs text-ink-faint mt-1">Udløber 09/27</div>
 						</div>
-						<button type="button" class="top-btn !py-2 !px-3.5 !text-xs">Aendr</button>
+						<button type="button" class="top-btn !py-2 !px-3.5 !text-xs">Ændr</button>
 					</div>
 					<div class="mt-4 text-xs text-ink-faint">
 						Faktura sendes automatisk til <strong class="text-ink">{{ user?.email ?? "--" }}</strong> hver
-						maaned.
+						måned.
 					</div> -->
 				</aside>
 			</div>
@@ -273,7 +273,7 @@ const INVOICES = [
 										class="text-clay-deep font-mono text-[11px] uppercase font-medium tracking-[0.15em]"
 										@click="tab = 'tier'"
 									>
-										Aendr plan &rarr;
+										Ændr plan &rarr;
 									</button>
 								</div>
 							</div>
@@ -290,7 +290,7 @@ const INVOICES = [
 						<div class="mb-4">
 							<h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Forbrug</h3>
 						</div>
-						<div class="mono-label !text-[rgba(107,96,86,0.6)] mb-2">Generationer brugt denne maaned</div>
+						<div class="mono-label !text-[rgba(107,96,86,0.6)] mb-2">Generationer brugt denne måned</div>
 						<div class="font-body text-[32px] font-light text-ink">
 							{{ usageData.used }}<span class="text-sm ml-1 text-ink-faint">/{{ usageData.limit }}</span>
 						</div>
@@ -321,7 +321,7 @@ const INVOICES = [
 								{{ user?.role ?? "user" }}
 							</h3>
 							<p class="mt-3 text-[13px]" style="color: rgba(243, 237, 226, 0.6)">
-								Din rolle bestemmer hvad du kan goere paa platformen.
+								Din rolle bestemmer hvad du kan gøre på platformen.
 							</p>
 						</div>
 					</div>

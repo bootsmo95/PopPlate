@@ -71,7 +71,7 @@ const FEATURES = [
 						Alt hvad I beh&oslash;ver for <span class="italic text-clay-deep">den perfekte</span> menu.
 					</h1>
 					<p class="text-ink-mute mt-6 text-[17px] leading-[1.55] max-w-[540px] mx-auto">
-						Fra smartphone-fotos til 3D-modeller i AR &mdash; popplate giver jeres g&aelig;ster en helt ny m&aring;de at opleve menukortet p&aring;.
+						Fra smartphone-fotos til 3D-modeller i AR &mdash; popplate giver jeres gæster en helt ny måde at opleve menukortet på.
 					</p>
 				</div>
 			</div>

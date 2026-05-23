@@ -3,9 +3,9 @@
     <!-- Count indicator -->
     <div class="flex items-center justify-between mb-3">
       <p class="text-sm text-gray-600">
-        {{ totalCount }} / {{ MAX_IMAGES }} images
+        {{ totalCount }} / {{ MAX_IMAGES }} billeder
         <span v-if="totalCount < MIN_IMAGES" class="text-amber-600">
-          (min {{ MIN_IMAGES }} required)
+          (min. {{ MIN_IMAGES }} kræves)
         </span>
       </p>
     </div>
@@ -26,7 +26,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
       </svg>
       <p class="text-sm font-medium text-gray-700">
-        Drop images here or <span class="text-slate-600 underline">click to browse</span>
+        Træk billeder hertil eller <span class="text-slate-600 underline">klik for at vælge</span>
       </p>
       <p class="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — max 10 MB per file</p>
       <input
@@ -52,14 +52,14 @@
       >
         <img
           :src="img.imageUrl"
-          :alt="`Source image`"
+          :alt="`Kildebillede`"
           class="w-full h-full object-cover"
         />
         <button
           type="button"
           class="absolute top-1 right-1 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 focus:opacity-100"
           :disabled="deletingIds.has(img.id)"
-          :title="deletingIds.has(img.id) ? 'Deleting…' : 'Remove image'"
+          :title="deletingIds.has(img.id) ? 'Sletter…' : 'Fjern billede'"
           @click.stop="handleDelete(img)"
         >
           <svg v-if="!deletingIds.has(img.id)" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
@@ -98,14 +98,14 @@
         </div>
         <!-- Queued overlay -->
         <div v-else-if="item.status === 'queued'" class="absolute inset-0 bg-black/30 flex items-center justify-center">
-          <p class="text-white text-xs">Queued</p>
+          <p class="text-white text-xs">I kø</p>
         </div>
         <!-- Remove button for queued/error items -->
         <button
           v-if="item.status !== 'uploading'"
           type="button"
           class="absolute top-1 right-1 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 focus:opacity-100"
-          title="Remove"
+          title="Fjern"
           @click.stop="removeFromQueue(item.id)"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
@@ -166,13 +166,13 @@ const allImages = computed(() => [...props.existingImages, ...uploadQueue.value]
 function validateFile(file: File): string | null {
   const ext = '.' + file.name.split('.').pop()?.toLowerCase()
   if (!ALLOWED_EXTENSIONS.includes(ext)) {
-    return `"${file.name}": unsupported format (use JPG, PNG, or WEBP)`
+    return `"${file.name}": formatet understøttes ikke (brug JPG, PNG eller WEBP)`
   }
   if (file.type && !ALLOWED_MIME_TYPES.includes(file.type)) {
-    return `"${file.name}": unsupported MIME type`
+    return `"${file.name}": filtypen understøttes ikke`
   }
   if (file.size > MAX_FILE_SIZE) {
-    return `"${file.name}": exceeds 10 MB limit`
+    return `"${file.name}": overstiger grænsen på 10 MB`
   }
   return null
 }
@@ -185,7 +185,7 @@ function addFilesToQueue(files: FileList | File[]) {
   for (const file of fileArray) {
     const currentTotal = props.existingImages.length + uploadQueue.value.filter(i => i.status !== 'error').length
     if (currentTotal >= MAX_IMAGES) {
-      errors.push(`Maximum ${MAX_IMAGES} images allowed — some files were skipped.`)
+      errors.push(`Maks. ${MAX_IMAGES} billeder er tilladt — nogle filer blev sprunget over.`)
       break
     }
 
@@ -256,7 +256,7 @@ async function processQueue() {
         const e = err as { data?: { message?: string }; message?: string }
         next.status = 'error'
         next.progress = 0
-        next.error = e?.data?.message ?? e?.message ?? 'Upload failed'
+        next.error = e?.data?.message ?? e?.message ?? 'Upload fejlede'
       } finally {
         clearInterval(progressInterval)
       }
@@ -302,7 +302,7 @@ async function handleDelete(image: SourceImage) {
     emit('deleted', image.id)
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    validationError.value = e?.data?.message ?? e?.message ?? 'Failed to delete image.'
+    validationError.value = e?.data?.message ?? e?.message ?? 'Kunne ikke slette billedet.'
   } finally {
     const next = new Set(deletingIds.value)
     next.delete(image.id)

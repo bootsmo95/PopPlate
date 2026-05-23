@@ -2,8 +2,8 @@
   <div>
     <!-- Monthly limit warning -->
     <div v-if="monthlyLimitReached" class="rounded-md border border-[#8b6914]/20 bg-[#8b6914]/5 px-4 py-3 mb-4">
-      <p class="text-sm font-medium text-[#6b4f10] mb-0.5">Maanedlig graense naaet</p>
-      <p class="text-sm text-[#8b6914]">Du har brugt alle dine 3D-generationer for denne maaned. Graensen nulstilles ved din naeste faktureringsdato.</p>
+      <p class="text-sm font-medium text-[#6b4f10] mb-0.5">Månedlig grænse nået</p>
+      <p class="text-sm text-[#8b6914]">Du har brugt alle dine 3D-generationer for denne måned. Grænsen nulstilles ved din næste faktureringsdato.</p>
     </div>
 
     <!-- No job yet -->

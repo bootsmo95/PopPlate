@@ -12,11 +12,11 @@ export async function requireAccessibleRestaurant(restaurantId: string, user: Se
     .limit(1)
 
   if (!restaurant) {
-    throw createError({ statusCode: 404, message: 'Restaurant not found' })
+    throw createError({ statusCode: 404, message: 'Restauranten blev ikke fundet' })
   }
 
   if (!hasUnlimitedAccess(user) && restaurant.ownerId !== user.id) {
-    throw createError({ statusCode: 403, message: 'You do not own this restaurant' })
+    throw createError({ statusCode: 403, message: 'Du har ikke adgang til denne restaurant' })
   }
 
   return restaurant

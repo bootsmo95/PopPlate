@@ -71,9 +71,9 @@ const periodLabel = computed(() => {
 })
 
 function deltaLabel(current?: number, prev?: number): string {
-  if (current == null || prev == null || prev === 0) return 'ingen aendring'
+  if (current == null || prev == null || prev === 0) return 'ingen ændring'
   const pct = Math.round(((current - prev) / prev) * 100)
-  if (pct === 0) return 'ingen aendring'
+  if (pct === 0) return 'ingen ændring'
   return `${Math.abs(pct)}% vs. forrige periode`
 }
 
@@ -188,7 +188,7 @@ function deltaDir(current?: number, prev?: number): 'up' | 'down' | 'neutral' {
             :delta-direction="deltaDir(analytics?.interactions, analytics?.prev?.interactions)"
           />
           <StatCard
-            label="Mest populaer"
+            label="Mest populær"
             :value="analytics?.topDish
               ? (analytics.topDish.length > 20 ? analytics.topDish.slice(0, 20) + '...' : analytics.topDish)
               : '—'"
@@ -242,7 +242,7 @@ function deltaDir(current?: number, prev?: number): 'up' | 'down' | 'neutral' {
           class="py-12 text-center"
         >
           <h3 class="font-display text-[22px] mb-2 text-ink">Ingen data endnu</h3>
-          <p class="text-ink-faint text-[15px]">Statistik vises, nar dine gaester begynder at aabne menuen.</p>
+          <p class="text-ink-faint text-[15px]">Statistik vises, når dine gæster begynder at åbne menuen.</p>
         </div>
       </template>
     </div>

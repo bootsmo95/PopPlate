@@ -14,7 +14,7 @@ export async function handleModelProxy(event: H3Event, headOnly = false) {
   const match = path.match(/^([a-zA-Z0-9_-]+)\.(glb|usdz|png)$/)
 
   if (!match) {
-    throw createError({ statusCode: 400, message: 'Invalid model path' })
+    throw createError({ statusCode: 400, message: 'Ugyldig modelsti' })
   }
 
   const identifier = match[1]!
@@ -32,7 +32,7 @@ export async function handleModelProxy(event: H3Event, headOnly = false) {
     .where(isUuid ? eq(dishes.id, identifier) : eq(dishes.publicDishId, identifier))
 
   if (!dish || dish.status !== 'published') {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
+    throw createError({ statusCode: 404, message: 'Retten blev ikke fundet' })
   }
 
   return sendModelAsset(event, dish, ext, headOnly)
@@ -74,7 +74,7 @@ export async function sendModelAsset(
   try {
     parsedUrl = new URL(url)
   } catch {
-    throw createError({ statusCode: 500, message: 'Invalid upstream URL' })
+    throw createError({ statusCode: 500, message: 'Ugyldig model-URL' })
   }
 
   const allowedHosts = new Set([...ALLOWED_UPSTREAM_HOSTS, ...getAllowedStorageHosts()])
@@ -104,7 +104,7 @@ export async function sendModelAsset(
 
   const reader = upstream.body?.getReader()
   if (!reader) {
-    throw createError({ statusCode: 502, message: 'No response body' })
+    throw createError({ statusCode: 502, message: 'Intet svar fra modelserveren' })
   }
 
   return new Readable({

@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   const hardDelete = getQuery(event).hard === 'true'
   if (hardDelete) {
     if (!hasUnlimitedAccess(user)) {
-      throw createError({ statusCode: 403, message: 'Only admins can permanently delete dishes' })
+      throw createError({ statusCode: 403, message: 'Kun administratorer kan slette retter permanent' })
     }
 
     await db.delete(analyticsEvents).where(eq(analyticsEvents.dishId, id))
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
       .returning()
 
     if (!deleted) {
-      throw createError({ statusCode: 404, message: 'Dish not found' })
+      throw createError({ statusCode: 404, message: 'Retten blev ikke fundet' })
     }
 
     return { success: true, deleted: true }
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
     .returning()
 
   if (!archived) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
+    throw createError({ statusCode: 404, message: 'Retten blev ikke fundet' })
   }
 
   return { success: true }

@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     .where(and(eq(dishSourceImages.id, imageId), eq(dishSourceImages.dishId, id)))
 
   if (!image) {
-    throw createError({ statusCode: 404, message: 'Image not found' })
+    throw createError({ statusCode: 404, message: 'Billedet blev ikke fundet' })
   }
 
   // Delete external file only when this isn't an inline DB-backed asset

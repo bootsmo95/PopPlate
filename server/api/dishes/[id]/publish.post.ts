@@ -22,22 +22,22 @@ export default defineEventHandler(async (event) => {
   if (dish.status !== 'ready') {
     throw createError({
       statusCode: 422,
-      message: 'Dish must have status "ready" before publishing',
+      message: 'Retten skal have status "klar" før publicering',
     })
   }
   if (!dish.name) {
-    throw createError({ statusCode: 422, message: 'Dish must have a name before publishing' })
+    throw createError({ statusCode: 422, message: 'Retten skal have et navn før publicering' })
   }
   if (!dish.posterUrl) {
     throw createError({
       statusCode: 422,
-      message: 'Dish must have a poster image before publishing',
+      message: 'Retten skal have et posterbillede før publicering',
     })
   }
   if (!dish.previewModelGlbUrl) {
     throw createError({
       statusCode: 422,
-      message: 'Dish must have a 3D model before publishing',
+      message: 'Retten skal have en 3D-model før publicering',
     })
   }
 

@@ -56,8 +56,8 @@
   <div v-else-if="error || !dish" class="min-h-screen flex items-center justify-center px-6">
     <div class="text-center max-w-sm">
       <p class="text-sm font-bold uppercase tracking-[0.24em] text-orange-600">PopPlate</p>
-      <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950">Dish not found</h1>
-      <p class="mt-3 text-sm leading-6 text-slate-600">This dish may not be available or the link may be incorrect.</p>
+      <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950">Retten blev ikke fundet</h1>
+      <p class="mt-3 text-sm leading-6 text-slate-600">Retten er muligvis ikke tilgængelig, eller linket er forkert.</p>
     </div>
   </div>
 
@@ -110,7 +110,7 @@
         <strong>{{ dish.name }}</strong>
       </div>
       <div class="flex gap-2.5">
-        <button type="button" aria-label="Share" class="w-10 h-10 rounded-full border border-line-strong grid place-items-center text-ink transition hover:border-ink hover:bg-[rgba(26,20,16,0.04)]">
+        <button type="button" aria-label="Del" class="w-10 h-10 rounded-full border border-line-strong grid place-items-center text-ink transition hover:border-ink hover:bg-[rgba(26,20,16,0.04)]">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path d="M3 8l5-5m0 0l5 5M8 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -193,7 +193,7 @@
         </h1>
 
         <div class="flex justify-between items-baseline py-5 border-t border-b border-line mb-8">
-          <span class="mono-label">Dish</span>
+          <span class="mono-label">Ret</span>
           <span v-if="dish.priceText" class="font-body text-[32px] font-medium text-ink tabular-nums">{{ dish.priceText }}</span>
         </div>
 
@@ -234,17 +234,17 @@
               style="background: #d4a880; color: #2b1f15;"
               @click="onArClicked"
             >
-              <span>View in AR</span>
+              <span>Se i AR</span>
             </button>
           </template>
 
-          <!-- Desktop: QR code -->
+          <!-- Desktop: QR-kode -->
           <template v-else>
             <p class="relative text-sm leading-[1.5] mb-6 max-w-[380px]" style="color: rgba(243, 237, 226, 0.7);">
               Scan med din telefon for at se retten på dit bord.
             </p>
             <div v-if="qrDataUrl" class="relative">
-              <img :src="qrDataUrl" alt="QR code" class="w-[160px] h-[160px] rounded-lg" />
+              <img :src="qrDataUrl" alt="QR-kode" class="w-[160px] h-[160px] rounded-lg" />
             </div>
           </template>
         </div>
@@ -330,7 +330,7 @@ const ingredientList = computed<string[]>(() => {
 })
 
 useHead({
-  title: computed(() => dish.value?.name ?? 'Dish'),
+  title: computed(() => dish.value?.name ?? 'Ret'),
   meta: [
     {
       name: 'description',

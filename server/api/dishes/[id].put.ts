@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
 
   if (body.scaleCm !== undefined) {
     if (body.scaleCm !== null && (!Number.isFinite(body.scaleCm) || body.scaleCm <= 0 || body.scaleCm > 200)) {
-      throw createError({ statusCode: 400, message: 'Dish size must be between 0 and 200 cm.' })
+      throw createError({ statusCode: 400, message: 'Retstørrelse skal være mellem 0 og 200 cm.' })
     }
 
     updateData.scaleCm = body.scaleCm
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     .returning()
 
   if (!updated) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
+    throw createError({ statusCode: 404, message: 'Retten blev ikke fundet' })
   }
 
   return updated

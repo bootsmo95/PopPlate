@@ -31,7 +31,7 @@ export async function handleGenerate(
     .limit(1)
 
   if (!dish) {
-    throw new Error('Dish not found')
+    throw new Error('Retten blev ikke fundet')
   }
 
   const images = await db
@@ -41,7 +41,7 @@ export async function handleGenerate(
     .orderBy(asc(dishSourceImages.sortOrder))
 
   if (images.length === 0) {
-    throw new Error('No source images found for dish')
+    throw new Error('Ingen kildebilleder fundet for retten')
   }
 
   const imageUrls = images.slice(0, 4).map(img => img.imageUrl)
@@ -120,7 +120,7 @@ export async function handleGenerate(
     }
 
     if (status.status === 'CANCELED') {
-      throw new Error('Meshy task was canceled')
+      throw new Error('Meshy-opgaven blev annulleret')
     }
 
     if (status.status === 'PENDING' && status.preceding_tasks !== undefined) {
@@ -130,7 +130,7 @@ export async function handleGenerate(
     }
   }
 
-  throw new Error('Generation timed out after 30 minutes')
+  throw new Error('Generation fik timeout efter 30 minutter')
 }
 
 async function downloadAndCompress(glbUrl: string): Promise<Buffer> {

@@ -32,11 +32,11 @@ export async function requireOwnedDish(dishId: string, user: SessionUser) {
     .limit(1)
 
   if (!dish) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
+    throw createError({ statusCode: 404, message: 'Retten blev ikke fundet' })
   }
 
   if (!hasUnlimitedAccess(user) && dish.ownerId !== user.id) {
-    throw createError({ statusCode: 403, message: 'You do not own this dish' })
+    throw createError({ statusCode: 403, message: 'Du har ikke adgang til denne ret' })
   }
 
   const { ownerId: _ownerId, ...ownedDish } = dish

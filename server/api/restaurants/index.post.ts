@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   const name = body?.name?.trim()
 
   if (!name) {
-    throw createError({ statusCode: 400, message: 'Restaurant name is required' })
+    throw createError({ statusCode: 400, message: 'Restaurantnavn er påkrævet' })
   }
 
   // Check tier limit
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
   const baseSlug = slugify(name)
 
   if (!baseSlug) {
-    throw createError({ statusCode: 400, message: 'Restaurant name must contain letters or numbers' })
+    throw createError({ statusCode: 400, message: 'Restaurantnavn skal indeholde bogstaver eller tal' })
   }
 
   let slug = baseSlug

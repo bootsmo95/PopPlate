@@ -126,7 +126,7 @@ async function handleDeleteRestaurant() {
 
     <!-- Error -->
     <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
-      Kunne ikke indlaese restaurant.
+      Kunne ikke indlæse restaurant.
     </div>
 
     <template v-else-if="restaurant">
@@ -153,7 +153,7 @@ async function handleDeleteRestaurant() {
       <!-- Stats -->
       <div class="grid grid-cols-4 gap-4 mb-8 max-[1100px]:grid-cols-2 max-[480px]:grid-cols-1">
         <StatCard label="Retter" :value="restaurant.dishCount" caption="i alt" />
-        <StatCard label="Publiceret" :value="publishedCount" caption="live pa menu" />
+        <StatCard label="Publiceret" :value="publishedCount" caption="live på menu" />
         <StatCard label="AR-visninger" value="--" sub="/30d" caption="kommer snart" />
         <StatCard label="QR-scans" value="--" sub="/30d" caption="kommer snart" />
       </div>
@@ -217,9 +217,9 @@ async function handleDeleteRestaurant() {
       <!-- Full dish table -->
       <div class="p-card">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Alle retter pa {{ restaurant.name }}</h3>
+          <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Alle retter på {{ restaurant.name }}</h3>
           <NuxtLink :to="`/platform/r/${restaurant.slug}/dishes`" class="font-mono text-[11px] uppercase font-medium text-clay-deep tracking-[0.15em]">
-            Aabn fuld liste &rarr;
+            Åbn fuld liste &rarr;
           </NuxtLink>
         </div>
         <DishTable :dishes="filteredDishes" compact />
@@ -231,7 +231,7 @@ async function handleDeleteRestaurant() {
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 class="font-display font-normal text-[22px] tracking-[-0.015em]">Slet restaurant</h3>
-            <p class="text-sm text-ink-mute mt-1">Sletter permanent denne restaurant og alle tilhoerende retter, QR-koder, analytics, jobs og billeder.</p>
+            <p class="text-sm text-ink-mute mt-1">Sletter permanent denne restaurant og alle tilhørende retter, QR-koder, analytics, jobs og billeder.</p>
           </div>
           <button
             type="button"

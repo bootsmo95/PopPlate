@@ -26,7 +26,7 @@ export async function getSessionUser(event: H3Event): Promise<SessionUser | null
 export async function requireAuth(event: H3Event): Promise<{ user: SessionUser }> {
   const result = await requireUserSession(event, {
     statusCode: 401,
-    message: 'Unauthorized',
+    message: 'Du er ikke logget ind',
   })
   return { user: result.user as SessionUser }
 }

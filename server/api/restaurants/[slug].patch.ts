@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     .limit(1)
 
   if (!restaurantRow) {
-    throw createError({ statusCode: 404, message: 'Restaurant not found' })
+    throw createError({ statusCode: 404, message: 'Restauranten blev ikke fundet' })
   }
 
   await requireAccessibleRestaurant(restaurantRow.id, user)
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
   if (body.name !== undefined) {
     const trimmed = body.name.trim()
     if (!trimmed) {
-      throw createError({ statusCode: 400, message: 'Name cannot be empty' })
+      throw createError({ statusCode: 400, message: 'Navn må ikke være tomt' })
     }
     updateData.name = trimmed
   }

@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   if ((imageCount?.count ?? 0) < 2) {
     throw createError({
       statusCode: 422,
-      message: 'Dish must have at least 2 source images before generating',
+      message: 'Retten skal have mindst 2 kildebilleder før generering',
     })
   }
 
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
   if (inflightJob) {
     throw createError({
       statusCode: 409,
-      message: 'A generation job is already in progress for this dish',
+      message: 'Der er allerede en generation i gang for denne ret',
     })
   }
 
@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
       if (monthlyCount >= limits.maxGenerationsPerMonth) {
         throw createError({
           statusCode: 403,
-          message: 'Du har naaet din maanedlige graense for 3D-generationer. Graensen nulstilles ved din naeste faktureringsdato.',
+          message: 'Du har nået din månedlige grænse for 3D-generationer. Grænsen nulstilles ved din næste faktureringsdato.',
         })
       }
 

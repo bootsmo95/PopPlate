@@ -31,7 +31,7 @@ function checkRateLimit(ip: string): boolean {
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) ?? 'unknown'
   if (!checkRateLimit(ip)) {
-    throw createError({ statusCode: 429, message: 'Too many requests' })
+    throw createError({ statusCode: 429, message: 'For mange forespørgsler' })
   }
 
   const body = await readBody(event)
@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
     .where(isUuid ? eq(dishes.id, dishId) : eq(dishes.publicDishId, dishId))
     .limit(1)
   if (!dish) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
+    throw createError({ statusCode: 404, message: 'Retten blev ikke fundet' })
   }
 
   await db.insert(analyticsEvents).values({

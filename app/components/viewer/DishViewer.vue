@@ -5,7 +5,7 @@
       :src="glbUrl"
       :ios-src="effectiveUsdzUrl ?? undefined"
       :poster="posterUrl ?? undefined"
-      :alt="alt ?? 'Dish 3D model'"
+      :alt="alt ?? '3D-model af ret'"
       :scale="scaleAttr"
       ar-scale="fixed"
       ar-placement="floor"
@@ -81,7 +81,7 @@ const props = withDefaults(
   {
     usdzUrl: null,
     posterUrl: null,
-    alt: 'Dish 3D model',
+    alt: '3D-model af ret',
     height: '60vh',
     scale: 0.12,
     autoAr: false,

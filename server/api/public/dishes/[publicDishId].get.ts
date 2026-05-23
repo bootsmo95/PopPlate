@@ -15,11 +15,11 @@ export default defineEventHandler(async (event) => {
     .where(eq(dishes.publicDishId, publicDishId))
 
   if (!dish) {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
+    throw createError({ statusCode: 404, message: 'Retten blev ikke fundet' })
   }
 
   if (dish.status !== 'published') {
-    throw createError({ statusCode: 404, message: 'Dish not found' })
+    throw createError({ statusCode: 404, message: 'Retten blev ikke fundet' })
   }
 
   return {

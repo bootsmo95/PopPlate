@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   // Parse multipart form data
   const parts = await readMultipartFormData(event)
   if (!parts || parts.length === 0) {
-    throw createError({ statusCode: 400, message: 'No form data received' })
+    throw createError({ statusCode: 400, message: 'Ingen formulardata modtaget' })
   }
 
   // Extract fields
@@ -33,10 +33,10 @@ export default defineEventHandler(async (event) => {
 
   // Validate required fields
   if (!dishId) {
-    throw createError({ statusCode: 400, message: 'dishId is required' })
+    throw createError({ statusCode: 400, message: 'Ret-id mangler' })
   }
   if (!filePart) {
-    throw createError({ statusCode: 400, message: 'No file provided' })
+    throw createError({ statusCode: 400, message: 'Ingen fil valgt' })
   }
 
   const dish = await requireOwnedDish(dishId, user)
@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
   if (filePart.data.length > MAX_FILE_SIZE) {
     throw createError({
       statusCode: 400,
-      message: 'File size exceeds the 10 MB limit',
+      message: 'Filen overskrider grænsen på 10 MB',
     })
   }
 

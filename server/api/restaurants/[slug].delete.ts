@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     .limit(1)
 
   if (!restaurantRow) {
-    throw createError({ statusCode: 404, message: 'Restaurant not found' })
+    throw createError({ statusCode: 404, message: 'Restauranten blev ikke fundet' })
   }
 
   const restaurant = await requireAccessibleRestaurant(restaurantRow.id, user)
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!hasUnlimitedAccess(user)) {
-    throw createError({ statusCode: 403, message: 'Only admins can permanently delete restaurants' })
+    throw createError({ statusCode: 403, message: 'Kun administratorer kan slette restauranter permanent' })
   }
 
   const restaurantDishes = await db
@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
     .returning()
 
   if (!deleted) {
-    throw createError({ statusCode: 404, message: 'Restaurant not found' })
+    throw createError({ statusCode: 404, message: 'Restauranten blev ikke fundet' })
   }
 
   return { success: true, deleted: true }

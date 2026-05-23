@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
     .limit(1)
 
   if (!restaurant) {
-    throw createError({ statusCode: 404, message: 'Restaurant not found' })
+    throw createError({ statusCode: 404, message: 'Restauranten blev ikke fundet' })
   }
 
   const publishedDishes = await db

@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
   const dish = await requireOwnedDish(id, user)
   if (dish.status !== 'published') {
-    throw createError({ statusCode: 422, message: 'Only published dishes can be unpublished' })
+    throw createError({ statusCode: 422, message: 'Kun publicerede retter kan fjernes fra publicering' })
   }
 
   const [updatedDish] = await db

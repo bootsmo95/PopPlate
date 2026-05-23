@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
   const key = keyParts.join('/')
 
   if (!bucket || !key) {
-    throw createError({ statusCode: 400, message: 'Invalid storage path' })
+    throw createError({ statusCode: 400, message: 'Ugyldig filsti' })
   }
 
   if (bucket !== getBucketName()) {
-    throw createError({ statusCode: 404, message: 'File not found' })
+    throw createError({ statusCode: 404, message: 'Filen blev ikke fundet' })
   }
 
   const object = await getS3Client().send(new GetObjectCommand({ Bucket: bucket, Key: key }))
@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
   const body = object.Body
   if (!body) {
-    throw createError({ statusCode: 404, message: 'File not found' })
+    throw createError({ statusCode: 404, message: 'Filen blev ikke fundet' })
   }
 
   if (body instanceof Readable) {

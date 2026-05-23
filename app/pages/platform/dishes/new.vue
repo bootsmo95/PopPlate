@@ -15,12 +15,12 @@
 
     <!-- No restaurants guard -->
     <div v-if="!restaurantsPending && (!restaurants || restaurants.length === 0)" class="text-center py-12">
-      <p class="text-ink-mute mb-3">You need a restaurant before creating dishes.</p>
+      <p class="text-ink-mute mb-3">Du skal have en restaurant, før du kan oprette retter.</p>
       <NuxtLink
         to="/platform/settings"
         class="top-btn top-btn--primary !inline-flex"
       >
-        Set up restaurant &rarr;
+        Opsæt restaurant &rarr;
       </NuxtLink>
     </div>
 
@@ -46,7 +46,7 @@
               v-model="form.name"
               type="text"
               required
-              placeholder="Fx Grilled Salmon"
+              placeholder="Fx grillet laks"
               class="field-input"
             >
             <div class="field-hint">Det er det navn gæsten ser på menukortet.</div>
@@ -63,7 +63,7 @@
           <div class="grid grid-cols-2 gap-4 max-[600px]:grid-cols-1">
             <div class="mb-6">
               <label class="field-label">Pris</label>
-              <input v-model="form.priceText" type="text" placeholder="e.g. 245 kr" class="field-input">
+              <input v-model="form.priceText" type="text" placeholder="Fx 245 kr" class="field-input">
             </div>
           </div>
           <div class="mb-6">
@@ -71,7 +71,7 @@
             <input
               v-model="form.allergens"
               type="text"
-              placeholder="e.g. Fish, Gluten"
+              placeholder="Fx fisk, gluten"
               class="field-input"
             >
             <div class="field-hint">Komma-separeret. Vises som chips på menuen.</div>
@@ -81,7 +81,7 @@
             <input
               v-model="form.ingredients"
               type="text"
-              placeholder="e.g. Salmon, lemon, dill"
+              placeholder="Fx laks, citron, dild"
               class="field-input"
             >
             <div class="field-hint">Komma-separeret. Bruges af AI til at forstå retten.</div>
@@ -190,11 +190,11 @@ const errorMsg = ref('')
 
 async function handleSubmit() {
   if (!form.name.trim()) {
-    errorMsg.value = 'Name is required.'
+    errorMsg.value = 'Navn er påkrævet.'
     return
   }
   if (!form.restaurantId) {
-    errorMsg.value = 'Please select a restaurant.'
+    errorMsg.value = 'Vælg en restaurant.'
     return
   }
 

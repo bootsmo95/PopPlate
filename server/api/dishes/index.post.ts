@@ -20,10 +20,10 @@ export default defineEventHandler(async (event) => {
   }>(event)
 
   if (!body?.name) {
-    throw createError({ statusCode: 400, message: 'name is required' })
+    throw createError({ statusCode: 400, message: 'Navn er påkrævet' })
   }
   if (!body?.restaurantId) {
-    throw createError({ statusCode: 400, message: 'restaurantId is required' })
+    throw createError({ statusCode: 400, message: 'Restaurant er påkrævet' })
   }
 
   await requireAccessibleRestaurant(body.restaurantId, user)

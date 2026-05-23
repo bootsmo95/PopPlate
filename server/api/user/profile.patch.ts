@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (body.displayName !== undefined) {
     const trimmed = body.displayName.trim()
     if (!trimmed || trimmed.length > 100) {
-      throw createError({ statusCode: 400, message: 'Display name must be 1-100 characters' })
+      throw createError({ statusCode: 400, message: 'Visningsnavn skal være 1-100 tegn' })
     }
     body.displayName = trimmed
   }
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     })
 
   if (!updated) {
-    throw createError({ statusCode: 404, message: 'User not found' })
+    throw createError({ statusCode: 404, message: 'Brugeren blev ikke fundet' })
   }
 
   // Update the session so the client sees the new displayName immediately

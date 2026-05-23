@@ -86,7 +86,7 @@ async function handleSave() {
     <PageSkeleton v-if="pending" variant="dashboard" />
 
     <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
-      Kunne ikke indlaese restaurant.
+      Kunne ikke indlæse restaurant.
     </div>
 
     <template v-else-if="restaurant">
@@ -96,7 +96,7 @@ async function handleSave() {
         </template>
         <template #sub>
           <p class="text-ink-mute mt-3 text-[15px] max-w-[480px]">
-            Opdater restaurantens info. Synligt pa den offentlige menu-side.
+            Opdater restaurantens info. Synligt på den offentlige menu-side.
           </p>
         </template>
         <template #actions>
@@ -118,7 +118,7 @@ async function handleSave() {
         <div>
           <label class="field-label" for="r-tagline">Kort beskrivelse</label>
           <input id="r-tagline" v-model="form.tagline" type="text" class="field-input" placeholder="Fx: Moderne nordisk kokken i hjertet af Kobenhavn" />
-          <div class="field-hint">En kort teaser der vises pa menu-siden.</div>
+          <div class="field-hint">En kort teaser der vises på menu-siden.</div>
         </div>
 
         <!-- Address -->
@@ -143,7 +143,7 @@ async function handleSave() {
         <!-- Actions -->
         <div class="flex items-center gap-4 pt-2">
           <button type="submit" :disabled="saving || !form.name.trim()" class="top-btn top-btn--primary">
-            {{ saving ? 'Gemmer...' : 'Gem aendringer' }}
+            {{ saving ? 'Gemmer...' : 'Gem ændringer' }}
           </button>
           <span v-if="saved" class="text-sm text-green-700 font-medium">Gemt!</span>
           <span v-if="saveError" class="text-sm text-[#8a4838]">{{ saveError }}</span>

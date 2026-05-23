@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   const dbUser = await getDbUser(user.id)
 
   if (!dbUser) {
-    throw createError({ statusCode: 404, message: 'User not found' })
+    throw createError({ statusCode: 404, message: 'Brugeren blev ikke fundet' })
   }
 
   const anchorDate = dbUser.createdAt

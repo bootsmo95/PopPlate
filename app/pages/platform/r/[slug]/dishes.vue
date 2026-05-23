@@ -79,17 +79,17 @@ const filteredDishes = computed(() => {
 
     <!-- Error -->
     <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
-      Kunne ikke indlaese retter.
+      Kunne ikke indlæse retter.
     </div>
 
     <template v-else-if="data">
       <PageHead :back-href="`/platform/r/${data.restaurant.slug}`" :back-label="data.restaurant.name">
         <template #title>
-          <h1 class="page-title">Retter pa <span class="accent">{{ data.restaurant.name }}</span></h1>
+          <h1 class="page-title">Retter på <span class="accent">{{ data.restaurant.name }}</span></h1>
         </template>
         <template #sub>
           <p class="text-ink-mute mt-3 text-[15px] max-w-[480px]">
-            Rediger retterne der hoerer til /r/{{ data.restaurant.slug }}.
+            Rediger retterne der hører til /r/{{ data.restaurant.slug }}.
           </p>
         </template>
         <template #actions>
@@ -100,7 +100,7 @@ const filteredDishes = computed(() => {
             class="top-btn"
           >
             <Icon name="arrow-up-right" :size="14" />
-            <span>Aabn menu</span>
+            <span>Åbn menu</span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/platform/dishes/new', query: { restaurantId: data.restaurant.id } }"

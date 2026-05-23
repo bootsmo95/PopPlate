@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const ext = getRouterParam(event, 'ext')
 
   if (!id || !ext || !VALID_EXTENSIONS.has(ext)) {
-    throw createError({ statusCode: 400, message: 'Invalid model path' })
+    throw createError({ statusCode: 400, message: 'Ugyldig modelsti' })
   }
 
   const dish = await requireOwnedDish(id, user)

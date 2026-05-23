@@ -153,7 +153,7 @@
 							<div class="r-dish-3d-corner tr" />
 							<div class="r-dish-3d-corner bl" />
 							<div class="r-dish-3d-corner br" />
-							<div class="r-dish-3d-label"><span class="dot" /> 3D Preview</div>
+							<div class="r-dish-3d-label"><span class="dot" /> 3D-forhåndsvisning</div>
 						</div>
 						<div class="r-dish-shine" />
 
