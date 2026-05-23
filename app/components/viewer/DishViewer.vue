@@ -14,7 +14,7 @@
       :rotation-per-second="autoRotate ? rotationPerSecond : undefined"
       :loading="loading"
       camera-controls
-      ar
+      :ar="arEnabled ? true : undefined"
       ar-modes="webxr scene-viewer quick-look"
       shadow-intensity="0.4"
       shadow-softness="1"
@@ -28,7 +28,7 @@
       @error="handleError"
       @load="handleLoad"
     >
-      <ViewerArButton @ar-clicked="emit('ar-clicked')" />
+      <ViewerArButton v-if="props.showArButton" @ar-clicked="emit('ar-clicked')" />
     </model-viewer>
 
     <div
@@ -73,6 +73,7 @@ const props = withDefaults(
     height?: string
     scale?: number
     autoAr?: boolean
+    showArButton?: boolean
     autoRotate?: boolean
     rotationPerSecond?: string
     loading?: 'auto' | 'lazy' | 'eager'
@@ -82,8 +83,9 @@ const props = withDefaults(
     posterUrl: null,
     alt: 'Dish 3D model',
     height: '60vh',
-    scale: 0.24,
+    scale: 0.12,
     autoAr: false,
+    showArButton: true,
     autoRotate: true,
     rotationPerSecond: '18deg',
     loading: 'auto',
@@ -98,6 +100,7 @@ type ModelViewerElement = HTMLElement & {
 const viewerRef = ref<ModelViewerElement | null>(null)
 const viewerHeight = computed(() => props.height)
 const scaleAttr = computed(() => `${props.scale} ${props.scale} ${props.scale}`)
+const arEnabled = computed(() => props.showArButton || props.autoAr)
 const hasError = ref(false)
 const modelLoaded = ref(false)
 const pendingArActivation = ref(false)

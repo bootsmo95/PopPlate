@@ -170,6 +170,7 @@
 								:alt="dish.name"
 								:scale="viewerScale(dish)"
 								height="100%"
+								:show-ar-button="false"
 								loading="lazy"
 								rotation-per-second="14deg"
 								@viewer-loaded="trackMenuViewerLoaded(dish)"
@@ -300,7 +301,7 @@ function posterUrl(dish: MenuDish) {
 }
 
 function viewerScale(dish: MenuDish) {
-	return dish.scaleCm && dish.scaleCm > 0 ? dish.scaleCm / 100 : 0.24;
+	return dish.scaleCm && dish.scaleCm > 0 ? dish.scaleCm / 200 : 0.12;
 }
 
 function allergenList(dish: MenuDish) {
