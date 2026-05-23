@@ -7,12 +7,18 @@ import { recoverStaleGenerationJobs } from '../server/utils/generation-timeout.j
 
 const POLL_INTERVAL_MS = 5000
 const WORKER_HEALTH_PORT = Number(process.env.WORKER_HEALTH_PORT ?? process.env.PORT ?? 3001)
+const MAX_WORKER_CONCURRENCY = 3
+const WORKER_CONCURRENCY = Math.min(
+  MAX_WORKER_CONCURRENCY,
+  Math.max(1, Number(process.env.WORKER_CONCURRENCY ?? MAX_WORKER_CONCURRENCY) || 1),
+)
 
 let isShuttingDown = false
 let healthServer: Server | null = null
 let lastPollAt: Date | null = null
 let lastSuccessfulPollAt: Date | null = null
 let activeJobId: string | null = null
+const activeJobIds = new Set<string>()
 let lastJobId: string | null = null
 
 async function ensureMeshySchema(): Promise<void> {
@@ -27,7 +33,7 @@ async function recoverStaleJobs(): Promise<void> {
   }
 }
 
-async function processNextJob(): Promise<void> {
+async function claimNextJob() {
   // Atomic job pickup: UPDATE ... WHERE status='queued' RETURNING * (prevents race conditions)
   const [job] = await db
     .update(generationJobs)
@@ -45,10 +51,15 @@ async function processNextJob(): Promise<void> {
     .returning()
 
   if (!job) {
-    return
+    return null
   }
 
+  return job
+}
+
+async function processJob(job: NonNullable<Awaited<ReturnType<typeof claimNextJob>>>): Promise<void> {
   activeJobId = job.id
+  activeJobIds.add(job.id)
   lastJobId = job.id
 
   console.log(`[worker] Job ${job.id} -> processing`)
@@ -106,7 +117,19 @@ async function processNextJob(): Promise<void> {
 
     console.error(`[worker] Job ${job.id} -> failed: ${errorMessage}`)
   } finally {
-    activeJobId = null
+    activeJobIds.delete(job.id)
+    activeJobId = activeJobIds.values().next().value ?? null
+  }
+}
+
+async function fillWorkerSlots(): Promise<void> {
+  while (!isShuttingDown && activeJobIds.size < WORKER_CONCURRENCY) {
+    const job = await claimNextJob()
+    if (!job) return
+
+    void processJob(job).catch((err) => {
+      console.error(`[worker] Unexpected error while processing job ${job.id}:`, err)
+    })
   }
 }
 
@@ -117,7 +140,7 @@ async function poll(): Promise<void> {
 
   try {
     await recoverStaleJobs()
-    await processNextJob()
+    await fillWorkerSlots()
     lastSuccessfulPollAt = new Date()
   } catch (err) {
     console.error('[worker] Unexpected error in poll loop:', err)
@@ -149,6 +172,9 @@ function startHealthServer(): void {
       lastPollAt: lastPollAt?.toISOString() ?? null,
       lastSuccessfulPollAt: lastSuccessfulPollAt?.toISOString() ?? null,
       activeJobId,
+      activeJobIds: [...activeJobIds],
+      activeJobCount: activeJobIds.size,
+      workerConcurrency: WORKER_CONCURRENCY,
       lastJobId,
     }))
   })
@@ -174,6 +200,7 @@ process.on('SIGTERM', () => shutdown('SIGTERM'))
 
 async function main(): Promise<void> {
   console.log('[worker] Starting PopPlate worker...')
+  console.log(`[worker] Concurrency set to ${WORKER_CONCURRENCY} job(s)`)
   startHealthServer()
   await ensureMeshySchema()
   console.log('[worker] Meshy schema ensured')
