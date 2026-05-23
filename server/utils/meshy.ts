@@ -36,11 +36,19 @@ export interface MeshyTaskStatus {
 const MESHY_PARAMS = {
   ai_model: 'meshy-6',
   topology: 'triangle',
-  target_polycount: 12000,
+  target_polycount: 16000,
   target_formats: ['glb', 'usdz'],
+  should_texture: true,
   enable_pbr: true,
+  image_enhancement: false,
+  remove_lighting: false,
   should_remesh: true,
-  texture_prompt: 'photorealistic food photography, appetizing, natural colors, glossy where wet, crisp detail, studio lighting',
+  texture_prompt: [
+    'photorealistic fine dining dish that closely matches the source photos',
+    'natural food colors, preserved ingredient identity, soft creamy sauce, translucent seafood, fresh herbs, green oil droplets',
+    'matte ceramic white plate, wet ingredients only where naturally glossy',
+    'avoid plastic, wax, melted blobs, cartoon styling, overexposure, pure white burnt-out sauce, oversized vertical piles',
+  ].join(', '),
 }
 
 export async function createImageTo3DTask(imageUrls: string[]): Promise<MeshyTaskResult> {

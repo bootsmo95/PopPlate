@@ -3,8 +3,8 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
 import { dedup, prune, flatten, join } from '@gltf-transform/functions'
 import sharp from 'sharp'
 
-const MAX_TEXTURE_SIZE = 512
-const WEBP_QUALITY = 62
+const MAX_TEXTURE_SIZE = 768
+const WEBP_QUALITY = 72
 
 export async function compressGlb(inputBuffer: Buffer): Promise<Buffer> {
   const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
@@ -16,6 +16,7 @@ export async function compressGlb(inputBuffer: Buffer): Promise<Buffer> {
     prune(),
     flatten(),
     join(),
+    tuneFoodMaterials(),
     compressTexturesToWebP(),
     normalizeToUnitWidth(),
   )
@@ -134,6 +135,27 @@ function normalizeToUnitWidth() {
       console.log(`[compress-glb] Normalized model: ${maxHorizontalDim.toFixed(3)} -> 1.0m (scale factor: ${scaleFactor.toFixed(4)})`)
     } catch (err) {
       console.warn('[compress-glb] Normalization failed, skipping:', err)
+    }
+  }
+}
+
+function tuneFoodMaterials() {
+  return (doc: Document) => {
+    for (const material of doc.getRoot().listMaterials()) {
+      material.setMetallicFactor(0)
+
+      const roughness = material.getRoughnessFactor()
+      material.setRoughnessFactor(Math.max(roughness, 0.78))
+
+      const baseColor = material.getBaseColorFactor()
+      if (baseColor) {
+        material.setBaseColorFactor([
+          Math.min(baseColor[0] * 0.96, 1),
+          Math.min(baseColor[1] * 0.96, 1),
+          Math.min(baseColor[2] * 0.96, 1),
+          baseColor[3],
+        ])
+      }
     }
   }
 }
