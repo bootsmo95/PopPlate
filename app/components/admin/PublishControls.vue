@@ -4,14 +4,14 @@
     <!-- Not ready to publish -->
     <template v-if="!canPublish && dish.status !== 'published'">
       <div class="rounded-lg bg-gray-50 border border-gray-200 px-4 py-3 space-y-1.5">
-        <p class="text-sm font-semibold text-gray-700">Cannot publish yet</p>
+        <p class="text-sm font-semibold text-gray-700">Kan ikke publiceres endnu</p>
         <ul class="list-disc list-inside space-y-1">
           <li v-if="dish.status !== 'ready'" class="text-sm text-gray-500">
-            Dish must have status "ready" (current: {{ dish.status }})
+            Retten skal have status "klar" (nu: {{ statusLabel(dish.status) }})
           </li>
-          <li v-if="!dish.name" class="text-sm text-gray-500">Dish must have a name</li>
-          <li v-if="!dish.posterUrl" class="text-sm text-gray-500">Dish must have a poster image (complete generation first)</li>
-          <li v-if="!dish.previewModelGlbUrl" class="text-sm text-gray-500">Dish must have a 3D model (complete generation first)</li>
+          <li v-if="!dish.name" class="text-sm text-gray-500">Retten skal have et navn</li>
+          <li v-if="!dish.posterUrl" class="text-sm text-gray-500">Retten skal have et posterbillede (færdiggør generering først)</li>
+          <li v-if="!dish.previewModelGlbUrl" class="text-sm text-gray-500">Retten skal have en 3D-model (færdiggør generering først)</li>
         </ul>
       </div>
     </template>
@@ -19,13 +19,13 @@
     <!-- Ready but not published -->
     <template v-else-if="dish.status === 'ready'">
       <div class="flex items-center gap-3">
-        <p class="text-sm text-gray-600 flex-1">Your dish is ready to publish and share with guests.</p>
+        <p class="text-sm text-gray-600 flex-1">Retten er klar til at blive publiceret og delt med gæster.</p>
         <button
           :disabled="publishing"
           class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:bg-green-300 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap"
           @click="handlePublish"
         >
-          {{ publishing ? 'Publishing…' : 'Publish Dish' }}
+          {{ publishing ? 'Publicerer…' : 'Publicer ret' }}
         </button>
       </div>
     </template>
@@ -39,20 +39,20 @@
             <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
-            <span class="text-sm font-semibold">Dish is live!</span>
+            <span class="text-sm font-semibold">Retten er live!</span>
           </div>
           <button
             :disabled="unpublishing"
             class="px-4 py-2 bg-white hover:bg-gray-50 disabled:opacity-50 text-gray-700 text-sm font-medium border border-gray-300 rounded-lg transition-colors"
             @click="handleUnpublish"
           >
-            {{ unpublishing ? 'Unpublishing…' : 'Unpublish' }}
+            {{ unpublishing ? 'Fjerner…' : 'Fjern publicering' }}
           </button>
         </div>
 
         <!-- Public URL -->
         <div>
-          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">Public URL</p>
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">Offentlig URL</p>
           <div class="flex items-center gap-2">
             <a
               :href="publicUrl"
@@ -64,18 +64,18 @@
               class="px-3 py-2 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
               @click="copyUrl"
             >
-              {{ copied ? 'Copied!' : 'Copy' }}
+              {{ copied ? 'Kopieret!' : 'Kopiér' }}
             </button>
           </div>
         </div>
 
         <!-- QR Code -->
         <div v-if="qrCode">
-          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">QR Code</p>
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">QR-kode</p>
           <div class="flex items-start gap-4">
             <img
               :src="qrImageUrl"
-              alt="QR code"
+              alt="QR-kode"
               class="w-[200px] h-[200px] border border-gray-200 rounded-lg bg-white p-1"
             />
             <div class="flex flex-col gap-2 pt-1">
@@ -83,12 +83,12 @@
                 class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-lg transition-colors"
                 @click="downloadQr"
               >
-                Download QR
+                Hent QR
               </button>
             </div>
           </div>
         </div>
-        <div v-else class="text-sm text-gray-400">QR code loading…</div>
+        <div v-else class="text-sm text-gray-400">QR-kode indlæses…</div>
       </div>
     </template>
 
@@ -194,6 +194,18 @@ const canPublish = computed(() =>
   !!props.dish.previewModelGlbUrl,
 )
 
+function statusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    draft: 'kladde',
+    processing: 'genererer',
+    failed: 'fejlet',
+    ready: 'klar',
+    published: 'publiceret',
+    archived: 'arkiveret',
+  }
+  return labels[status] ?? status
+}
+
 const publishing = ref(false)
 const unpublishing = ref(false)
 const actionError = ref('')
@@ -213,7 +225,7 @@ async function handlePublish() {
     emit('published')
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    actionError.value = e?.data?.message ?? e?.message ?? 'Failed to publish dish.'
+    actionError.value = e?.data?.message ?? e?.message ?? 'Kunne ikke publicere retten.'
   } finally {
     publishing.value = false
   }
@@ -227,7 +239,7 @@ async function handleUnpublish() {
     emit('unpublished')
   } catch (err: unknown) {
     const e = err as { data?: { message?: string }; message?: string }
-    actionError.value = e?.data?.message ?? e?.message ?? 'Failed to unpublish dish.'
+    actionError.value = e?.data?.message ?? e?.message ?? 'Kunne ikke fjerne publiceringen.'
   } finally {
     unpublishing.value = false
   }

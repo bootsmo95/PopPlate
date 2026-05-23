@@ -6,7 +6,7 @@
     <PageSkeleton v-if="pending" variant="detail" />
 
     <!-- Error loading -->
-    <div v-else-if="fetchError" class="text-red-600 text-sm py-12 text-center">Failed to load dish.</div>
+    <div v-else-if="fetchError" class="text-red-600 text-sm py-12 text-center">Kunne ikke indlæse retten.</div>
 
     <template v-else-if="dish">
       <PageHead back-href="/platform/dishes" back-label="Tilbage til retter">
@@ -122,7 +122,7 @@
                 <span class="w-1.5 h-1.5 rounded-full" style="background: #6e8b5a;" />
                 3D-forhåndsvisning
               </div>
-              <div class="font-mono text-[10px]" style="color: rgba(243, 237, 226, 0.5); letter-spacing: 0.12em;">DRAG TO ROTATE</div>
+              <div class="font-mono text-[10px]" style="color: rgba(243, 237, 226, 0.5); letter-spacing: 0.12em;">TRÆK FOR AT DREJE</div>
             </div>
             <div class="relative px-8 pb-8 pt-2.5" style="min-height: 400px;">
               <ViewerDishViewer
@@ -191,7 +191,7 @@
             <p class="text-[13px] text-ink-mute mb-3.5 leading-[1.5]">
               Arkiver for at skjule retten uden at miste data -- eller slet permanent. Slettet ret kan ikke gendannes.
             </p>
-            <p v-if="dish.status === 'archived'" class="text-sm text-ink-mute mb-3">This dish is archived.</p>
+            <p v-if="dish.status === 'archived'" class="text-sm text-ink-mute mb-3">Retten er arkiveret.</p>
             <div class="flex gap-2">
               <ActionButton
                 v-if="dish.status !== 'archived'"
@@ -487,7 +487,7 @@ const archiving = ref(false)
 const deleting = ref(false)
 
 async function handleArchive() {
-  if (!confirm('Archive this dish? It will no longer be visible to guests.')) return
+  if (!confirm('Arkiver denne ret? Den vil ikke længere være synlig for gæster.')) return
 
   archiving.value = true
 
@@ -504,7 +504,7 @@ async function handleArchive() {
 }
 
 async function handlePermanentDelete() {
-  if (!confirm('Permanently delete this dish? This removes its QR code, analytics, jobs, and source image records.')) return
+  if (!confirm('Slet denne ret permanent? Det fjerner dens QR-kode, analytics, jobs og kildebilleder.')) return
 
   deleting.value = true
 

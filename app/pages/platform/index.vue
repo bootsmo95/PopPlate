@@ -165,7 +165,7 @@ const eyebrow = computed(() => `${today}${firstName.value ? ` · ${firstName.val
 							label="Administrer"
 							title="Alle retter"
 							italic="retter"
-							body="Filtrer, soeg, publish/unpublish, download QR-koder."
+							body="Filtrer, søg, publicer/fjern publicering, og hent QR-koder."
 							cta-label="Aabn liste"
 							to="/platform/dishes"
 						/>

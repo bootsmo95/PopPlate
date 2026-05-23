@@ -78,7 +78,7 @@ const FILTERS: Array<{ key: DishStatus | 'all'; label: string }> = [
 ]
 
 async function handleDeleteDish(dish: DesignDish) {
-  if (!confirm('Permanently delete this dish? This removes its QR code, analytics, jobs, and source image records.')) return
+  if (!confirm('Slet denne ret permanent? Det fjerner dens QR-kode, analytics, jobs og kildebilleder.')) return
 
   deletingId.value = String(dish.id)
 
@@ -104,7 +104,7 @@ async function handleDeleteDish(dish: DesignDish) {
       </template>
       <template #sub>
         <p class="text-ink-mute mt-3 text-[15px] max-w-[480px]">
-          Filtrer pa status, soeg, og rediger individuelle retter.
+          Filtrer på status, søg, og rediger individuelle retter.
         </p>
       </template>
       <template #actions>
@@ -119,7 +119,7 @@ async function handleDeleteDish(dish: DesignDish) {
 
     <!-- Error -->
     <div v-else-if="error" class="p-card py-16 text-center text-[#8a4838]">
-      Kunne ikke indlaese retter.
+      Kunne ikke indlæse retter.
     </div>
 
     <template v-else>
