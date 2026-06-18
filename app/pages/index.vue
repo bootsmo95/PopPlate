@@ -127,7 +127,7 @@ onMounted(() => {
 
 			<!-- Top corner CTAs -->
 			<div class="hero-top-ctas relative z-[6]">
-				<NuxtLink to="/r/folker" class="btn-ghost">Se eksempel-menu</NuxtLink>
+				<NuxtLink to="/r/boots-food" class="btn-ghost">Se eksempel-menu</NuxtLink>
 				<NuxtLink to="/platform/signup" class="btn-primary">
 					<span>Få demo til din restaurant</span>
 					<span
