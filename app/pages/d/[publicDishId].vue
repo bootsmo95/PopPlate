@@ -310,7 +310,8 @@ const modelUsdzUrl = computed(() => dish.value?.hasUsdz ? `/m/${publicDishId}.us
 const modelPosterUrl = computed(() => dish.value?.hasPoster ? `/m/${publicDishId}.png` : undefined)
 const viewerScale = computed(() => {
   const scaleCm = dish.value?.scaleCm
-  return scaleCm && scaleCm > 0 ? scaleCm / 200 : 0.12
+  // With 0.25m normalization, scale=1 fills viewer; scaleCm adjusts ratio
+  return scaleCm && scaleCm > 0 ? scaleCm / 25 : 1
 })
 
 const allergenList = computed<string[]>(() => {

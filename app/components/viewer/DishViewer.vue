@@ -7,7 +7,6 @@
       :poster="posterUrl ?? undefined"
       :alt="alt ?? '3D-model af ret'"
       :scale="scaleAttr"
-      ar-scale="fixed"
       ar-placement="floor"
       :auto-rotate="autoRotate ? true : undefined"
       :auto-rotate-delay="autoRotate ? 0 : undefined"
@@ -83,7 +82,7 @@ const props = withDefaults(
     posterUrl: null,
     alt: '3D-model af ret',
     height: '60vh',
-    scale: 0.12,
+    scale: 1,
     autoAr: false,
     showArButton: true,
     autoRotate: true,

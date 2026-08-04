@@ -301,7 +301,7 @@ function posterUrl(dish: MenuDish) {
 }
 
 function viewerScale(dish: MenuDish) {
-	return dish.scaleCm && dish.scaleCm > 0 ? dish.scaleCm / 200 : 0.12;
+	return dish.scaleCm && dish.scaleCm > 0 ? dish.scaleCm / 25 : 1;
 }
 
 function allergenList(dish: MenuDish) {

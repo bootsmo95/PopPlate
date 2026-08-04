@@ -121,7 +121,9 @@ function normalizeToUnitWidth() {
         return
       }
 
-      const scaleFactor = 1.0 / maxHorizontalDim
+      // Target plate-sized width (25cm) so models display correctly in AR with ar-scale="auto"
+      const TARGET_WIDTH_METERS = 0.25
+      const scaleFactor = TARGET_WIDTH_METERS / maxHorizontalDim
 
       for (const rootNode of scene.listChildren()) {
         const currentScale = rootNode.getScale() as [number, number, number]
@@ -132,7 +134,7 @@ function normalizeToUnitWidth() {
         ])
       }
 
-      console.log(`[compress-glb] Normalized model: ${maxHorizontalDim.toFixed(3)} -> 1.0m (scale factor: ${scaleFactor.toFixed(4)})`)
+      console.log(`[compress-glb] Normalized model: ${maxHorizontalDim.toFixed(3)} -> ${TARGET_WIDTH_METERS}m (scale factor: ${scaleFactor.toFixed(4)})`)
     } catch (err) {
       console.warn('[compress-glb] Normalization failed, skipping:', err)
     }
