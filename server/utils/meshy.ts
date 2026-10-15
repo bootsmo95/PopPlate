@@ -45,12 +45,6 @@ const MESHY_PARAMS = {
   image_enhancement: false,
   remove_lighting: false,
   should_remesh: true,
-  texture_prompt: [
-    'photorealistic fine dining dish that closely matches the source photos',
-    'natural food colors, preserved ingredient identity, soft creamy sauce, translucent seafood, fresh herbs, green oil droplets',
-    'matte ceramic white plate, wet ingredients only where naturally glossy',
-    'avoid plastic, wax, melted blobs, cartoon styling, overexposure, pure white burnt-out sauce, oversized vertical piles',
-  ].join(', '),
 }
 
 export async function createImageTo3DTask(imageUrls: string[]): Promise<MeshyTaskResult> {
@@ -58,9 +52,13 @@ export async function createImageTo3DTask(imageUrls: string[]): Promise<MeshyTas
     ? '/openapi/v1/multi-image-to-3d'
     : '/openapi/v1/image-to-3d'
 
+  // Texture from the dish's own photo rather than a text prompt, so Meshy
+  // doesn't invent labels or details that aren't in the source images.
+  const params = { ...MESHY_PARAMS, texture_image_url: imageUrls[0] }
+
   const body = imageUrls.length > 1
-    ? { image_urls: imageUrls, ...MESHY_PARAMS }
-    : { image_url: imageUrls[0], ...MESHY_PARAMS }
+    ? { image_urls: imageUrls, ...params }
+    : { image_url: imageUrls[0], ...params }
 
   const response = await fetch(`${MESHY_BASE_URL}${endpoint}`, {
     method: 'POST',

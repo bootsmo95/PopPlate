@@ -37,25 +37,6 @@
       </div>
     </template>
 
-    <!-- Ready -->
-    <template v-else-if="isReady">
-      <div class="space-y-3">
-        <div class="flex items-center gap-2 text-[#4a6240]">
-          <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <p class="text-sm font-medium">3D-modellen er klar.</p>
-        </div>
-        <button
-          :disabled="loading || monthlyLimitReached"
-          class="top-btn !py-2.5 !px-4 !text-sm disabled:opacity-50"
-          @click="startGeneration"
-        >
-          {{ loading ? 'Starter...' : 'Generer igen' }}
-        </button>
-      </div>
-    </template>
-
     <!-- Processing -->
     <template v-else-if="latestJob?.status === 'processing'">
       <div class="space-y-3">
@@ -76,6 +57,25 @@
           />
         </div>
         <p class="text-xs text-ink-faint">Det tager typisk 2-5 minutter. Du kan godt forlade siden imens.</p>
+      </div>
+    </template>
+
+    <!-- Ready -->
+    <template v-else-if="isReady">
+      <div class="space-y-3">
+        <div class="flex items-center gap-2 text-[#4a6240]">
+          <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <p class="text-sm font-medium">3D-modellen er klar.</p>
+        </div>
+        <button
+          :disabled="loading || monthlyLimitReached"
+          class="top-btn !py-2.5 !px-4 !text-sm disabled:opacity-50"
+          @click="startGeneration"
+        >
+          {{ loading ? 'Starter...' : 'Generer igen' }}
+        </button>
       </div>
     </template>
 
