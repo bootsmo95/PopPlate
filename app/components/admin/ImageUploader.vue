@@ -46,15 +46,22 @@
     <div v-if="allImages.length > 0" class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
       <!-- Existing uploaded images -->
       <div
-        v-for="img in existingImages"
+        v-for="(img, index) in existingImages"
         :key="img.id"
         class="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200"
       >
-        <img
-          :src="img.imageUrl"
-          :alt="`Kildebillede`"
-          class="w-full h-full object-cover"
-        />
+        <button
+          type="button"
+          class="block w-full h-full cursor-zoom-in"
+          title="Vis billede"
+          @click="openLightbox(index)"
+        >
+          <img
+            :src="img.imageUrl"
+            :alt="`Kildebillede`"
+            class="w-full h-full object-cover"
+          />
+        </button>
         <button
           type="button"
           class="absolute top-1 right-1 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 focus:opacity-100"
@@ -114,6 +121,61 @@
         </button>
       </div>
     </div>
+
+    <!-- Lightbox -->
+    <Teleport to="body">
+      <div
+        v-if="lightboxImage"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 sm:p-10"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Kildebillede"
+        @click.self="closeLightbox"
+      >
+        <img
+          :src="lightboxImage.imageUrl"
+          alt="Kildebillede"
+          class="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
+        />
+
+        <button
+          type="button"
+          class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+          title="Luk"
+          @click="closeLightbox"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <template v-if="existingImages.length > 1">
+          <button
+            type="button"
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+            title="Forrige"
+            @click="stepLightbox(-1)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+            title="Næste"
+            @click="stepLightbox(1)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <p class="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/70 tabular-nums">
+            {{ (lightboxIndex ?? 0) + 1 }} / {{ existingImages.length }}
+          </p>
+        </template>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -310,7 +372,38 @@ async function handleDelete(image: SourceImage) {
   }
 }
 
+const lightboxIndex = ref<number | null>(null)
+const lightboxImage = computed(() =>
+  lightboxIndex.value === null ? null : props.existingImages[lightboxIndex.value] ?? null,
+)
+
+function openLightbox(index: number) {
+  lightboxIndex.value = index
+}
+
+function closeLightbox() {
+  lightboxIndex.value = null
+}
+
+function stepLightbox(delta: number) {
+  if (lightboxIndex.value === null) return
+  const count = props.existingImages.length
+  lightboxIndex.value = (lightboxIndex.value + delta + count) % count
+}
+
+function handleLightboxKey(event: KeyboardEvent) {
+  if (lightboxIndex.value === null) return
+  if (event.key === 'Escape') closeLightbox()
+  else if (event.key === 'ArrowLeft') stepLightbox(-1)
+  else if (event.key === 'ArrowRight') stepLightbox(1)
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleLightboxKey)
+})
+
 onUnmounted(() => {
+  window.removeEventListener('keydown', handleLightboxKey)
   uploadQueue.value.forEach(item => URL.revokeObjectURL(item.previewUrl))
 })
 </script>
