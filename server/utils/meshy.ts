@@ -34,9 +34,11 @@ export interface MeshyTaskStatus {
 }
 
 const MESHY_PARAMS = {
-  ai_model: 'meshy-7',
+  ai_model: 'meshy-7.1',
+  geometry_resolution: '2k',
   topology: 'triangle',
-  target_polycount: 16000,
+  target_polycount: 60000,
+  texture_resolution: '4k',
   target_formats: ['glb', 'usdz'],
   should_texture: true,
   enable_pbr: true,
